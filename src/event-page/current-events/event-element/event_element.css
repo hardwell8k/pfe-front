@@ -1,0 +1,13 @@
+.event_element{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    
+}
+
+.event_element h3,.event_element p {
+    margin: 0; 
+    padding: 0; 
+    line-height: 1.2; 
+}

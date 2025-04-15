@@ -1,0 +1,57 @@
+.UpComingEvents{
+    display: flex;
+    flex-direction: column;
+    width: 0px;
+    
+    height: auto;
+    min-height: 100px;
+    background-color: aqua;
+    
+    padding-left: 20px;
+    transition: width 0.5s ease;
+}
+
+.UpComingEvents.expanded{
+    width: 250px;
+
+}
+
+.search{
+    display: flex;
+    flex-direction: row;
+    width: 75%;
+    background-color: #91A4B7;
+    
+    overflow: hidden;
+    
+}
+
+.events{
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+#open_close{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    line-height: 1;
+    padding: 0;
+    overflow: hidden;
+    
+    margin-left: auto;
+    margin-top: 80px;
+}
+
+.upcoming_event.selected{
+    background-color: grey;
+}
+
+

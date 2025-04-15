@@ -1,0 +1,34 @@
+.addNewType{
+    position: fixed;
+    top: 40%;
+    left: 35%;
+    width: 40vw;
+    height: 30vh;
+    border-radius: 25px;
+    border-right: 25px;
+    border-top-right-radius: 25px;
+    background-color: rgb(223, 38, 38);
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    z-index: 3000;
+    
+}
+
+.new_type_name_input{
+    background-color: black;
+}
+
+#add_new_type_form{
+    background-color: aqua;
+    width: 50%;
+    display: flex;
+}
+
+.new_type_name_input{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}

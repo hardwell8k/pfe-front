@@ -1,0 +1,9 @@
+.client_interface_client_containing_div{
+    display: flex;
+    flex-direction: row;
+    color: black;
+}
+
+.client_interface_client_containing_subdiv.domain{
+    margin-left: auto;
+}

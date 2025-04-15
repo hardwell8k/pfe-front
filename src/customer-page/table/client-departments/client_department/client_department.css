@@ -1,0 +1,19 @@
+/* src/customer-page/table/client-departments/client_department/client_department.css */
+
+.client_department_div {
+    display: flex;
+    flex-direction: row; /* Align items in a row */
+    justify-content: space-between; /* Space between items */
+    padding: 10px; /* Padding for each department item */
+    border-bottom: 1px solid #e0e0e0; /* Divider line */
+    align-items: center; /* Center items vertically */
+}
+
+.client_department_subdiv {
+    flex-grow: 1; /* Allow each item to take available space */
+    margin-right: 10px; /* Space between items */
+}
+
+.client_department_subdiv:last-child {
+    margin-right: 0; /* Remove margin for last item */
+}

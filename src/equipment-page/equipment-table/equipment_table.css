@@ -1,0 +1,178 @@
+/* Main container */
+.equipment_table_containing_div {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.1), 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+/* Header section */
+.equipement_table_header_div {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.equipment_table_header_subdiv {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid #EAECF0;
+}
+
+.equipment_table_header_subdiv h3 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #101828;
+    margin: 0;
+}
+
+.search_equipments {
+    flex: 1;
+    margin: 0 24px;
+}
+
+.quiment_table_header_subdiv_buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.quiment_table_header_subdiv_buttons button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: white;
+    border: 1px solid #D0D5DD;
+    border-radius: 8px;
+    color: #344054;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quiment_table_header_subdiv_buttons button:hover {
+    background: #F9FAFB;
+}
+
+.quiment_table_header_subdiv_buttons img {
+    width: 20px;
+    height: 20px;
+    opacity: 0.75;
+}
+
+/* Table header */
+.equipment_table_header_names_subdiv {
+    display: flex;
+    align-items: center;
+    padding: 12px 24px;
+    background: #F9FAFB;
+    border-bottom: 1px solid #EAECF0;
+}
+
+.equipment_table_header_names_subdiv_subdiv {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #667085;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.equipment_table_header_names_subdiv_subdiv h3 {
+    font-size: 12px;
+    font-weight: 500;
+    color: #667085;
+    margin: 0;
+    text-transform: capitalize;
+}
+
+.equipment_table_header_names_subdiv_subdiv img {
+    width: 16px;
+    height: 16px;
+    opacity: 0.5;
+}
+
+/* Column widths */
+.equipment_table_header_names_subdiv .checkbox {
+    flex: 0 0 40px;
+}
+
+.equipment_table_header_names_subdiv_subdiv:nth-child(2) {
+    flex: 2;
+}
+
+.equipment_table_header_names_subdiv_subdiv:nth-child(3) {
+    flex: 1.5;
+}
+
+.equipment_table_header_names_subdiv_subdiv:nth-child(4) {
+    flex: 1;
+}
+
+.equipment_table_header_names_subdiv_subdiv:nth-child(5) {
+    flex: 0.8;
+    justify-content: center;
+}
+
+.equipment_table_header_names_subdiv_subdiv:nth-child(6) {
+    flex: 2;
+}
+
+.equipment_table_header_names_subdiv_subdiv:nth-child(7) {
+    flex: 1;
+}
+
+/* Elements container */
+.equipment_table_elements_div {
+    width: 100%;
+}
+
+/* Footer pagination */
+.equipment_table_footer_div {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 16px 24px;
+    gap: 8px;
+    border-top: 1px solid #EAECF0;
+}
+
+.equipment_table_footer_div button {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid #D0D5DD;
+    background: white;
+    border-radius: 50%;
+    color: #344054;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.equipment_table_footer_div button:hover {
+    background: #1570EF;
+    border-color: #1570EF;
+    color: white;
+}
+
+.equipment_table_footer_div button:first-child,
+.equipment_table_footer_div button:last-child {
+    padding: 0;
+    width: 32px;
+}
+
+.equipment_table_footer_div button.active {
+    background: #1570EF;
+    border-color: #1570EF;
+    color: white;
+}

@@ -1,0 +1,77 @@
+import { useForm } from 'react-hook-form';
+
+import './AddCustomer.css'
+
+function AddCustomer(props:any){
+    const {register,handleSubmit,formState:{errors}} = useForm();
+
+    const Onsubmit =async (data:any)=>{
+        try {
+            alert('adding client')
+            const reponse = await fetch('http://localhost:5000/api/addClient',{
+                method:"POST",
+                headers:{"Content-type":"application/json"},
+                body: JSON.stringify(data),
+            })
+
+            const result = await reponse.json();
+            if(!result.success){
+                throw({status:reponse.status,message:result.message});
+            }
+            alert('client added');
+        } catch (error:any) {
+            alert('failed to add client ');
+            alert(error.message);
+            console.error("failed to add a client",error.message);
+        }
+    }
+
+    return(
+        <div className={`AddCustomer_container ${props.extended?'extended':''}`}>
+
+            <div className='AddCustomer_container_header'>
+                <h2>Add Customer</h2>
+                <button id='AddCustomer_container_exit_button' onClick={()=>{props.extend()}}>X</button>
+            </div>
+
+            <div className='AddCustomer_container_form_div'>
+                <form id='AddCustomer_container_form' onSubmit={handleSubmit(Onsubmit)}>
+
+                    <div className='AddCustomer_container_form_input'>
+                        <p className='AddCustomer_container_label'>company name</p>
+
+                        <input type="text" {...register("nom",{required:"company name is required"})} />
+                        {errors.nom&&<p>{String(errors.nom.message)}</p>}
+                    </div>
+
+                    <div className='AddCustomer_container_form_input'>
+                        <p className='AddCustomer_container_label'>company Email</p>
+
+                        <input type="text" {...register("email",{required:"email is required"})} />
+                        {errors.email&&<p>{String(errors.email.message)}</p>}
+                    </div>
+
+                    <div className='AddCustomer_container_form_input'>
+                        <p className='AddCustomer_container_label'>company Phone number</p>
+
+                        <input type="number" {...register("num_tel",{required:"phone number is required"})} />
+                        {errors.num_tel&&<p>{String(errors.num_tel.message)}</p>}
+                    </div>
+
+                    <div className='AddCustomer_container_form_input'>
+                        <p className='AddCustomer_container_label'>company Domain</p>
+
+                        <input type="text" {...register("domain",{required:"domain is required"})} />
+                        {errors.domain&&<p>{String(errors.domain.message)}</p>}
+                    </div>
+
+                    <button type='submit'> Add Customer</button>
+
+                </form>
+            </div>
+
+        </div>
+    );
+}
+
+export default AddCustomer;

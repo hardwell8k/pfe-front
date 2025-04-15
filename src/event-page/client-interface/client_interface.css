@@ -1,0 +1,22 @@
+.client_interface_subdiv_department{
+    color: black;
+    
+}
+
+.client_interface_event_page_subdi{
+    position: absolute;
+    right: 35%;
+    top: 20%;
+    background-color:aliceblue;
+    width: fit-content;
+    height: fit-content;
+    padding:50px;
+}
+
+.lient_interface_subdiv_element:hover{
+    background-color: beige;
+}
+
+.lient_interface_subdiv_element.selected{
+    background-color: grey;
+}

@@ -1,0 +1,19 @@
+.equipment_page_container{
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: calc(100vw - 50px);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 32px;
+    box-sizing: border-box;
+    align-items: center;
+}
+
+.equipment_page_container > * {
+    
+    width: 100%;
+}

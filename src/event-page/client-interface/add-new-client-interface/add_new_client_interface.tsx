@@ -1,0 +1,81 @@
+import { useForm } from 'react-hook-form';
+import { FETCH_STATUS } from '../../../fetchStatus';
+import { useState } from 'react';
+
+import Loading from '../../../loading/loading';
+import './add_new_client_interface.css'
+
+function Add_new_client_interface(props:any){
+
+    const Onsubmit =async (data:any)=>{
+        try {
+            setStatus(FETCH_STATUS.LOADING);
+            alert('adding client');
+            const reponse = await fetch('http://localhost:5000/api/addClient',{
+                method:"POST",
+                headers:{"Content-type":"application/json"},
+                body: JSON.stringify(data),
+            })
+
+            const result = await reponse.json();
+            if(!result.success){
+                throw({status:reponse.status,message:result.message});
+            }
+            alert('client added');
+            props.setClients([...props.clients,{nom:data.nom,domain:data.domain}]);
+            setStatus(FETCH_STATUS.SUCCESS);
+        } catch (error:any) {
+            alert('failed to add client ');
+            alert(error.message);
+            console.error("failed to add a client",error.message);
+            setStatus(FETCH_STATUS.ERROR);
+        }
+    }
+
+    const {register,handleSubmit,formState:{errors}} = useForm();
+    const [status,setStatus] = useState(FETCH_STATUS.IDLE);
+
+    if(status===FETCH_STATUS.LOADING){
+        <div className='add_new_client_interface'><Loading/></div>
+    }
+
+    return (<div className='add_new_client_interface'>
+        <form onSubmit={handleSubmit(Onsubmit)}>
+
+            <div className='add_new_client_interface_subdiv'>
+
+                <div className='add_new_client_interface_subdiv_nom'>
+                    <input {...register('nom',{required:"le nom est obligatoire"})} placeholder='nom'/>
+                    {errors.nom&&<p>{String(errors.nom.message)}</p>}
+                </div>
+
+                <div className='add_new_client_interface_subdiv_domain'>
+                    <input {...register('domain',{required:"le domain est obligatoire"})} placeholder='domain'/>
+                    {errors.domain&&<p>{String(errors.domain.message)}</p>}
+                </div>
+
+            </div>
+
+            <div className='add_new_client_interface_subdiv'>
+
+                <div className='add_new_client_interface_subdiv_num_tel'>
+                    <input {...register('num_tel',{required:"le numero de telephone est obligatoire",pattern:{value:/^[0-9]+$/,message:"le numero de telephone doit contenir uniquement des chiffres"}})} placeholder='numero de telephone'/>
+                    {errors.num_tel&&<p>{String(errors.num_tel.message)}</p>}                
+                </div>
+
+                <div className='add_new_client_interface_subdiv_email'>
+                    <input {...register('email',{required:"l'email est obligatoire"})} placeholder='email'/>
+                    {errors.email&&<p>{String(errors.email.message)}</p>}
+                </div>
+
+            </div>
+
+            <div className='add_new_client_interface_subdiv'>
+                <button type='button' onClick={()=>{props.handleAddNewClientInterfaceIsVisible()}}>cancel</button>
+                <button type='submit'>Add new Client</button>
+            </div>
+        </form>
+    </div>);
+}
+
+export default Add_new_client_interface;

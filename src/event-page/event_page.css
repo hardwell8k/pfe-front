@@ -1,0 +1,13 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    background-color: rgb(255, 244, 234);
+    height: auto;
+}
+
+.maindiv{
+    display: flex;
+    flex-direction: row;
+    margin-left: 50px;
+}
