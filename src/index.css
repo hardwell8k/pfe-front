@@ -29,6 +29,11 @@ a:hover {
   min-width: 320px;
   min-height: 100vh;
 }*/
+body{
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
 
 /*h1 {
   font-size: 3.2em;

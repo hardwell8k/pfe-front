@@ -14,7 +14,8 @@ function Event_page(){
             setStatus(FETCH_STATUS.LOADING);
             const reponse = await fetch("http://localhost:5000/api/getUPcomingEvents",{
                 method:"POST",
-                headers:{'Content-Type':'application/json'}
+                headers:{'Content-Type':'application/json'},
+                credentials:'include',
             });
 
             const result = await reponse.json();

@@ -102,7 +102,7 @@ function Event_creation_form(props:any,ref:any){
             if(!result.success){
                 throw({status:reponse.status,message:result.message});
             }
-            alert(result.message);
+            //alert(result.message);
             props.setStatus(FETCH_STATUS.SUCCESS);
         } catch(error:any){
             console.error(error.message);
@@ -189,8 +189,8 @@ function Event_creation_form(props:any,ref:any){
     useEffect(()=>{
         if(props.selectedUpcomingEventIndex!==-1){
             setValue("nom",(props.selectedUpcomingEvent).nom);
-            setValue("date_debut",(((props.selectedUpcomingEvent).date_debut).split('T'))[0]);
-            setValue("date_fin",(((props.selectedUpcomingEvent).date_fin).split('T'))[0]);
+            setValue("date_debut",(new Date((props.selectedUpcomingEvent).date_debut)));
+            setValue("date_fin",(new Date((props.selectedUpcomingEvent).date_fin)));
             setValue("address",(props.selectedUpcomingEvent).address);
             setValue("nbr_invite",(props.selectedUpcomingEvent).nbr_invite);
             setValue("client_id",(props.selectedUpcomingEvent).client_id);
