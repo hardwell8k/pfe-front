@@ -17,6 +17,7 @@ import AddStaff from './add-staff/AddStaff.tsx';
 import AddAccomodation from './add-accomodation/AddAccomodation.tsx';
 import AddWorkshop from './add-workshop/AddWorkshop.tsx';
 import StaffUpdate from './update-staff/StaffUpdate.tsx';
+import StaffPage from './staff-page/staffPage.tsx';
 
 
 const isLogedIn = ()=>{
@@ -47,6 +48,11 @@ const router = createBrowserRouter([
   {
     path: '/equipment',
     element:<ProtectedRoute element={<Equipment_page/>} />,
+    errorElement:<div> 404 PAGE NOT FOUND</div>
+  },
+  {
+    path:'/staff',
+    element:<ProtectedRoute element={<StaffPage/>} />,
     errorElement:<div> 404 PAGE NOT FOUND</div>
   },
   {

@@ -7,10 +7,10 @@ function Department(props:any){
     const AddDepartment = async(data:any)=>{
         
         try {
-            alert(props.clientID)
+            
             data = {...data,"client_id":props.clientID,};
             
-            alert("adding department")
+            
             const reponse = await fetch('http://localhost:5000/api/addDepartment',{
                 method:"POST",
                 headers:{"Content-Type":"application/json"},
@@ -22,6 +22,7 @@ function Department(props:any){
                 throw({status:reponse.status,message:result.message});
             }
             alert("department added");
+            reset();
         } catch (error:any) {
             console.error("failed to add department",error.message)
             alert("failed to add department");
@@ -30,7 +31,7 @@ function Department(props:any){
         }
     }
 
-    const {register,handleSubmit,formState:{errors}} = useForm();
+    const {register,handleSubmit,reset,formState:{errors}} = useForm();
     return(
     <div className='add_department_interface'>
         <p>Add department</p>

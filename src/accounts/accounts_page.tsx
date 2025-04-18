@@ -15,7 +15,7 @@ function Accounts_page(){
     
     const getAllAccounts = async() =>{
         try {
-            alert("get all accounts");
+            //alert("get all accounts");
             setStatus(FETCH_STATUS.LOADING);
             const reponse = await fetch("http://localhost:5000/api/getAcounts",{
                 method:'POST',

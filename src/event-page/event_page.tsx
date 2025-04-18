@@ -27,8 +27,11 @@ function Event_page(){
               }, 10000);
             //await new Promise(resolve => setTimeout(resolve, 10000));
             //alert("fuck");
-            //alert(UpComingEvents);
+            
             setUpComingEvents(result.data);
+            /*for(let i=0;i<result.data.length;i++){
+                alert(result.data[i].nom);
+            }*/
             setStatus(FETCH_STATUS.SUCCESS);
         } catch (error:any) {
             console.error("error while getting upcoming events",error.message);
@@ -50,7 +53,7 @@ function Event_page(){
         <Sidebar/>
         <div className="maindiv">
             <Current_events status={status} UpComingEvents={UpComingEvents} selectedUpcomingEventIndex={selectedUpcomingEventIndex} setselectedUpcomingEventIndex={setselectedUpcomingEventIndex} />
-            <Event_creation selectedUpcomingEvent={UpComingEvents[selectedUpcomingEventIndex]} selectedUpcomingEventIndex={selectedUpcomingEventIndex}/>
+            <Event_creation selectedUpcomingEvent={UpComingEvents[selectedUpcomingEventIndex]} selectedUpcomingEventIndex={selectedUpcomingEventIndex} setselectedUpcomingEventIndex={setselectedUpcomingEventIndex}/>
         </div>
     </div>
     

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./client_departments.css"
-import ClientDepartment from "./client_department/client_department";
+import ClientDepartment from "./client-department/client_department";
 
 function ClientDepartments(props:any){
 
@@ -31,12 +31,11 @@ function ClientDepartments(props:any){
     useEffect(()=>{getClientDepartments()},[])
 
     return(
-        departments.length > 0 && <div className="client_departments_div">
+        <div className="client_departments_div">
             {departments.map((item:any)=>(
                 <ClientDepartment nom={item.nom} department={item.department} num_tel={item.num_tel} email={item.email}/>
             ))}
         </div>
-        
     )
 }
 

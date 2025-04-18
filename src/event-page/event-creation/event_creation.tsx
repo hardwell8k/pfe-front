@@ -53,12 +53,12 @@ function Event_creation(props:any){
     }
 
     const handleUpdateClick = async()=>{
-        alert('handleUpdateClick');
+        //alert('handleUpdateClick');
         await Event_creation_form_ref.current?.updateEventCall();
     }
 
     const handleDeleteClick = async()=>{
-        alert('handleDeleteClick');
+        //alert('handleDeleteClick');
         await Event_creation_form_ref.current?.deleteEventCall();
     }
 
@@ -77,7 +77,7 @@ function Event_creation(props:any){
                 <p id="address">{address}</p>
             </div>
 
-            <h1>{Event_name}</h1>
+            <h1 id="event_name">{Event_name}</h1>
 
             <div className="description_edit_delete">
                 <p id="description">{description}</p>
@@ -87,7 +87,7 @@ function Event_creation(props:any){
 
         </div>
 
-        <Event_creation_form setStatus={setStatus} ref={Event_creation_form_ref} setEvent_name ={handlesetEvent_name} setAddress={handlesetAddress} setDate={handlesetDate} setDescription={handlesetDescription} selectedUpcomingEvent={props.selectedUpcomingEvent} selectedUpcomingEventIndex={props.selectedUpcomingEventIndex}/>
+        <Event_creation_form setStatus={setStatus} ref={Event_creation_form_ref} setEvent_name ={handlesetEvent_name} setAddress={handlesetAddress} setDate={handlesetDate} setDescription={handlesetDescription} selectedUpcomingEvent={props.selectedUpcomingEvent} selectedUpcomingEventIndex={props.selectedUpcomingEventIndex} setselectedUpcomingEventIndex={props.setselectedUpcomingEventIndex}/>
     </div>
     
     

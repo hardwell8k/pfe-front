@@ -206,15 +206,17 @@
     
 }*/
 
-/* table.css */
+/* !!!!!!!!!!!!!!!!!!!!!!!!table.css good version !!!!!!!!!!!!!!!!!!!!!!!! */
 .table {
     background-color: #ffffff;
     border-radius: 12px;
-    overflow: hidden;
+    overflow: auto;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     color: #333;
     width: 100%;
     max-width: 100%;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .head {
@@ -293,7 +295,7 @@
     cursor: pointer;
 }
 
-/* Media queries for responsiveness */
+
 @media screen and (max-width: 1100px) {
     .Customer_Table_Title:nth-child(6) {
         display: none;
@@ -341,3 +343,4 @@
         width: 55%;
     }
 }
+

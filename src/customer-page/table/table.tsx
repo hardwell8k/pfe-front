@@ -8,8 +8,8 @@ import ClientDepartments from './client-departments/client_departments';
 function content(props:any){
 
     
-    const [clients,setClients] = useState([]);
-    const [selectedClient,setSelectedClient] = useState(null);
+    
+    const [selectedClient,setSelectedClient] = useState(-1);
 
     const getClients = async ()=>{
         try {
@@ -25,7 +25,7 @@ function content(props:any){
                 throw({status:reponse.status,message:result.message});
             }
             
-            setClients(result.data);
+            props.setClients(result.data);
         } catch (error:any) {
             console.error("failed to get clients",error.message);
         }
@@ -67,9 +67,9 @@ function content(props:any){
             </div>
             
             <div className='customers'>
-                {clients.map((item:any)=>{
+                {(props.clients).map((item:any)=>{
                     return(<>
-                        <Customer client_id={item.ID} name={item.nom} email={item.email} phone_number={item.num_tel} domain={item.domain} extended={props.extended} openAddDepartment={props.openAddDepartment} setClientID={props.setClientID} setSelectedClient={setSelectedClient}/>
+                        <Customer client_id={item.ID} name={item.nom} email={item.email} phone_number={item.num_tel} domain={item.domain} extend extended={props.extended} openAddDepartment={props.openAddDepartment} setClientID={props.setClientID} setSelectedClient={setSelectedClient} addDepartmentISVisible={props.addDepartmentISVisible}/>
                         {selectedClient === item.ID && <ClientDepartments clientID={item.ID}/>}
                     </>);
                 })}

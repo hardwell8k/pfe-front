@@ -21,7 +21,7 @@ function Customer(props:any){
             <div className='customer_containing_subdiv'>
                 <h3>{props.domain??"domain"}</h3>
             </div>
-            <div className={`customer_containing_button_subdiv ${props.extended?'extended':''}`}>
+            <div className={`customer_containing_button_subdiv ${(props.extended&&!props.addDepartmentISVisible)?'extended':''}`}>
                 <button id='add_department_button' onClick={()=>{props.setClientID(props.client_id);props.openAddDepartment()}}> add department</button>
             </div>
         </div>

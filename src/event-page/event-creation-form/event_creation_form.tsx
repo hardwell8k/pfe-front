@@ -19,7 +19,7 @@ interface EventFormData extends FieldValues {
     nbr_invite: number;
     type: string;
     date_debut: Date|null;
-    date_fin: Date;
+    date_fin: Date|null;
     address: string;
     description?: string;
   }
@@ -161,13 +161,29 @@ function Event_creation_form(props:any,ref:any){
         setValue("client_id",id);
     }
 
-    
+    function extractInitials(name:string){
+        return ((name.split(' ')).map(n=>n[0])).join('');
+    }
+
+    function clearform(){
+        setValue("nom","");
+        setValue("edition","");
+        setValue("nbr_invite",0);
+        setValue("type","");
+        setValue("date_debut",null);
+        setValue("date_fin",null);
+        setValue("address","");
+        setValue("description","");
+        setValue("client_id",null);
+        props.setselectedUpcomingEventIndex(-1);
+    }
 
     const {register,control,getValues,setValue,handleSubmit,watch,formState:{ errors }} = useForm<EventFormData>();
 
     const [EventTypes,setEventTypes] = useState<string[]>([]);
     const [newTypeIsVisible,setNewTypeIsvisible] =useState(false);
     const [ClientInterfaceIsVisible,setClientInterfaceIsVisible] = useState(false);
+    const [clientName,setClientName] = useState("");
 
     const date_debut = watch('date_debut');
     
@@ -177,14 +193,6 @@ function Event_creation_form(props:any,ref:any){
     useEffect(()=>{props.setDescription(watch("description"))},[watch("description")]);
     
     useEffect(()=>{evenementTypesTraitement()},[]);
-
-    useEffect(()=>{
-        if(newTypeIsVisible){
-            document.body.classList.add('blured_background');
-        }else{
-            document.body.classList.remove('blured_background');
-        }
-    },[newTypeIsVisible])
     
     useEffect(()=>{
         if(props.selectedUpcomingEventIndex!==-1){
@@ -216,11 +224,13 @@ function Event_creation_form(props:any,ref:any){
         <form id="form" onSubmit={handleSubmit(onSubmit)}>
             <div className="mame_edition">
                 <div className="name">
-                    <input id="name" {...register("nom",{required:"name is required"})}  placeholder="name"/>
+                    <label>nom</label>
+                    <input id="name" {...register("nom",{required:"name is required"})}  placeholder="nom"/>
                     {errors.nom&&<p>{String(errors.nom.message)}</p>}
                 </div>
                 
                 <div>
+                    <label>édition</label>
                     <input id="edition" {...register("edition")} placeholder="edition"/>
                     {errors.edition&&<p>{String(errors.edition.message)}</p>}   
                 </div>
@@ -229,11 +239,13 @@ function Event_creation_form(props:any,ref:any){
             
             <div className="number_type">
                 <div className="number">
-                    <input id="number" {...register("nbr_invite",{required:"number of invite is required",pattern:{value:/^[0-9]+$/,message:"le numero doit contenir uniquement des chiffres"}})} placeholder="number of invite"/>
+                    <label>nombre d'invités</label>
+                    <input id="number" {...register("nbr_invite",{required:"number of invite is required",pattern:{value:/^[0-9]+$/,message:"le numero doit contenir uniquement des chiffres"}})} placeholder="nombre d'invités"/>
                     {errors.nbr_invite&&<p>{String(errors.nbr_invite.message)}</p>}
                 </div>
                 
                 <div className="type">
+                    <label>type</label>
                     <Controller
                     name="type"
                     control={control}
@@ -268,6 +280,7 @@ function Event_creation_form(props:any,ref:any){
                 <div className="start_time">
                 {/* <input type='datetime-local' id="start_time" {...register("date_debut",{required:"start time is required"})} placeholder="start time"/> */}
                     {/*errors.date_debut&&<p>{String(errors.date_debut.message)}</p>*/}
+                    <label>date debut</label>
                     <Controller
                     control={control}
                     name="date_debut"
@@ -284,6 +297,7 @@ function Event_creation_form(props:any,ref:any){
                         showTimeSelect
                         timeIntervals={15}
                         minDate={new Date()}
+                        onKeyDown={(e) => e.preventDefault()}
                         />
                     )}
                     />
@@ -293,15 +307,16 @@ function Event_creation_form(props:any,ref:any){
                 <div className="end_time">
                     {/*<input type="datetime-local" id="end_time" {...register("date_fin",{required:"end time is required"})} placeholder="end time"/>
                     {errors.date_fin&&<p>{String(errors.date_fin.message)}</p>}*/}
+                    <label>date fin</label>
                     <Controller
                         control={control}
                         name="date_fin"
                         rules={{ required: "End time is required" }}
-                        
+                        defaultValue={null}
                         render={({ field }) => (
                             <DatePicker
                             selected={field.value}
-                            onChange={(date) => {
+                            onChange={(date: Date|null) => {
                                 field.onChange(date);
                             }}
                             dateFormat="yyyy/MM/dd HH:mm"
@@ -310,6 +325,7 @@ function Event_creation_form(props:any,ref:any){
                             timeIntervals={15}
                             wrapperClassName="date-picker-wrapper"
                             minDate={date_debut ? new Date(date_debut) : new Date()} 
+                            onKeyDown={(e) => e.preventDefault()}
                             />
                         )}
                     />
@@ -321,29 +337,41 @@ function Event_creation_form(props:any,ref:any){
             <div className="address_client_description">
                 <div className="address_description">
                     <div className="address1">
+                        <label>adresse</label>
                         <input id="address1" {...register("address",{required:"address is required"})} placeholder="address"/>
                         {errors.address&&<p>{String(errors.address.message)}</p>}
                     </div>
-
-                    <textarea id="description1" {...register("description")} rows={10} cols={100} placeholder="description"/>
+                    <div className="description1">
+                        <label>description</label>
+                        <textarea id="description1" {...register("description")} rows={10} cols={100} placeholder="description"/>
+                    </div>
+                    
                 </div>
                 <div className="client">
                     <button id="client_button" type="button" onClick={()=>{OpenClientInterface()}}> Clients</button>
                     <input type="hidden" {...register("client_id", { required: "Client selection is required" })} />
                     {errors.client_id && <p className="text-red-500">{String(errors.client_id.message)}</p>}
+                    {watch("client_id")&&<div className="profile-square">
+                        <div className="profile-circle">
+                            {extractInitials(clientName)}
+                        </div>
+                        <div className="profile-name">
+                            {clientName}
+                        </div>
+                    </div>}
                 </div>
                 
 
             </div>
             <div className="buttons_below">
-                <button id="go_back" type="button"><img src={arrowImg} alt=""/>Go Back</button>
+                <button id="go_back" type="button" onClick={()=>{clearform()}}><img src={arrowImg} alt=""/>Go Back</button>
                 <button id="add_details" type="button">+ add details</button>
                 <button id="create_new_event" type="submit">+ create a new event</button>
             </div>
 
         </form>
         {newTypeIsVisible&&<Add_new_type getEventTypes={evenementTypesTraitement} isvisible={handleNewTypeIsVisible}/>}
-        {ClientInterfaceIsVisible&&<ClientInterface handleClient_id={handleClient_id} storedClientId={watch("client_id")}/>}
+        {ClientInterfaceIsVisible&&<ClientInterface handleClient_id={handleClient_id} storedClientId={watch("client_id")} setClientName={setClientName}/>}
         
     </>);
 }

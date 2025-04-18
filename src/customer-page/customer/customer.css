@@ -299,12 +299,12 @@
 
 .customer_containing_button_subdiv {
     margin-left: auto;
-    width: auto;
+    width: 0px;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: width 0.3s ease;
-    overflow: visible;
+    overflow: hidden;
 }
 
 .customer_containing_button_subdiv.extended {
@@ -328,7 +328,7 @@
     background-color: #4f59b8;
 }
 
-/* Add company logo styling */
+
 .company-logo {
     width: 24px;
     height: 24px;
@@ -339,7 +339,7 @@
     justify-content: center;
 }
 
-/* Add category tag styling */
+
 .category-tag {
     display: inline-block;
     padding: 4px 8px;
@@ -363,7 +363,7 @@
     color: #ef4444;
 }
 
-/* Media queries for responsiveness */
+
 @media screen and (max-width: 1100px) {
     .customer_containing_subdiv:nth-child(6) {
         display: none;

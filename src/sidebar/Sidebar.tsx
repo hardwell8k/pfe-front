@@ -12,6 +12,7 @@ import historyImg from '../assets/history_black.svg'
 import settingsImg from '../assets/settings_black.svg'
 import logoutImg from '../assets/logout_black.svg'
 import dropdown from '../assets/arrow_drop_down_black.svg'
+import accountsImg from '../assets/accounts_black.svg'
 
 
 type MenuState = Record<string, boolean>
@@ -68,7 +69,7 @@ function Sidebar(){
 
                 <li>
                     <span>
-                        <Element imgUrl={staffImg} link="" name="Staff"/>
+                        <Element imgUrl={staffImg} link="/staff" name="Staff"/>
                         <img className="dropdownarrow" onClick={()=>{updateInvisible("staff")}} src={dropdown} alt="problem" />
                     </span>
                     <ul className={`sub_menu ${menuIsVisible.staff? 'visible':''}`}>
@@ -82,7 +83,7 @@ function Sidebar(){
                 </li>
 
                 <li>
-                    <Element imgUrl={historyImg} link="/Accounts" name="Accounts"/>
+                    <Element imgUrl={accountsImg} link="/Accounts" name="Accounts"/>
                 </li>
             </ul>
 

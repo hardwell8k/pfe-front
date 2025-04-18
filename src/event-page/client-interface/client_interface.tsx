@@ -3,7 +3,7 @@ import { useEffect,useState } from 'react';
 import './client_interface.css'
 
 import ClientInterfaceClient from './client-interface-client/client_interface_client';
-import ClientDepartments from '../../customer-page/table/client-departments/client_departments';
+import ClientDepartments from './client-departments/client_departments';
 import Add_new_client_interface from "../client-interface/add-new-client-interface/add_new_client_interface";
 import { FETCH_STATUS } from '../../fetchStatus';
 function ClientInterface(props:any){
@@ -13,7 +13,7 @@ function ClientInterface(props:any){
     
     const getClients = async ()=>{
         try {
-            //alert("trying");
+            
             setStatus(FETCH_STATUS.LOADING);
             const reponse = await fetch('http://localhost:5000/api/getAllClients',{
                 method:'POST',
@@ -48,23 +48,24 @@ function ClientInterface(props:any){
 
     return(
         <div className='client_interface_event_page_subdi'>
-            {
-                clients.map((item:any)=>{
+            <div className='client_interface_subdiv_clients'>
+            {clients.map((item:any)=>{
                     return(
-                    <div className={`lient_interface_subdiv_element ${props.storedClientId===item.ID ? "selected":"" }`} onClick={()=>{props.handleClient_id(item.ID)}}>
+                    <div className={`client_interface_subdiv_element ${props.storedClientId===item.ID ? "selected":"" }`} onClick={()=>{ if (props.storedClientId===item.ID){props.handleClient_id(null);props.setClientName("");}else{props.handleClient_id(item.ID);props.setClientName(item.nom)}}}>
                         <div className='client_interface_subdiv_client'>
                             <ClientInterfaceClient name={item.nom} domain={item.domain}/>
                         </div>
 
-                        <div className='client_interface_subdiv_department'>
+                        {props.storedClientId===item.ID&&<div className='client_interface_subdiv_department'>
                             <ClientDepartments clientID={item.ID}/>
-                        </div>
+                        </div>}
                     </div>
                         
                     )
                 })
             }
-            <p onClick={handleAddNewClientInterfaceIsVisible}>Add New Client</p>
+            </div>
+            <p onClick={handleAddNewClientInterfaceIsVisible} id='add_new_client_interface_button'>Add New Client</p>
             {AddNewClientInterfaceIsVisible&&<Add_new_client_interface handleAddNewClientInterfaceIsVisible={handleAddNewClientInterfaceIsVisible} setClients={setClients} clients={clients} />}
         </div>
     );

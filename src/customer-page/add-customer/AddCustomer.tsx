@@ -3,11 +3,12 @@ import { useForm } from 'react-hook-form';
 import './AddCustomer.css'
 
 function AddCustomer(props:any){
-    const {register,handleSubmit,formState:{errors}} = useForm();
+
+    const {register,reset,handleSubmit,formState:{errors}} = useForm();
 
     const Onsubmit =async (data:any)=>{
         try {
-            alert('adding client')
+            
             const reponse = await fetch('http://localhost:5000/api/addClient',{
                 method:"POST",
                 headers:{"Content-type":"application/json"},
@@ -18,12 +19,18 @@ function AddCustomer(props:any){
             if(!result.success){
                 throw({status:reponse.status,message:result.message});
             }
-            alert('client added');
+            
+            props.setClients([...props.clients,data]);
+            clearForm();
         } catch (error:any) {
             alert('failed to add client ');
             alert(error.message);
             console.error("failed to add a client",error.message);
         }
+    }
+
+    function clearForm(){
+        reset();
     }
 
     return(

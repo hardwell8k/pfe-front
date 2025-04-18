@@ -31,7 +31,7 @@ function Add_new_type (props:any){
 
     return(
         <div className='addNewType' >
-            <button onClick={props.isvisible}>X</button>
+            <button id='close_button' onClick={props.isvisible}>X</button>
             <form onSubmit={handleSubmit(submitNewType)} id='add_new_type_form'>
                 <div className='new_type_name_input'>
                     <label htmlFor="name">nom</label>
