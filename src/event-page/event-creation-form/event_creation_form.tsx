@@ -16,7 +16,7 @@ import "react-datepicker/dist/react-datepicker.css";
 interface EventFormData extends FieldValues {
     nom: string;
     edition?: string;
-    nbr_invite: number;
+    nbr_invite: number|null;
     type: string;
     date_debut: Date|null;
     date_fin: Date|null;
@@ -168,7 +168,7 @@ function Event_creation_form(props:any,ref:any){
     function clearform(){
         setValue("nom","");
         setValue("edition","");
-        setValue("nbr_invite",0);
+        setValue("nbr_invite",null);
         setValue("type","");
         setValue("date_debut",null);
         setValue("date_fin",null);
