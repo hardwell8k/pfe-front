@@ -5,6 +5,7 @@ import {useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import './login_page.css';
 import Loading from '../loading/loading';
+import LeftImage from '../assets/Illustration.svg';
 
 
 function Login_page(){
@@ -41,7 +42,8 @@ function Login_page(){
     
     return(<div className='login_page_container'>
         <div className='login_page_img'>
-            <img src='' alt='login_img'/>
+            <h1>Plan-It</h1>
+            <img src={LeftImage} alt='login_img'/>
         </div>
         <div className='login_page_form_containing_div' onSubmit={handleSubmit(logIn)}>
             {status === FETCH_STATUS.LOADING?<Loading/>

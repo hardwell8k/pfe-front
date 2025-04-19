@@ -1,179 +1,109 @@
-/* General Styles for the Add Department Interface */
 .add_department_interface {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    max-width: 400px;
     height: 100vh;
-    width: 50vw;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0 auto;
-    background-color: #ffffff;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    font-family: 'Inter', sans-serif;
-    transition: width 0.5s ease;
-}
-
-/* Extended Interface */
-.add_department_interface.extended {
-    width: 0;
-    box-shadow: none;
-}
-
-/* Form Header */
-.add_department_interface_header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 24px;
-    background-color: #007bff;
-    color: white;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.add_department_interface_header h2 {
-    font-size: 18px;
+  }
+  
+  .add_department_interface > p {
+    font-size: 1.5rem;
     font-weight: 600;
-    margin: 0;
-}
-
-/* Close Button */
-#add_department_exit_button {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: #f0f0f0;
-    color: #6b7280;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  #add_department_form {
     display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    
+    margin-right: 5rem;
+  }
+  
+  .add_department_form_subdiv {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+  
+  .add_department_form_subdiv_input {
+    flex: 1 1 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .add_department_form_subdiv_input > p {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #34495e;
+  }
+  
+  .add_department_form_subdiv_input > input {
+    padding: 0.75rem 1rem;
+    border: 1px solid #dcdde1;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border 0.3s, box-shadow 0.3s;
+    width: 100%;
+  }
+  
+  .add_department_form_subdiv_input > input:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  }
+  
+  .add_department_form_subdiv_input > p:last-child {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: #e74c3c; /* error text */
+  }
+  
+  .add_department_form_subdiv_buttons {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
-}
-
-#add_department_exit_button:hover {
-    background-color: #e0e0e0;
-}
-
-/* Form Container */
-.add_department_interface_form_div {
-    background-color: #f9f9f9;
-    flex: 1;
-    padding: 24px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-/* Form Styling */
-#add_department_form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    gap: 1rem;
+    margin-top: 2rem;
     width: 100%;
-    margin: 0 auto;
-}
-
-/* Input Group */
-.add_department_form_subdiv {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
-}
-
-.add_department_form_subdiv_input {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  }
+  
+  #AddDepartment_submit_button,
+  #AddDepartment_return_return {
+    padding: 0.75rem 1.5rem;
     width: 100%;
-}
-
-.add_department_interface_label {
-    font-size: 14px;
-    font-weight: 500;
-    color: #6b7280;
-}
-
-/* Inputs */
-.add_department_form_subdiv_input input {
-    padding: 12px 16px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #111827;
-    background-color: #ffffff;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    width: 100%;
-}
-
-.add_department_form_subdiv_input input:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
-}
-
-/* Error Messages */
-.add_department_form_subdiv_input p {
-    color: #ef4444;
-    font-size: 12px;
-    margin-top: 6px;
-}
-
-/* Submit Button */
-#add_department_submit_button {
-    padding: 12px 16px;
-    background-color: #007bff;
-    color: white;
     border: none;
     border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.3s;
-    width: 100%;
-}
-
-#add_department_submit_button:hover {
-    background-color: #0056b3;
-}
-
-/* Cancel Button */
-#AddDepartment_return_return {
-    padding: 12px 16px;
-    background-color: transparent;
-    color: #007bff;
-    border: 1px solid #007bff;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    transition: background-color 0.3s;
-    width: 100%;
-}
-
-#AddDepartment_return_return:hover {
-    background-color: #e7f1ff;
-}
-
-/* Responsive Design */
-@media screen and (max-width: 768px) {
-    .add_department_interface {
-        width: 100%;
-    }
-
-    .add_department_interface_form_div {
-        padding: 16px;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .add_department_interface_header {
-        padding: 16px;
-    }
-
-    .add_department_interface_form_div {
-        padding: 16px;
-    }
-
-    #add_department_form button[type="submit"] {
-        padding: 10px 16px;
-    }
-}
+    transition: background-color 0.3s ease;
+  }
+  
+  #AddDepartment_return_return {
+    background-color: #ecf0f1;
+    color: #2c3e50;
+  }
+  
+  #AddDepartment_return_return:hover {
+    background-color: #d0d3d4;
+  }
+  
+  #AddDepartment_submit_button {
+    background-color: #3498db;
+    color: #fff;
+  }
+  
+  #AddDepartment_submit_button:hover {
+    background-color: #2980b9;
+  }
+  

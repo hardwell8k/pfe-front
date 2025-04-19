@@ -25,6 +25,30 @@ interface EventFormData extends FieldValues {
   }
 
 function Event_creation_form(props:any,ref:any){
+    
+
+    const getClients = async ()=>{
+        try {
+            
+            setClient_interfaceStatus(FETCH_STATUS.LOADING);
+            const reponse = await fetch('http://localhost:5000/api/getAllClients',{
+                method:'POST',
+                headers:{"Content-Type":"application/json"},
+            });
+    
+            const result = await reponse.json();
+    
+            if(!result.success){
+                throw({status:reponse.status,message:result.message});
+            }
+                
+            setClients(result.data);
+            setClient_interfaceStatus(FETCH_STATUS.SUCCESS);
+        } catch (error:any) {
+            console.error("failed to get clients",error.message);
+            setClient_interfaceStatus(FETCH_STATUS.ERROR);
+        }
+    }
 
     
 
@@ -103,7 +127,9 @@ function Event_creation_form(props:any,ref:any){
                 throw({status:reponse.status,message:result.message});
             }
             //alert(result.message);
+            reset();
             props.setStatus(FETCH_STATUS.SUCCESS);
+            props.getUpcomingEvents();
         } catch(error:any){
             console.error(error.message);
             alert(error.message);     
@@ -137,6 +163,8 @@ function Event_creation_form(props:any,ref:any){
             }
             alert(result.message);
             props.setStatus(FETCH_STATUS.SUCCESS)
+            reset();
+            props.getUpcomingEvents();
         } catch(error:any){
             console.error(error.message);  
             props.setStatus(FETCH_STATUS.ERROR);   
@@ -178,12 +206,23 @@ function Event_creation_form(props:any,ref:any){
         props.setselectedUpcomingEventIndex(-1);
     }
 
-    const {register,control,getValues,setValue,handleSubmit,watch,formState:{ errors }} = useForm<EventFormData>();
+    function getClientName(id:number){
+        
+        const client:any = clients.find((client:any)=>client.ID===id);
+        if(client){
+            setClientName(client.nom);
+        }
+    }
+
+    const {register,control,getValues,setValue,reset,handleSubmit,watch,formState:{ errors }} = useForm<EventFormData>();
 
     const [EventTypes,setEventTypes] = useState<string[]>([]);
     const [newTypeIsVisible,setNewTypeIsvisible] =useState(false);
     const [ClientInterfaceIsVisible,setClientInterfaceIsVisible] = useState(false);
     const [clientName,setClientName] = useState("");
+    const [clients,setClients] = useState([]);
+
+    const [Client_interfaceStatus,setClient_interfaceStatus] = useState(FETCH_STATUS.IDLE);
 
     const date_debut = watch('date_debut');
     
@@ -209,9 +248,13 @@ function Event_creation_form(props:any,ref:any){
             selectedEventID.current = (props.selectedUpcomingEvent).ID;
         }else{
             selectedEventID.current = 0;
+            clearform();
         }
     },[props.selectedUpcomingEventIndex])
     
+    useEffect(()=>{if(watch("client_id")){getClientName(watch("client_id"))}},[watch("client_id")]);
+
+    useEffect(()=>{getClients()},[]);
 
     const selectedEventID = useRef(0);
 
@@ -371,7 +414,7 @@ function Event_creation_form(props:any,ref:any){
 
         </form>
         {newTypeIsVisible&&<Add_new_type getEventTypes={evenementTypesTraitement} isvisible={handleNewTypeIsVisible}/>}
-        {ClientInterfaceIsVisible&&<ClientInterface handleClient_id={handleClient_id} storedClientId={watch("client_id")} setClientName={setClientName}/>}
+        {ClientInterfaceIsVisible&&<ClientInterface clients={clients} setClients={setClients} handleClient_id={handleClient_id} storedClientId={watch("client_id")} setClientName={setClientName} status={Client_interfaceStatus}/>}
         
     </>);
 }

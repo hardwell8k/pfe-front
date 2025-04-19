@@ -87,7 +87,7 @@ function Event_creation(props:any){
 
         </div>
 
-        <Event_creation_form setStatus={setStatus} ref={Event_creation_form_ref} setEvent_name ={handlesetEvent_name} setAddress={handlesetAddress} setDate={handlesetDate} setDescription={handlesetDescription} selectedUpcomingEvent={props.selectedUpcomingEvent} selectedUpcomingEventIndex={props.selectedUpcomingEventIndex} setselectedUpcomingEventIndex={props.setselectedUpcomingEventIndex}/>
+        <Event_creation_form setStatus={setStatus} ref={Event_creation_form_ref} setEvent_name ={handlesetEvent_name} setAddress={handlesetAddress} setDate={handlesetDate} setDescription={handlesetDescription} selectedUpcomingEvent={props.selectedUpcomingEvent} selectedUpcomingEventIndex={props.selectedUpcomingEventIndex} setselectedUpcomingEventIndex={props.setselectedUpcomingEventIndex} getUpcomingEvents={props.getUpcomingEvents} />
     </div>
     
     

@@ -13,7 +13,8 @@ import settingsImg from '../assets/settings_black.svg'
 import logoutImg from '../assets/logout_black.svg'
 import dropdown from '../assets/arrow_drop_down_black.svg'
 import accountsImg from '../assets/accounts_black.svg'
-
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 type MenuState = Record<string, boolean>
 
@@ -36,6 +37,8 @@ function Sidebar(){
         );
 
     }
+
+    const navigate = useNavigate();
 
     return(
         
@@ -94,7 +97,7 @@ function Sidebar(){
                     <h3>Easin Arafat</h3>
                     <p>Admin</p>
                 </div>
-                <img src={logoutImg} alt="problem"/>
+                <img src={logoutImg} alt="problem" onClick={()=>{Cookies.remove("isLogedIn",{secure:true,sameSite:"strict"});navigate("/")}}/>
             </div>
         </div>
         

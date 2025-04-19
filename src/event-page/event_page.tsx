@@ -53,7 +53,7 @@ function Event_page(){
         <Sidebar/>
         <div className="maindiv">
             <Current_events status={status} UpComingEvents={UpComingEvents} selectedUpcomingEventIndex={selectedUpcomingEventIndex} setselectedUpcomingEventIndex={setselectedUpcomingEventIndex} />
-            <Event_creation selectedUpcomingEvent={UpComingEvents[selectedUpcomingEventIndex]} selectedUpcomingEventIndex={selectedUpcomingEventIndex} setselectedUpcomingEventIndex={setselectedUpcomingEventIndex}/>
+            <Event_creation getUpcomingEvents={getUpcomingEvents} selectedUpcomingEvent={UpComingEvents[selectedUpcomingEventIndex]} selectedUpcomingEventIndex={selectedUpcomingEventIndex} setselectedUpcomingEventIndex={setselectedUpcomingEventIndex}/>
         </div>
     </div>
     

@@ -70,8 +70,9 @@ function Department(props:any){
             </div>
             
             <div className='add_department_form_subdiv_buttons'>
-                    <button id='AddDepartment_return_return' onClick={()=>{props.openAddDepartment()}}> cancel</button>
-                    <button id='AddDepartment_submit_button' type='submit'>add</button>
+                <button id='AddDepartment_submit_button' type='submit'>add</button>
+                <button id='AddDepartment_return_return' onClick={()=>{props.openAddDepartment()}}> cancel</button>
+                    
             </div>
         </form>
     </div>
