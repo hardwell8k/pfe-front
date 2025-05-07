@@ -1,4 +1,4 @@
-import { useEffect,useState } from 'react';
+import { useEffect,useRef,useState } from 'react';
 
 import './client_interface.css'
 
@@ -7,6 +7,19 @@ import ClientDepartments from './client-departments/client_departments';
 import Add_new_client_interface from "../client-interface/add-new-client-interface/add_new_client_interface";
 import { FETCH_STATUS } from '../../fetchStatus';
 function ClientInterface(props:any){
+
+    const clientOpenRef = useRef<HTMLDivElement | null>(null);
+
+    function handleClickOutside(event: MouseEvent) {
+        if (clientOpenRef.current && !clientOpenRef.current.contains(event.target as Node)) {
+          props.isOpen(false);
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+      }, []);
 
 
     function handleAddNewClientInterfaceIsVisible(){
@@ -22,7 +35,7 @@ function ClientInterface(props:any){
     }
 
     return(
-        <div className='client_interface_event_page_subdi'>
+        <div className='client_interface_event_page_subdi' ref={clientOpenRef}>
             <div className='client_interface_subdiv_clients'>
             {props.clients.map((item:any)=>{
                     return(

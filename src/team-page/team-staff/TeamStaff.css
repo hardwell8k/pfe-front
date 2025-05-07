@@ -1,0 +1,77 @@
+/* TeamStaff.css */
+.team_staff {
+    position: relative;
+    background-color: #f9fafb;
+    transition: all 0.2s ease;
+  }
+  
+  .team_staff:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .team_staff--selected {
+    background-color: rgba(59, 130, 246, 0.05);
+  }
+  
+  .team_staff td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: middle;
+    font-size: 0.825rem;
+    color: #4b5563;
+  }
+  
+  .team_staff_checkbox_cell {
+    width: 48px;
+    padding-left: 1.25rem !important;
+  }
+  
+  .team_staff_checkbox {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    accent-color: #3b82f6;
+    cursor: pointer;
+  }
+  
+  .team_staff_logo_name {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .team_staff_name {
+    font-weight: 500;
+    color: #4b5563;
+  }
+  
+  .team_staff_phone_cell, 
+  .team_staff_email_cell {
+    color: #6b7280;
+  }
+  
+  .team_staff_status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: capitalize;
+  }
+  
+  .team_staff_status--active {
+    background-color: #dcfce7;
+    color: #16a34a;
+  }
+  
+  .team_staff_status--pending {
+    background-color: #fef3c7;
+    color: #d97706;
+  }
+  
+  .team_staff_status--inactive {
+    background-color: #fee2e2;
+    color: #dc2626;
+  }

@@ -11,9 +11,10 @@ function ClientDepartments(props:any){
             //alert("trying to get client department");
             //alert(JSON.stringify({user_id:props.clientID}));
             const reponse = await fetch('http://localhost:5000/api/getClientDepartments',{
-                method:'POST',
+                method:'GET',
                 headers:{"Content-Type":"application/json"},
                 body:JSON.stringify({client_id:props.clientID}),
+                credentials: 'include',
             });
 
             const result = await reponse.json();

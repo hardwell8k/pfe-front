@@ -1,5 +1,5 @@
 import{useForm} from 'react-hook-form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FETCH_STATUS } from '../fetchStatus';
 import {useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
@@ -28,8 +28,9 @@ function Login_page(){
             
             setStatus(FETCH_STATUS.SUCCESS);
 
-            Cookies.set('isLogedIn',result.success,{expires:1/8,secure:true,sameSite:'strict'});
-            navigate('/event');
+            Cookies.set('isLogedIn',result.success,{expires:1/3,secure:true,sameSite:'strict'});
+            Cookies.set('role',result.data,{expires:1/3,secure:true,sameSite:'strict'})
+            navigate('/firstPage');
         } catch (error:any) {
             console.error("error while getting upcoming events",error.message);
             alert(error.message);
@@ -39,6 +40,12 @@ function Login_page(){
 
     const {register, handleSubmit, formState:{errors}} = useForm();
     const [status,setStatus] = useState(FETCH_STATUS.IDLE);
+
+    useEffect(()=>{
+        if(Cookies.get("isLogedIn")){
+            navigate('/firstPage');
+        }}
+    ,[])
     
     return(<div className='login_page_container'>
         <div className='login_page_img'>

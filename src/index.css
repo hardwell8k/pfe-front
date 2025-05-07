@@ -71,3 +71,10 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(36%) sepia(98%) saturate(7492%) hue-rotate(210deg) brightness(95%) contrast(101%);
+  cursor: pointer;
+}

@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import './StaffUpdate.css';
 import Sidebar from '../sidebar/Sidebar';
 
 export default function StaffUpdate() {
+  const location = useLocation();
+  const receivedData = useRef<any>(location.state);
   const [formData, setFormData] = useState({
-    staffId: '',
-    firstName: '',
-    lastName: '',
-    contact: '',
-    email: '',
-    department: '',
-    team: '',
-    role: ''
+    ID: receivedData.current.ID,
+    nom: receivedData.current.nom,
+    prenom: receivedData.current.prenom,
+    num_tel: receivedData.current.num_tel,
+    email: receivedData.current.email,
+    departement: receivedData.current.departement,
+    team: receivedData.current.team,
+    role: receivedData.current.role
   });
 
   const handleInputChange = (e: any) => {
@@ -19,48 +22,36 @@ export default function StaffUpdate() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Function to fetch staff details
-  const fetchStaffDetails = async (id: string) => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/staff/${id}`);
-      if (!response.ok) {
-        throw new Error('Staff member not found');
-      }
-      const data = await response.json();
-      setFormData(prev => ({ ...prev, ...data }));
-    } catch (error) {
-      console.error('Error fetching staff details:', error);
-      alert('Failed to fetch staff details');
-    }
-  };
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-      const response = await fetch(`http://localhost:5000/api/staff/${formData.staffId}`, {
+      const response = await fetch(`http://localhost:5000/api/updateStaff`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json',},
+        credentials:'include',
         body: JSON.stringify(formData)
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to update staff member');
-      }
+      
 
       const result = await response.json();
+      if(!result.success){
+        throw({status: response.status,message:result.message});
+      }
+      
       console.log('Staff member updated successfully:', result);
       
       // Clear form
       setFormData({
-        staffId: '',
-        firstName: '',
-        lastName: '',
-        contact: '',
+        ID: '',
+        nom: '',
+        prenom: '',
+        num_tel: '',
         email: '',
-        department: '',
+        departement: '',
         team: '',
         role: ''
       });
@@ -89,12 +80,12 @@ export default function StaffUpdate() {
                   <label className="form-label">Staff ID</label>
                   <input
                     type="text"
-                    name="staffId"
+                    name="ID"
                     placeholder="Enter staff ID"
                     className="form-input"
-                    value={formData.staffId}
+                    value={formData.ID}
                     onChange={handleInputChange}
-                    onBlur={(e) => e.target.value && fetchStaffDetails(e.target.value)}
+                    onBlur={(e) => e.target.value}
                     required
                   />
                 </div>
@@ -103,10 +94,10 @@ export default function StaffUpdate() {
                   <label className="form-label">First Name</label>
                   <input
                     type="text"
-                    name="firstName"
+                    name="nom"
                     placeholder="Enter first name"
                     className="form-input"
-                    value={formData.firstName}
+                    value={formData.nom}
                     onChange={handleInputChange}
                     required
                   />
@@ -116,10 +107,10 @@ export default function StaffUpdate() {
                   <label className="form-label">Last Name</label>
                   <input
                     type="text"
-                    name="lastName"
+                    name="prenom"
                     placeholder="Enter last name"
                     className="form-input"
-                    value={formData.lastName}
+                    value={formData.prenom}
                     onChange={handleInputChange}
                     required
                   />
@@ -129,10 +120,10 @@ export default function StaffUpdate() {
                   <label className="form-label">Contact</label>
                   <input
                     type="tel"
-                    name="contact"
+                    name="num_tel"
                     placeholder="Enter phone number"
                     className="form-input"
-                    value={formData.contact}
+                    value={formData.num_tel}
                     onChange={handleInputChange}
                     required
                   />
@@ -158,9 +149,9 @@ export default function StaffUpdate() {
                   <label className="form-label">Department</label>
                   <div className="select-wrapper">
                     <select
-                      name="department"
+                      name="departement"
                       className="form-select"
-                      value={formData.department}
+                      value={formData.departement}
                       onChange={handleInputChange}
                       required
                     >

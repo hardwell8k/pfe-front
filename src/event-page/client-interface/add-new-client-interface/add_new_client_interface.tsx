@@ -15,6 +15,7 @@ function Add_new_client_interface(props:any){
                 method:"POST",
                 headers:{"Content-type":"application/json"},
                 body: JSON.stringify(data),
+                credentials: 'include',
             })
 
             const result = await reponse.json();

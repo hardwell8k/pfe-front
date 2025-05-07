@@ -17,7 +17,19 @@ import AddStaff from './add-staff/AddStaff.tsx';
 import AddAccomodation from './add-accomodation/AddAccomodation.tsx';
 import AddWorkshop from './add-workshop/AddWorkshop.tsx';
 import StaffUpdate from './update-staff/StaffUpdate.tsx';
-import StaffPage from './staff-page/staffPage.tsx';
+import StaffPage from './staff-page/StaffPage.tsx';
+import LandingPage from './landing-page/LandingPage.tsx';
+import AddDetails from './AddDetails/AddDetails.tsx';
+import HistoryPage from './history-page/HistoryPage.tsx';
+import CarPage from './car-page/CarPage.tsx';
+import Eventdetails from './eventdetails/Eventdetails.tsx';
+import AddPause from './add-pause/AddPause.tsx';
+import AddSoiree from './add-soiree/AddSoiree.tsx';
+import AdduserAccomodation from './add-user-accomodation-pricing/AdduserAccomodation.tsx';
+import AddTransport from './add-transportation/AddTransport.tsx';
+import TeamPage from './team-page/TeamPage.tsx';
+import FirstPage from './first-page/firstpage.tsx';
+import ProjectDashboard from './upcomingevent/upcomingevent.tsx';
 
 
 const isLogedIn = ()=>{
@@ -36,8 +48,18 @@ const router = createBrowserRouter([
     errorElement: <div> 404 PAGE NOT FOUND</div>
   },
   {
+    path: '/landing',
+    element: <LandingPage />,
+    errorElement: <div> 404 PAGE NOT FOUND</div>
+  },
+  {
     path: '/event',
     element:<ProtectedRoute element={<Event_page />} />,
+    errorElement: <div> 404 PAGE NOT FOUND</div>
+  },
+  {
+    path: '/addDetails',
+    element:<ProtectedRoute element={<AddDetails />} />,
     errorElement: <div> 404 PAGE NOT FOUND</div>
   },
   {
@@ -98,6 +120,56 @@ const router = createBrowserRouter([
   {
     path:'/AddWorkshop',
     element:<ProtectedRoute element={<AddWorkshop/>} />,
+    errorElement:<div> 404 PAGE NOT FOUND</div>
+  },
+  {
+    path:'/history',
+    element:<ProtectedRoute element={<HistoryPage/>} />,
+    errorElement:<div> 404 PAGE NOT FOUND</div>
+  },
+  {
+    path:'/car',
+    element:<ProtectedRoute element={<CarPage/>} />,
+    errorElement:<div> 404 PAGE NOT FOUND</div>
+  },
+  {
+    path:'/eventDetails',
+    element:<ProtectedRoute element={<Eventdetails/>} />,
+    errorElement:<div> 404 PAGE NOT FOUND</div>
+  },
+  {
+    path:'/addSoiree',
+    element:<ProtectedRoute element={<AddSoiree/>} />,
+    errorElement:<div> 404 PAGE NOT FOUND</div>
+  },
+  {
+    path:'/addPause',
+    element:<ProtectedRoute element={<AddPause/>} />,
+    errorElement:<div> 404 PAGE NOT FOUND</div>
+  },
+  {
+    path:'/addUserAccomodation',
+    element:<ProtectedRoute element={<AdduserAccomodation/>} />,
+    errorElement:<div> 404 PAGE NOT FOUND</div>
+  },
+  {
+    path:'/addTransport',
+    element:<ProtectedRoute element={<AddTransport/>} />,
+    errorElement:<div> 404 PAGE NOT FOUND</div>
+  },
+  {
+    path:'/teamPage',
+    element:<ProtectedRoute element={<TeamPage/>} />,
+    errorElement:<div> 404 PAGE NOT FOUND</div>
+  },
+  {
+    path:'/firstPage',
+    element:<ProtectedRoute element={<FirstPage/>} />,
+    errorElement:<div> 404 PAGE NOT FOUND</div>
+  },
+  {
+    path:'/upcomingEvents',
+    element:<ProtectedRoute element={<ProjectDashboard/>} />,
     errorElement:<div> 404 PAGE NOT FOUND</div>
   }
 ])

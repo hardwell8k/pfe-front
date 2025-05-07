@@ -13,6 +13,7 @@ import settingsImg from '../assets/settings_black.svg'
 import logoutImg from '../assets/logout_black.svg'
 import dropdown from '../assets/arrow_drop_down_black.svg'
 import accountsImg from '../assets/accounts_black.svg'
+import carImg from '../assets/swap_driving_black.svg'
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
@@ -67,7 +68,7 @@ function Sidebar(){
                 </li>
 
                 <li>
-                    <Element imgUrl={teamImg} link="" name="Teams"/>
+                    <Element imgUrl={teamImg} link="/teamPage" name="Teams"/>
                 </li>
 
                 <li>
@@ -82,11 +83,15 @@ function Sidebar(){
                 </li>
 
                 <li>
-                    <Element imgUrl={historyImg} link="" name="History"/>
+                    <Element imgUrl={historyImg} link="/history" name="History"/>
                 </li>
 
                 <li>
                     <Element imgUrl={accountsImg} link="/Accounts" name="Accounts"/>
+                </li>
+                    <Element imgUrl={carImg} link="/car" name="car"/>
+                <li>
+
                 </li>
             </ul>
 

@@ -1,0 +1,150 @@
+import React from 'react';
+import './firstpage.css';
+import businessImg from '../assets/first_page_business.png';
+import advertisementImg from '../assets/first_page_advertisement.png';
+import digitalImg from '../assets/first_page_digital.png';
+
+const FirstPage: React.FC = () => {
+  return (
+    <div className="first-page-container">
+      <div className="top-gradient-section">
+        <header>
+          <div className="logo">EventHub</div>
+          <div className="user-menu">
+            <div className="avatar">JD</div>
+            <span>John Doe</span>
+          </div>
+        </header>
+      </div>
+      
+      <main>
+        {/* Upcoming Events Heading */}
+        <a href="#" className="upcoming-events-title">Upcoming Events</a>
+        
+        {/* Upcoming Events Cards */}
+        <div className="events-card-container">
+          <a href="#" style={{ textDecoration: 'none', flex: 1 }}>
+            <div className="event-card">
+              <div className="days-label">in 3 days</div>
+              <div className="quote-icon">❝</div>
+              <p className="event-description">Tech Innovation Summit: Join industry leaders to discuss emerging technologies and future trends in the tech industry.</p>
+              <div className="divider"></div>
+              <div className="event-info">
+                <img src="https://via.placeholder.com/120" alt="Event Profile" className="profile-img" />
+                <div>
+                  <div className="event-company">TechCon</div>
+                  <div className="event-position">Convention Center, Main Hall</div>
+                </div>
+              </div>
+            </div>
+          </a>
+          
+          <a href="#" style={{ textDecoration: 'none', flex: 1 }}>
+            <div className="event-card featured">
+              <div className="days-label">in 5 days</div>
+              <div className="quote-icon">❝</div>
+              <p className="event-description">Marketing Workshop: Learn the latest digital marketing strategies and networking opportunities with marketing professionals.</p>
+              <div className="divider"></div>
+              <div className="event-info">
+                <img src="https://via.placeholder.com/120" alt="Event Profile" className="profile-img" />
+                <div>
+                  <div className="event-company">DigitalSummit</div>
+                  <div className="event-position">Downtown Business Center</div>
+                </div>
+              </div>
+            </div>
+          </a>
+          
+          <a href="#" style={{ textDecoration: 'none', flex: 1 }}>
+            <div className="event-card featured">
+              <div className="days-label">in 7 days</div>
+              <div className="quote-icon">❝</div>
+              <p className="event-description">Networking Mixer: An evening of professional networking with entrepreneurs and business leaders from various industries.</p>
+              <div className="divider"></div>
+              <div className="event-info">
+                <img src="https://via.placeholder.com/120" alt="Event Profile" className="profile-img" />
+                <div>
+                  <div className="event-company">BizConnect</div>
+                  <div className="event-position">Skyline Lounge</div>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+        
+        {/* View All Events and Add New Event Buttons */}
+        <div className="button-container">
+          <a href="/upcomingEvents" className="view-all-events-btn">View All Events</a>
+          <a href="/event" className="add-new-event-btn">Add New Event</a>
+        </div>
+        
+        {/* Updated What this month has in store for you section */}
+        <section className="month-stats-section">
+          <h1>What this month has in store for you</h1>
+          <div className="stats-container">
+            <div className="stat-item">
+              <svg className="stat-icon events" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM11 7h2v2h-2V7zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2zm-4-8h2v2H7V7zm0 4h2v2H7v-2zm0 4h2v2H7v-2zm8-8h2v2h-2V7zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2z"/>
+              </svg>
+              <div className="stat-number">20</div>
+              <div className="stat-label">events</div>
+            </div>
+            <div className="stat-item">
+              <svg className="stat-icon visitors" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+              <div className="stat-number">2000</div>
+              <div className="stat-label">visitors</div>
+            </div>
+            <div className="stat-item">
+              <svg className="stat-icon workshops" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+              </svg>
+              <div className="stat-number">30</div>
+              <div className="stat-label">workshops</div>
+            </div>
+          </div>
+        </section>
+        
+        {/* Updated Business Events Sections */}
+        <section className="event-categories-section">
+          <div className="event-category">
+            <div className="event-illustration">
+              <img src={businessImg} alt="Business networking illustration" />
+            </div>
+            <div className="event-details">
+              <span className="category-number">5</span>
+              <h2 className="category-title">Business related Events</h2>
+              <p className="category-description">Express yourself in ways never before possible with a business card. You can showcase your work by uploading rich content such as photos, videos and custom links.</p>
+            </div>
+          </div>
+          
+          <div className="event-category">
+            <div className="event-illustration">
+              <img src={advertisementImg} alt="Advertising events illustration" />
+            </div>
+            <div className="event-details">
+              <span className="category-number">4</span>
+              <h2 className="category-title">Advertising Events</h2>
+              <p className="category-description">Express yourself in ways never before possible with a business card. You can showcase your work by uploading rich content such as photos, videos and custom links.</p>
+            </div>
+          </div>
+          
+          <div className="event-category">
+            <div className="event-illustration">
+              <img src={digitalImg} alt="Technology events illustration" />
+            </div>
+            <div className="event-details">
+              <span className="category-number">4</span>
+              <h2 className="category-title">Technology Events</h2>
+              <p className="category-description">The shortest route to your customers is through their mobile phones. Utilize our share options and take your brand viral by sharing your EBEX with your clients and friends.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+};
+
+export { FirstPage };
+export default FirstPage;

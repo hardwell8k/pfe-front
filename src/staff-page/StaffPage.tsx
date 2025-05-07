@@ -1,5 +1,5 @@
 import Sidebar from '../sidebar/Sidebar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './StaffPage.css';
 import arrow_back from '../assets/arrow_back_black.svg';
 import arrow_forward from '../assets/arrow_forward_black.svg';
@@ -35,75 +35,35 @@ import { useNavigate } from 'react-router-dom';
 
 function StaffPage(){
     const navigate = useNavigate();
-    const StaticStaff = [
-        {
-          name: "Jane Cooper",
-          departement: "Marketing",
-          phoneNumber: "(225) 555-0118",
-          email: "jane@microsoft.com",
-          team: "team10",
-          status: "Available"
-        },
-        {
-          name: "Floyd Miles",
-          departement: "RH",
-          phoneNumber: "(205) 555-0100",
-          email: "floyd@yahoo.com",
-          team: "team3",
-          status: "not Available"
-        },
-        {
-          name: "Ronald Richards",
-          departement: "Finance",
-          phoneNumber: "(302) 555-0107",
-          email: "ronald@adobe.com",
-          team: "team1",
-          status: "not Available"
-        },
-        {
-          name: "Marvin McKinney",
-          departement: "Marketing",
-          phoneNumber: "(252) 555-0126",
-          email: "marvin@tesla.com",
-          team: "team2",
-          status: "Available"
-        },
-        {
-          name: "Jerome Bell",
-          departement: "Finance",
-          phoneNumber: "(629) 555-0129",
-          email: "jerome@google.com",
-          team: "team13",
-          status: "Available"
-        },
-        {
-          name: "Kathryn Murphy",
-          departement: "RH",
-          phoneNumber: "(406) 555-0120",
-          email: "kathryn@microsoft.com",
-          team: "team2",
-          status: "Available"
-        },
-        {
-          name: "Jacob Jones",
-          departement: "RH",
-          phoneNumber: "(208) 555-0112",
-          email: "jacob@yahoo.com",
-          team: "team14",
-          status: "Available"
-        },
-        {
-          name: "Kristin Watson",
-          departement: "Marketing",
-          phoneNumber: "(704) 555-0127",
-          email: "kristin@facebook.com",
-          team: "team1",
-          status: "can"
+
+    const getAllStaff = async ()=>{
+      try {
+        setStatus(FETCH_STATUS.LOADING);
+        const reponse = await fetch("http://localhost:5000/api/getAllStaff",{
+            method:"GET",
+            headers:{'Content-Type':'application/json'},
+            credentials:'include',
+        });
+
+        const result = await reponse.json();
+        if(!result.success){
+            throw({status: reponse.status,message:result.message});
         }
-      ];
+        
+        setStaff(result.data);
+        setStatus(FETCH_STATUS.SUCCESS);
+      }catch (error:any) {
+        console.error("error while getting upcoming events",error.message);
+        alert(error.message);
+        setStatus(FETCH_STATUS.ERROR)
+      }
+    }
+    
 
     const [status,setStatus] = useState(FETCH_STATUS.IDLE);
-    const [staff,setStaff] = useState(StaticStaff);
+    const [staff,setStaff] = useState([]);
+
+    useEffect(()=>{getAllStaff()},[]);
 
     const BarOptions:ChartOptions<'bar'> = {
         responsive: true,
@@ -226,7 +186,7 @@ function StaffPage(){
                 <div className='staff_elements_div'>
                     {status === FETCH_STATUS.LOADING?<Loading/>
                     :staff.map((item:any)=>(
-                        <StaffElement name={item.name} departement={item.departement} email={item.email} team={item.team} tel={item.phoneNumber}/>
+                        <StaffElement id={item.ID} name={item.nom} surname={item.prenom} departement={item.departement} email={item.email} team={item.team_nom} tel={item.num_tel}/>
                     ))}
                 </div>
                 <div className='staff_page_footer'>

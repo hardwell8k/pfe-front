@@ -13,122 +13,93 @@ export default function AddStaff() {
     role: ''
   });
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     try {
       const response = await fetch('http://localhost:5000/api/staff', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to add staff member');
-      }
-
-      const result = await response.json();
-      console.log('Staff member added successfully:', result);
-      
-      // Clear form
-      setFormData({
-        firstName: '',
-        lastName: '',
-        contact: '',
-        email: '',
-        department: '',
-        team: '',
-        role: ''
-      });
-
+      if (!response.ok) throw new Error('Failed to add staff member');
+      await response.json();
+      setFormData({ firstName: '', lastName: '', contact: '', email: '', department: '', team: '', role: '' });
       alert('Staff member added successfully!');
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Failed to add staff member');
+    } catch (error: any) {
+      alert('Failed to add staff member: ' + error.message);
     }
   };
 
   return (
-    <div className="dashboard-container">
-      <Sidebar/>
-      <div className="main-content">
-        <h1 className="page-title">Staff Management</h1>
-        
-        <div className="form-card">
-          <h2 className="form-title">Add Staff Member</h2>
-          
+    <div className="asf-dashboard-container">
+      <Sidebar />
+      <div className="asf-main-content">
+        <h1 className="asf-page-title">Add Staff Member</h1>
+        <div className="asf-form-card">
           <form onSubmit={handleSubmit}>
-            <div className="form-grid">
-              {/* Left Column */}
+            <div className="asf-form-grid">
               <div>
-                <div className="form-group">
-                  <label className="form-label">First Name</label>
+                <div className="asf-form-group">
+                  <label className="asf-form-label">First Name</label>
                   <input
                     type="text"
                     name="firstName"
                     placeholder="Enter first name"
-                    className="form-input"
+                    className="asf-form-input"
                     value={formData.firstName}
                     onChange={handleInputChange}
                     required
                   />
                 </div>
-
-                <div className="form-group">
-                  <label className="form-label">Last Name</label>
+                <div className="asf-form-group">
+                  <label className="asf-form-label">Last Name</label>
                   <input
                     type="text"
                     name="lastName"
                     placeholder="Enter last name"
-                    className="form-input"
+                    className="asf-form-input"
                     value={formData.lastName}
                     onChange={handleInputChange}
                     required
                   />
                 </div>
-
-                <div className="form-group">
-                  <label className="form-label">Contact</label>
+                <div className="asf-form-group">
+                  <label className="asf-form-label">Contact</label>
                   <input
                     type="tel"
                     name="contact"
                     placeholder="Enter phone number"
-                    className="form-input"
+                    className="asf-form-input"
                     value={formData.contact}
                     onChange={handleInputChange}
                     required
                   />
                 </div>
-
-                <div className="form-group">
-                  <label className="form-label">Email</label>
+                <div className="asf-form-group">
+                  <label className="asf-form-label">Email</label>
                   <input
                     type="email"
                     name="email"
                     placeholder="Enter email address"
-                    className="form-input"
+                    className="asf-form-input"
                     value={formData.email}
                     onChange={handleInputChange}
                     required
                   />
                 </div>
               </div>
-
-              {/* Right Column */}
               <div>
-                <div className="form-group">
-                  <label className="form-label">Department</label>
-                  <div className="select-wrapper">
+                <div className="asf-form-group">
+                  <label className="asf-form-label">Department</label>
+                  <div className="asf-select-wrapper">
                     <select
                       name="department"
-                      className="form-select"
+                      className="asf-form-select"
                       value={formData.department}
                       onChange={handleInputChange}
                       required
@@ -139,20 +110,15 @@ export default function AddStaff() {
                       <option value="management">Management</option>
                       <option value="logistics">Logistics</option>
                     </select>
-                    <div className="select-icon">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </div>
+
                   </div>
                 </div>
-
-                <div className="form-group">
-                  <label className="form-label">Team</label>
-                  <div className="select-wrapper">
+                <div className="asf-form-group">
+                  <label className="asf-form-label">Team</label>
+                  <div className="asf-select-wrapper">
                     <select
                       name="team"
-                      className="form-select"
+                      className="asf-form-select"
                       value={formData.team}
                       onChange={handleInputChange}
                       required
@@ -163,20 +129,15 @@ export default function AddStaff() {
                       <option value="lighting">Lighting Team</option>
                       <option value="staging">Staging Team</option>
                     </select>
-                    <div className="select-icon">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </div>
+
                   </div>
                 </div>
-
-                <div className="form-group">
-                  <label className="form-label">Role</label>
-                  <div className="select-wrapper">
+                <div className="asf-form-group">
+                  <label className="asf-form-label">Role</label>
+                  <div className="asf-select-wrapper">
                     <select
                       name="role"
-                      className="form-select"
+                      className="asf-form-select"
                       value={formData.role}
                       onChange={handleInputChange}
                       required
@@ -187,22 +148,13 @@ export default function AddStaff() {
                       <option value="technician">Technician</option>
                       <option value="operator">Operator</option>
                     </select>
-                    <div className="select-icon">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </div>
+
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Submit Button */}
-            <div className="button-container">
-              <button
-                type="submit"
-                className="submit-button"
-              >
+            <div className="asf-buttons-container">
+              <button type="submit" className="asf-submit-button">
                 Add Staff Member
               </button>
             </div>

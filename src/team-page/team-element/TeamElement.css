@@ -1,0 +1,132 @@
+/* TeamElement.css */
+
+.team_element {
+    position: relative;
+    transition: all 0.2s ease;
+  }
+  
+  .team_element:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+  }
+  
+  .team_element--selected {
+    background-color: rgba(59, 130, 246, 0.05);
+  }
+  
+  .team_element td {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: middle;
+    font-size: 0.875rem;
+    color: #374151;
+  }
+  
+  .team_element_checkbox_cell {
+    width: 48px;
+    padding-left: 1.25rem !important;
+  }
+  
+  .team_element_checkbox {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    accent-color: #3b82f6;
+    cursor: pointer;
+  }
+  
+  .team_element_logo_name {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .team_element_name {
+    font-weight: 500;
+    color: #111827;
+  }
+  
+  .team_element_creation_date_container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+  
+  .team_element_calendar_icon {
+    font-size: 1rem;
+  }
+  
+  .team_element_status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: capitalize;
+  }
+  
+  .team_element_status--active {
+    background-color: #dcfce7;
+    color: #16a34a;
+  }
+  
+  .team_element_status--pending {
+    background-color: #fef3c7;
+    color: #d97706;
+  }
+  
+  .team_element_status--inactive {
+    background-color: #fee2e2;
+    color: #dc2626;
+  }
+  
+  .team_element_actions_cell {
+    padding-right: 1.25rem !important;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+  
+  .team_element_more_actions {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .team_element_more_actions:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .team_element_dropdown_button {
+    transition: transform 0.2s ease;
+  }
+  
+  
+  .team_element_dropdown_button--open {
+    transform: rotate(180deg);
+  }
+  
+
+  .team_element_staff_container {
+    display: none;
+    padding-left: 3rem;
+  }
+  
+  .team_element_staff_container--open {
+    display: block;
+  }
+
+
+  

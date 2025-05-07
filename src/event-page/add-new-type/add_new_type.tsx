@@ -8,7 +8,8 @@ function Add_new_type (props:any){
             const reponse = await fetch('http://localhost:5000/api/addEventType',{
                 method:"POST",
                 headers:{"Content-Type":"application/json"},
-                body:JSON.stringify(data)
+                body:JSON.stringify(data),
+                credentials: 'include',
             });
             
             const result = await reponse.json();

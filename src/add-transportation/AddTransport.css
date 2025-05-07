@@ -1,0 +1,262 @@
+/* Main container styles */
+.transport-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #fff7ed;
+}
+
+.transport-content {
+  flex: 1;
+  padding: 2rem;
+  overflow: auto;
+  margin-left: 0;
+}
+
+.transport-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* Form container */
+.transport-form-container {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem 2rem;
+  max-width: 1185px;
+  margin: 0 auto;
+  width: 95%;
+}
+
+.form-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.transport-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5rem;
+}
+
+@media (min-width: 768px) {
+  .transport-form-grid {
+    grid-template-columns: 1fr 1fr;
+    max-width: 1600px;
+    margin: 0 auto;
+    gap: 2rem;
+  }
+}
+
+.transport-form-column {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0 0.4rem;
+}
+
+/* Form groups */
+.transport-form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.transport-form-group label {
+  display: block;
+  font-size: 0.9rem;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.transport-form-group input,
+.transport-form-group select,
+.transport-form-group textarea {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  outline: none;
+  height: 45px;
+  box-sizing: border-box;
+  font-size: 0.9rem;
+  line-height: 1.25rem;
+  background-color: white;
+  max-width: none;
+}
+
+/* Specific styling for datetime inputs */
+input[type="datetime-local"] {
+  padding-right: 0.5rem;
+}
+
+/* Specific styling for number inputs */
+input[type="number"] {
+  -moz-appearance: textfield; /* Remove spinner in Firefox */
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.transport-form-group textarea {
+  min-height: 170px;
+  resize: vertical;
+  height: auto;
+}
+
+/* Description group specific style */
+.description-group {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Checkbox styling */
+.checkbox-group {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 0rem;
+  margin-top: 0.75rem;
+  background-color: #f9fafb;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.self-done-label {
+  font-weight: 500;
+  margin-right: 1rem;
+  font-size: 0.95rem;
+}
+
+.self-done-checkbox {
+  width: 14px !important;
+  height: 14px !important;
+  cursor: pointer;
+  align-items: top;
+  margin-top: 0 !important;
+  accent-color: #2563eb;
+  appearance: checkbox !important;
+  -webkit-appearance: checkbox !important;
+  opacity: 1 !important;
+  position: relative !important;
+  left: 0 !important;
+  transform: scale(1.2);
+}
+
+/* Action buttons */
+.transport-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 2rem;
+  width: 100%;
+}
+
+.button-row {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.action-button {
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  flex: 1;
+  border: none;
+  font-weight: 500;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.action-button.blue {
+  background-color: #2563eb;
+  color: white;
+}
+
+.action-button.blue:hover {
+  background-color: #1d4ed8;
+}
+
+.action-button.gray {
+  background-color: #e5e7eb;
+  color: #4b5563;
+}
+
+.action-button.gray:hover {
+  background-color: #d1d5db;
+}
+
+/* Bottom buttons */
+.transport-bottom-buttons {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  width: 100%;
+}
+
+.add-transportation-button {
+  padding: 0.75rem 1rem;
+  background-color: #2563eb;
+  color: white;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+
+  max-width: 20rem;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.add-transportation-button:hover {
+  background-color: #1d4ed8;
+}
+
+.check-transportation-button {
+  padding: 0.85rem 1.75rem;
+  background-color: #e5e7eb;
+  color: #4b5563;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  min-width: 250px;
+  font-size: 1rem;
+}
+
+.check-transportation-button:hover {
+  background-color: #d1d5db;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .transport-form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .transport-bottom-buttons {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+}
+
+.transport-form-group input[type="date"]::-webkit-calendar-picker-indicator,
+.transport-form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(36%) sepia(98%) saturate(7492%) hue-rotate(210deg) brightness(95%) contrast(101%);
+  cursor: pointer;
+}

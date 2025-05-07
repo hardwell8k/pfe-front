@@ -12,6 +12,10 @@ import { FETCH_STATUS } from "../../fetchStatus";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useNavigate } from "react-router-dom";
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface EventFormData extends FieldValues {
     nom: string;
@@ -22,18 +26,20 @@ interface EventFormData extends FieldValues {
     date_fin: Date|null;
     address: string;
     description?: string;
+    client_id: number|null;
   }
 
 function Event_creation_form(props:any,ref:any){
-    
+    const navigate = useNavigate();
 
     const getClients = async ()=>{
         try {
             
             setClient_interfaceStatus(FETCH_STATUS.LOADING);
             const reponse = await fetch('http://localhost:5000/api/getAllClients',{
-                method:'POST',
+                method:'GET',
                 headers:{"Content-Type":"application/json"},
+                credentials: 'include',
             });
     
             const result = await reponse.json();
@@ -55,12 +61,13 @@ function Event_creation_form(props:any,ref:any){
     const onSubmit = async (data : EventFormData)=>{
         try{
             props.setStatus(FETCH_STATUS.LOADING);
-            //alert(JSON.stringify(data, null, 2)); 
+             
             console.log("trying to create");
             const reponse = await fetch('http://localhost:5000/api/addEvent',{
                 method:'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
+                body: JSON.stringify(data),
+                credentials: 'include',
             });
             
             const result = await reponse.json();
@@ -68,11 +75,13 @@ function Event_creation_form(props:any,ref:any){
                 throw{status:reponse.status,message:result.message};
             }
 
-            alert("event created");
+            toast.success("event created");
             props.setStatus(FETCH_STATUS.SUCCESS);
+            clearform();
+            props.getUpcomingEvents();
         }catch(error:any){
             console.error(error.message);    
-            alert(error.err); 
+            toast.error(error.err); 
             props.setStatus(FETCH_STATUS.ERROR);
         }
     }
@@ -80,8 +89,9 @@ function Event_creation_form(props:any,ref:any){
     const getEventTypes = async ()=>{
         try{
             const reponse = await fetch('http://localhost:5000/api/getEventTypes',{
-                method:'POST',
-                headers:{'Content-Type':'application/json'}
+                method:'GET',
+                headers:{'Content-Type':'application/json'},
+                credentials: 'include',
             });
             
             const result = await reponse.json();
@@ -96,7 +106,7 @@ function Event_creation_form(props:any,ref:any){
 
     const evenementTypesTraitement = async ()=>{
         try{
-            //alert("called types")
+            
             const data = await getEventTypes();
             console.log("caling types twise")
             if(data !== null){
@@ -115,36 +125,35 @@ function Event_creation_form(props:any,ref:any){
     const updateEvent = async(id:number,data:any)=>{
         try {
             props.setStatus(FETCH_STATUS.LOADING);
-            //alert("first part");
+            
             const reponse = await fetch('http://localhost:5000/api/updateEvent',{
-                method:'POST',
+                method:'PUT',
                 headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({...data,"ID":id})
+                body:JSON.stringify({...data,"ID":id}),
+                credentials: 'include',
             });
-            //alert("second part");
+            
             const result = await reponse.json();
             if(!result.success){
                 throw({status:reponse.status,message:result.message});
             }
-            //alert(result.message);
-            reset();
+            toast.success("event updated with success");
             props.setStatus(FETCH_STATUS.SUCCESS);
             props.getUpcomingEvents();
         } catch(error:any){
             console.error(error.message);
-            alert(error.message);     
+            toast.error(error.message);     
             props.setStatus(FETCH_STATUS.ERROR);
         }
     }
 
     const handleUpdate = async()=>{
         if(selectedEventID.current===0){
-            alert("select an event to update");
+            toast.warn("select an event to update");
             return 0;
         }
         const data = getValues();
-        //alert(JSON.stringify(data));
-        //alert(selectedEventID.current)
+        
         await updateEvent(selectedEventID.current,data);
     }
 
@@ -152,29 +161,32 @@ function Event_creation_form(props:any,ref:any){
         try {
             props.setStatus(FETCH_STATUS.LOADING);
             const reponse = await fetch('http://localhost:5000/api/deleteEvent',{
-                method:'POST',
+                method:'DELETE',
                 headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({"ID":id})
+                body:JSON.stringify({"ID":id}),
+                credentials: 'include',
             });
             
             const result = await reponse.json();
             if(!result.success){
                 throw({status:reponse.status,message:result.message});
             }
-            alert(result.message);
+            toast.success(result.message);
             props.setStatus(FETCH_STATUS.SUCCESS)
-            reset();
+            clearform();
             props.getUpcomingEvents();
         } catch(error:any){
+            toast.error(error.message);
             console.error(error.message);  
             props.setStatus(FETCH_STATUS.ERROR);   
         }
     }
     const handleDelete = async ()=>{
         if(selectedEventID.current===0){
-            alert("select an event to delete");
+            toast.warn("select an event to delete");
             return 0;
         }
+        
         await deleteEvent(selectedEventID.current);
     }
 
@@ -206,8 +218,11 @@ function Event_creation_form(props:any,ref:any){
         props.setselectedUpcomingEventIndex(-1);
     }
 
-    function getClientName(id:number){
-        
+    function getClientName(id:number|null){
+        if(id === null){
+            setClientName("");
+            return;
+        }
         const client:any = clients.find((client:any)=>client.ID===id);
         if(client){
             setClientName(client.nom);
@@ -368,6 +383,12 @@ function Event_creation_form(props:any,ref:any){
                             timeIntervals={15}
                             wrapperClassName="date-picker-wrapper"
                             minDate={date_debut ? new Date(date_debut) : new Date()} 
+                            minTime={
+                                date_debut && new Date(date_debut).toDateString() === new Date().toDateString()
+                                  ? new Date(date_debut)
+                                  : new Date(new Date().setHours(0, 0, 0, 0))
+                              }
+                              maxTime={new Date(new Date().setHours(23, 45, 0, 0))}
                             onKeyDown={(e) => e.preventDefault()}
                             />
                         )}
@@ -408,15 +429,23 @@ function Event_creation_form(props:any,ref:any){
             </div>
             <div className="buttons_below">
                 <button id="go_back" type="button" onClick={()=>{clearform()}}><img src={arrowImg} alt=""/>Go Back</button>
-                <button id="add_details" type="button">+ add details</button>
+                <button id="add_details" type="button" onClick={()=>{if(props.selectedUpcomingEvent?.ID){navigate('/eventDetails', {state: { evenement_id: props.selectedUpcomingEvent.ID },});} else {toast.error("No event selected")}}}>+ add details</button>
                 <button id="create_new_event" type="submit">+ create a new event</button>
             </div>
 
         </form>
         {newTypeIsVisible&&<Add_new_type getEventTypes={evenementTypesTraitement} isvisible={handleNewTypeIsVisible}/>}
-        {ClientInterfaceIsVisible&&<ClientInterface clients={clients} setClients={setClients} handleClient_id={handleClient_id} storedClientId={watch("client_id")} setClientName={setClientName} status={Client_interfaceStatus}/>}
-        
+        {ClientInterfaceIsVisible&&<ClientInterface clients={clients} setClients={setClients} handleClient_id={handleClient_id} storedClientId={watch("client_id")} setClientName={setClientName} status={Client_interfaceStatus} isOpen={setClientInterfaceIsVisible}/>}
+        <ToastContainer 
+            position="top-center"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            pauseOnHover
+        />
     </>);
 }
 
 export default forwardRef(Event_creation_form);
+

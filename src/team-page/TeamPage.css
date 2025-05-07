@@ -1,0 +1,123 @@
+/* TeamPage.css */
+.team_page {
+    display: flex;
+    height: 100vh;
+    background-color: #f9fafb;
+  }
+  
+  .team_page_container {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+  }
+  
+  .team_page_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .team_page_title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #111827;
+    text-transform: capitalize;
+  }
+  
+  .team_page_search {
+    position: relative;
+    width: 300px;
+  }
+  
+  .team_page_search_input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    background-color: white;
+  }
+  
+  .team_page_search_input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  .team_page_search_icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+  }
+  
+  .team_page_table_container {
+    /*background-color: white;*/
+    border-radius: 0;
+    /*box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);*/
+    overflow: hidden;
+  }
+  
+  .team_page_table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+  }
+  
+  .team_page_table thead th {
+    padding: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4b5563;
+    background-color: #f9fafb;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  
+  
+  .team_page_sort_icon {
+    margin-left: 0.25rem;
+    opacity: 0.5;
+    font-size: 0.75rem;
+  }
+  
+  .team_page_checkbox_header {
+    width: 48px;
+  }
+  
+  .team_page_loading, .team_page_no_data {
+    padding: 2rem;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+  
+
+  @media (max-width: 1024px) {
+    .team_page_search {
+      width: 200px;
+    }
+    
+    .team_page_email_header, 
+    .team_page_phone_header {
+      display: none;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .team_page_header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    
+    .team_page_search {
+      width: 100%;
+    }
+  }
+
+

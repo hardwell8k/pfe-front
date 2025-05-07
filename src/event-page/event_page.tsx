@@ -6,6 +6,7 @@ import Event_creation from "./event-creation/event_creation";
 import { FETCH_STATUS } from "../fetchStatus";
 
 import "./event_page.css"
+import { toast } from "react-toastify";
 
 function Event_page(){
 
@@ -13,7 +14,7 @@ function Event_page(){
         try {
             setStatus(FETCH_STATUS.LOADING);
             const reponse = await fetch("http://localhost:5000/api/getUPcomingEvents",{
-                method:"POST",
+                method:"GET",
                 headers:{'Content-Type':'application/json'},
                 credentials:'include',
             });
@@ -22,20 +23,12 @@ function Event_page(){
             if(!result.success){
                 throw({status: reponse.status,message:result.message});
             }
-            setTimeout(() => {
-                console.log("5 seconds passed!");
-              }, 10000);
-            //await new Promise(resolve => setTimeout(resolve, 10000));
-            //alert("fuck");
-            
+
             setUpComingEvents(result.data);
-            /*for(let i=0;i<result.data.length;i++){
-                alert(result.data[i].nom);
-            }*/
             setStatus(FETCH_STATUS.SUCCESS);
         } catch (error:any) {
             console.error("error while getting upcoming events",error.message);
-            alert(error.message);
+            toast.error(error.message);
             setStatus(FETCH_STATUS.ERROR)
         }
     }
@@ -53,7 +46,7 @@ function Event_page(){
         <Sidebar/>
         <div className="maindiv">
             <Current_events status={status} UpComingEvents={UpComingEvents} selectedUpcomingEventIndex={selectedUpcomingEventIndex} setselectedUpcomingEventIndex={setselectedUpcomingEventIndex} />
-            <Event_creation getUpcomingEvents={getUpcomingEvents} selectedUpcomingEvent={UpComingEvents[selectedUpcomingEventIndex]} selectedUpcomingEventIndex={selectedUpcomingEventIndex} setselectedUpcomingEventIndex={setselectedUpcomingEventIndex}/>
+            <Event_creation getUpcomingEvents={getUpcomingEvents} selectedUpcomingEvent={UpComingEvents[selectedUpcomingEventIndex]} selectedUpcomingEventIndex={selectedUpcomingEventIndex} setselectedUpcomingEventIndex={setselectedUpcomingEventIndex} setUpComingEvents={setUpComingEvents}/>
         </div>
     </div>
     

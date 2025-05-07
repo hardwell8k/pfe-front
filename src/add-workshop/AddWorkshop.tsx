@@ -1,59 +1,126 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './AddWorkshop.css';
 import Sidebar from '../sidebar/Sidebar';
+import InstructorModal from './add-instructor/InstructorModal';
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+interface instructorsData {
+  ID: number;
+  nom: string;
+}
 
 export default function AddWorkshop() {
+  const location = useLocation();
+  const evenement_id = useRef<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (location.state && location.state.evenement_id) {
+      evenement_id.current = location.state.evenement_id;
+    }
+  }, [location.state]);
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
-    type: '',
-    fee: '',
-    maxUsers: '',
-    instructor: '',
-    address: '',
-    startTime: '',
-    finishTime: ''
+    nom: '',
+    categorie: '',
+    prix: '',
+    nbr_max_invite: '',
+    instructeur_id: null,
+    address: String(evenement_id.current),
+    temp_debut: '',
+    temp_fin: '',
   });
+  const [instructors, setInstructors] = useState<instructorsData[]>([]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleInstructorDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target;
+    
+    if (value === "addNewType") {
+      setIsModalOpen(true);
+      e.target.value = formData.instructeur_id || "";
+    } else {
+      handleInputChange(e);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     try {
-      const response = await fetch('http://localhost:5000/api/workshops', {
+      const submitData = {...formData,
+                          prix:Number(formData.prix),
+                          nbr_max_invite:Number(formData.nbr_max_invite),
+                          instructeur_id: Number(formData.instructeur_id)
+                        }
+      const response = await fetch('http://localhost:5000/api/addWorkshop', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        credentials: 'include',
+        body: JSON.stringify({ ...submitData, evenement_id: evenement_id.current })
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to create workshop');
+      if(!response.ok) {
+        throw new Error('Failed to add instructor');
       }
 
       const result = await response.json();
       console.log('Workshop created successfully:', result);
-      alert('Workshop created successfully!');
+      toast.success('Workshop created successfully!');
       setFormData({
-        name: '',
-        type: '',
-        fee: '',
-        maxUsers: '',
-        instructor: '',
-        address: '',
-        startTime: '',
-        finishTime: ''
+        nom: '',
+        categorie: '',
+        prix: '',
+        nbr_max_invite: '',
+        instructeur_id: null,
+        address: String(evenement_id.current),
+        temp_debut: '',
+        temp_fin: '',
       });
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to create workshop');
+      toast.error('Failed to create workshop');
     }
+  };
+
+  const getInstructors = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/getInstructorsForWorkshop', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get instructors');
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw({ status: response.status, message: result.message });
+      }
+
+      setInstructors(result.data);
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Failed to fetch instructors');
+    }
+  };
+
+  const handleInstructorAdded = () => {
+    getInstructors();
   };
 
   const handleGoBack = () => {
@@ -64,65 +131,70 @@ export default function AddWorkshop() {
     navigate('/workshops');
   };
 
+  useEffect(() => {
+    getInstructors();
+  }, []);
+
   return (
-    <div className="dashboard-container">
-      <Sidebar/>
-      <div className="main-content">
-        <h1 className="page-title">Add Workshop</h1>
-        
-        <div className="form-card">
+    <div className="add-workshop-dashboard-container">
+      <Sidebar />
+      <div className="add-workshop-main-content">
+        <h1 className="add-workshop-page-title">Workshop Management</h1>
+        <div className="add-workshop-form-card">
+          <h2 className="add-workshop-form-subtitle">Add Workshop</h2>
+          
           <form onSubmit={handleSubmit}>
-            <div className="form-grid">
+            <div className="add-workshop-form-grid">
               {/* Left Column */}
               <div>
-                <div className="form-group">
-                  <label className="form-label">Workshop Name</label>
+                <div className="add-workshop-form-group">
+                  <label className="add-workshop-form-label">Workshop Name</label>
                   <input
                     type="text"
-                    name="name"
+                    name="nom"
                     placeholder="Enter workshop name"
-                    className="form-input"
-                    value={formData.name}
+                    className="add-workshop-form-input"
+                    value={formData.nom}
                     onChange={handleInputChange}
                     required
                   />
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">Type</label>
+                <div className="add-workshop-form-group">
+                  <label className="add-workshop-form-label">Type</label>
                   <input
                     type="text"
-                    name="type"
+                    name="categorie"
                     placeholder="Enter workshop type"
-                    className="form-input"
-                    value={formData.type}
+                    className="add-workshop-form-input"
+                    value={formData.categorie}
                     onChange={handleInputChange}
                     required
                   />
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">Fee</label>
+                <div className="add-workshop-form-group">
+                  <label className="add-workshop-form-label">Fee</label>
                   <input
                     type="number"
-                    name="fee"
+                    name="prix"
                     placeholder="Enter workshop fee"
-                    className="form-input"
-                    value={formData.fee}
+                    className="add-workshop-form-input"
+                    value={formData.prix}
                     onChange={handleInputChange}
                     min="0"
                     required
                   />
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">Max Users</label>
+                <div className="add-workshop-form-group">
+                  <label className="add-workshop-form-label">Max Users</label>
                   <input
                     type="number"
-                    name="maxUsers"
+                    name="nbr_max_invite"
                     placeholder="Enter maximum users"
-                    className="form-input"
-                    value={formData.maxUsers}
+                    className="add-workshop-form-input"
+                    value={formData.nbr_max_invite}
                     onChange={handleInputChange}
                     min="1"
                     required
@@ -132,51 +204,56 @@ export default function AddWorkshop() {
 
               {/* Right Column */}
               <div>
-                <div className="form-group">
-                  <label className="form-label">Instructor</label>
-                  <input
-                    type="text"
-                    name="instructor"
-                    placeholder="Enter instructor name"
-                    className="form-input"
-                    value={formData.instructor}
-                    onChange={handleInputChange}
+                <div className="add-workshop-form-group">
+                  <label className="add-workshop-form-label">Instructor</label>
+                  <select 
+                    id="instructeur_id" 
+                    name="instructeur_id"
+                    className="add-workshop-form-input"
+                    value={formData.instructeur_id ?? ""}
+                    onChange={handleInstructorDropdownChange}
                     required
-                  />
+                  >
+                    {formData.instructeur_id === null && <option key={-1} value="" disabled hidden>Select an instructor</option>}
+                    {instructors.map((valeur, index) => (
+                      <option key={index} value={valeur.ID}>{valeur.nom}</option>
+                    ))}
+                    <option key={instructors.length} value="addNewType">+ Add a new instructor</option>
+                  </select>
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">Address</label>
+                <div className="add-workshop-form-group">
+                  <label className="add-workshop-form-label">Address</label>
                   <input
                     type="text"
                     name="address"
                     placeholder="Enter workshop address"
-                    className="form-input"
+                    className="add-workshop-form-input"
                     value={formData.address}
                     onChange={handleInputChange}
                     required
                   />
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">Start Time</label>
+                <div className="add-workshop-form-group">
+                  <label className="add-workshop-form-label">Start Time</label>
                   <input
                     type="datetime-local"
-                    name="startTime"
-                    className="form-input"
-                    value={formData.startTime}
+                    name="temp_debut"
+                    className="add-workshop-form-input"
+                    value={formData.temp_debut}
                     onChange={handleInputChange}
                     required
                   />
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">Finish Time</label>
+                <div className="add-workshop-form-group">
+                  <label className="add-workshop-form-label">Finish Time</label>
                   <input
                     type="datetime-local"
-                    name="finishTime"
-                    className="form-input"
-                    value={formData.finishTime}
+                    name="temp_fin"
+                    className="add-workshop-form-input"
+                    value={formData.temp_fin}
                     onChange={handleInputChange}
                     required
                   />
@@ -185,15 +262,23 @@ export default function AddWorkshop() {
             </div>
 
             {/* Buttons Container */}
-            <div className="buttons-container">
-              <button type="submit" className="submit-button">
+            <div className="add-workshop-buttons-container">
+              <button type="submit" className="add-workshop-submit-button">
                 Create Workshop
               </button>
-              <div className="secondary-buttons">
-                <button type="button" className="secondary-button" onClick={handleGoBack}>
+              <div className="add-workshop-secondary-buttons">
+                <button 
+                  type="button" 
+                  className="add-workshop-secondary-button" 
+                  onClick={handleGoBack}
+                >
                   Go Back
                 </button>
-                <button type="button" className="secondary-button" onClick={handleCheckWorkshops}>
+                <button 
+                  type="button" 
+                  className="add-workshop-secondary-button" 
+                  onClick={handleCheckWorkshops}
+                >
                   Check Workshops
                 </button>
               </div>
@@ -201,6 +286,21 @@ export default function AddWorkshop() {
           </form>
         </div>
       </div>
+      
+      <InstructorModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onInstructorAdded={handleInstructorAdded}
+      />
+
+      <ToastContainer 
+            position="top-center"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            pauseOnHover
+        />
     </div>
   );
-} 
+}
