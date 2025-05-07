@@ -5,17 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import Accounts_element from './accounts_element/accounts_element';
 import Sidebar from '../sidebar/Sidebar';
 import {FETCH_STATUS} from '../fetchStatus'
-import Loading from '../loading/loading';
 import './accounts_page.css';
-import searchIcon from '../assets/search_black.svg'
-import arrow_back from '../assets/arrow_back_black.svg'
-import arrow_forward from '../assets/arrow_forward_black.svg'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import arrowBack from '../assets/arrow_back_black.svg';
 import arrowForward from '../assets/arrow_forward_black.svg';
 import AddAccountModal from './add-account/AddAccountModal';
 import UpdateAccountModal from './update-account/UpdateAccountModal';
+import deleteGreyImg from '../assets/delete_24dp_grey.svg';
 
 interface accountItem{
 ID:number;
@@ -26,6 +23,7 @@ team:string;
 type:string;
 activation_date:string;
 deactivation_date:string;
+status:string;
 }
 
 interface selectedItems{
@@ -59,6 +57,50 @@ function Accounts_page(){
         }
     }
 
+    const deleteAccounts = async (ids: number[]) => {
+        try {
+          setStatus(FETCH_STATUS.LOADING);
+          const response = await fetch("http://localhost:5000/api/deleteAccount", {
+            method: "DELETE",
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ IDs:ids }),
+          });
+    
+          const result = await response.json();
+    
+          if (!result.success) {
+            throw ({ status: response.status, message: result.message });
+          }
+    
+          toast.success("accounts deleted successfully");
+          if(allSelected){
+            setCurrentPage(currentPage - 1);
+          }
+          getAllAccounts();
+          setStatus(FETCH_STATUS.SUCCESS);
+        } catch (error: any) {
+          console.error("Error while deleting accounts", error.message);
+          setStatus(FETCH_STATUS.ERROR);
+          toast.error('Error deleting accounts');
+        }
+      };
+    
+      const handleDelete = async () => {
+        let selectedAccountsIds: number[] = [];
+        Object.keys(selectedItems).forEach((key) => {
+          if (selectedItems[key]) {
+            selectedAccountsIds.push(parseInt(key));
+          }
+        });
+        if(selectedAccountsIds.length > 0){
+          await deleteAccounts(selectedAccountsIds);
+        }else{
+          toast.warning("no accounts selected");
+        }
+    
+      }
+
     const [status, setStatus] = useState(FETCH_STATUS.IDLE);
     const [accounts, setAccounts] = useState<accountItem[]>([]);
     const [selectedItems, setSelectedItems] = useState<selectedItems>({});
@@ -74,9 +116,10 @@ function Accounts_page(){
         type:"",
         activation_date:"",
         deactivation_date:"",
+        status:""
         });
     const [currentPage, setCurrentPage] = useState(1);
-    const itemPerPage = 5;
+    const itemPerPage = 7;
 
     const IndexOfLastItem = itemPerPage * currentPage;
     const IndexOfFirstItem = IndexOfLastItem - itemPerPage;
@@ -161,51 +204,61 @@ function Accounts_page(){
                         <th className='accounts_page_container_table_category_header'>
                         email
                         </th>
-                        <th className='accounts_page_container_table_nbr_place_header'>
+                        <th className='accounts_page_container_table_team_header'>
                         team 
                         </th>
-                        <th className='accounts_page_container_table_nbr_place_header'>
+                        <th className='accounts_page_container_table_type_header'>
                         type 
                         </th>
-                        <th className='accounts_page_container_table_actions_header'></th>
+                        <th className='accounts_page_container_table_status_header'>
+                        status 
+                        </th>
+                        <th className='accounts_page_container_table_actions_header'>
+                            <img src={deleteGreyImg} alt="" onClick={()=>{handleDelete()}}/>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                 {status === FETCH_STATUS.LOADING ? (
                     <tr>
-                    <td colSpan={7} className="accounts_page_table_loading">Loading data...</td>
+                    <td colSpan={8} className="accounts_page_table_loading">Loading data...</td>
                     </tr>
                 ) : filteredAccounts.length > 0 ? (
-                    shownAccounts.map((item) => (
+                    <>
+                        {shownAccounts.map((item) => (
                         <Accounts_element key={item.ID} item={item} isSelected={selectedItems[item.ID]} onSelect={handleSelectItem} setUpdate={setAccountToUpdate} setIsUpdateModalOpen={setIsUpdateModalOpen}/>
-                    ))
+                        ))}
+                    
+                    {currentPage*itemPerPage>filteredAccounts.length && <tr style={{height: "100%"}}></tr>}
+                    </>
+                    
                 ) : (
                     <tr>
-                    <td colSpan={7} className="accounts_page_table_no_data">No Accounts data found</td>
+                    <td colSpan={8} className="accounts_page_table_no_data">No Accounts data found</td>
                     </tr>
                 )}
                 </tbody>
                 <tfoot>
                 <tr>
-                    <td colSpan={7}>
+                    <td colSpan={8}>
                     <div className='accounts_page_table_footer_nav_buttons'>
                         <button className='accounts_page_table_prev' onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}>
                         <img src={arrowBack} alt="" />
                         </button>
                         <button onClick={() => setCurrentPage(1)} className={currentPage === 1 ? 'active_page_button' : ''}>1</button>
-                        {(filteredAccounts.length / 5) > 1 && (
+                        {(filteredAccounts.length / itemPerPage) > 1 && (
                         <button onClick={() => setCurrentPage(2)} className={currentPage === 2 ? 'active_page_button' : ''}>2</button>
                         )}
-                        {(filteredAccounts.length / 5) > 2 && (
+                        {(filteredAccounts.length / itemPerPage) > 2 && (
                         <button onClick={() => setCurrentPage(3)} className={currentPage === 3 ? 'active_page_button' : ''}>3</button>
                         )}
-                        {(filteredAccounts.length / 5) > 4 && <button disabled>...</button>}
-                        {(filteredAccounts.length / 5) > 3 && (
-                        <button onClick={() => setCurrentPage(Math.floor(filteredAccounts.length / 5) + 1)} className={currentPage === (Math.floor(filteredAccounts.length / 5) + 1) ? 'active_page_button' : ''}>
-                            {Math.floor(filteredAccounts.length / 5) + 1}
+                        {(filteredAccounts.length / itemPerPage) > 4 && <button disabled>...</button>}
+                        {(filteredAccounts.length / itemPerPage) > 3 && (
+                        <button onClick={() => setCurrentPage(Math.floor(filteredAccounts.length / itemPerPage) + 1)} className={currentPage === (Math.floor(filteredAccounts.length / itemPerPage) + 1) ? 'active_page_button' : ''}>
+                            {Math.floor(filteredAccounts.length / itemPerPage) + 1}
                         </button>
                         )}
-                        <button className='accounts_page_table_next' onClick={() => currentPage < Math.floor(filteredAccounts.length / 5) + 1 && setCurrentPage(currentPage + 1)}>
+                        <button className='accounts_page_table_next' onClick={() => currentPage < Math.floor(filteredAccounts.length / itemPerPage) + 1 && setCurrentPage(currentPage + 1)}>
                         <img src={arrowForward} alt="" />
                         </button>
                     </div>

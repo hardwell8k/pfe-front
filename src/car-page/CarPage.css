@@ -86,6 +86,7 @@
   transition: all 0.2s ease;
   margin:0;
   height: 2.7rem;
+  width:6rem;
 }
 
 .car_page_container_add_car_button:hover {
@@ -216,4 +217,12 @@
   border: none;
   font-weight: 500;
   /*box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);*/
+}
+
+.car_page_container_table_actions_header{
+  text-align: right;
+}
+
+.car_page_container_table_actions_header img{
+  cursor: pointer;
 }

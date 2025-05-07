@@ -9,7 +9,8 @@ import arrowForward from '../assets/arrow_forward_black.svg';
 import AddCarModal from './add-car/AddCarModal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import deleteImg from '../assets/delete_black.svg';
+import deleteGreyImg from '../assets/delete_24dp_grey.svg';
+import UpdateCarModal from './update-car/UpdateCarModal';
 
 interface CarElement {
   ID: number;
@@ -30,6 +31,14 @@ function CarPage() {
   const [selectedItems, setSelectedItems] = useState<selectedItems>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false); 
+  const [carToUpdate , setCarToUpdate] = useState<CarElement>({
+    ID: 0,
+    nom: "",
+    matricule: "",
+    nbr_place: 0,
+    categorie: "",
+  });
   const itemPerPage = 7;
 
   const IndexOfLastItem = itemPerPage * currentPage;
@@ -64,8 +73,6 @@ function CarPage() {
     }));
   };
 
- 
-
   useEffect(() => {
     getCars();
   }, []);
@@ -92,6 +99,50 @@ function CarPage() {
       toast.error('Error loading cars');
     }
   };
+
+  const deleteCars = async (ids: number[]) => {
+    try {
+      setStatus(FETCH_STATUS.LOADING);
+      const response = await fetch("http://localhost:5000/api/deleteCar", {
+        method: "DELETE",
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ IDs:ids }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw ({ status: response.status, message: result.message });
+      }
+
+      toast.success("cars deleted successfully");
+      if(allSelected){
+        setCurrentPage(currentPage - 1);
+      }
+      getCars();
+      setStatus(FETCH_STATUS.SUCCESS);
+    } catch (error: any) {
+      console.error("Error while deleting cars", error.message);
+      setStatus(FETCH_STATUS.ERROR);
+      toast.error('Error deleting cars');
+    }
+  };
+
+  const handleDelete = async () => {
+    let selectedCarsIds: number[] = [];
+    Object.keys(selectedItems).forEach((key) => {
+      if (selectedItems[key]) {
+        selectedCarsIds.push(parseInt(key));
+      }
+    });
+    if(selectedCarsIds.length > 0){
+      await deleteCars(selectedCarsIds);
+    }else{
+      toast.warning("no cars selected");
+    }
+
+  }
 
   return (
     <div className='car_page'>
@@ -141,7 +192,9 @@ function CarPage() {
                 <th className='car_page_container_table_nbr_place_header'>
                   nombre des places
                 </th>
-                <th className='car_page_container_table_actions_header'></th>
+                <th className='car_page_container_table_actions_header'>
+                  <img src={deleteGreyImg} alt="" onClick={()=>{handleDelete()}}/>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -152,11 +205,10 @@ function CarPage() {
               ) : filteredCars.length > 0 ? (
                 <>
                   {shownCars.map((item) => (
-                    <CarElementComponent key={item.ID} item={item} isSelected={selectedItems[item.ID]} onselect={handleSelectItem} />
+                    <CarElementComponent key={item.ID} item={item} isSelected={selectedItems[item.ID]} onselect={handleSelectItem} setUpdate={setCarToUpdate} setIsUpdateModalOpen={setIsUpdateModalOpen}/>
                   ))}
-                  {currentPage*itemPerPage>filteredCars.length && <tr style={{height: "100%"}}>
-
-                  </tr>}
+                  {currentPage*itemPerPage>filteredCars.length && <tr style={{height: "100%"}}></tr>}
+                  
                 </>              
               ) : (
                 <tr>
@@ -172,19 +224,19 @@ function CarPage() {
                       <img src={arrowBack} alt="" />
                     </button>
                     <button onClick={() => setCurrentPage(1)} className={currentPage === 1 ? 'active_page_button' : ''}>1</button>
-                    {(filteredCars.length / 5) > 1 && (
+                    {(filteredCars.length / itemPerPage) > 1 && (
                       <button onClick={() => setCurrentPage(2)} className={currentPage === 2 ? 'active_page_button' : ''}>2</button>
                     )}
-                    {(filteredCars.length / 5) > 2 && (
+                    {(filteredCars.length / itemPerPage) > 2 && (
                       <button onClick={() => setCurrentPage(3)} className={currentPage === 3 ? 'active_page_button' : ''}>3</button>
                     )}
-                    {(filteredCars.length / 5) > 4 && <button disabled>...</button>}
-                    {(filteredCars.length / 5) > 3 && (
-                      <button onClick={() => setCurrentPage(Math.floor(filteredCars.length / 5) + 1)} className={currentPage === (Math.floor(filteredCars.length / 5) + 1) ? 'active_page_button' : ''}>
-                        {Math.floor(filteredCars.length / 5) + 1}
+                    {(filteredCars.length / itemPerPage) > 4 && <button disabled>...</button>}
+                    {(filteredCars.length / itemPerPage) > 3 && (
+                      <button onClick={() => setCurrentPage(Math.floor(filteredCars.length / itemPerPage) + 1)} className={currentPage === (Math.floor(filteredCars.length / itemPerPage) + 1) ? 'active_page_button' : ''}>
+                        {Math.floor(filteredCars.length / itemPerPage) + 1}
                       </button>
                     )}
-                    <button className='car_page_table_next' onClick={() => currentPage < Math.floor(filteredCars.length / 5) + 1 && setCurrentPage(currentPage + 1)}>
+                    <button className='car_page_table_next' onClick={() => currentPage < filteredCars.length / itemPerPage && setCurrentPage(currentPage + 1)}>
                       <img src={arrowForward} alt="" />
                     </button>
                   </div>
@@ -199,6 +251,13 @@ function CarPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         getCars={getCars}
+      />
+
+      <UpdateCarModal
+        isOpen={isUpdateModalOpen}
+        onClose={() => setIsUpdateModalOpen(false)}
+        getCars={getCars}
+        item={carToUpdate}
       />
 
       <ToastContainer 

@@ -10,7 +10,8 @@ interface accountItem{
     team:string;
     type:string;
     activation_date:string;
-    deactivation_date:string;
+    deactivation_date:string;   
+    status:string;
 }
 
 interface accountElementProps{
@@ -65,6 +66,10 @@ const Accounts_element: React.FC<accountElementProps> = ({item,isSelected,onSele
 
             <td className='accounts_element_type_cell'>
                 <span className='accounts_element_type'>{item.type??"-"}</span>
+            </td>
+
+            <td className='accounts_element_status_cell'>
+                <span className='accounts_element_status'>{item.status??"-"}</span>
             </td>
 
             <td className="accounts_element_actions_cell">

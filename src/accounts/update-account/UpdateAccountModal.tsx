@@ -96,7 +96,7 @@ const UpdateAccountModal: React.FC<UpdateAccountModalProps> = ({ isOpen, onClose
         role: '',
         email: '',
         password: '',
-        type: '',
+        type: 'permanent',
         activation_date: '',
         deactivation_date: ''
     });
@@ -170,7 +170,7 @@ const UpdateAccountModal: React.FC<UpdateAccountModalProps> = ({ isOpen, onClose
                     </select>
                 </div>
             </div>
-            <div className="update_account_modal_form_group">
+            {formData.type === "temporaire" && <div className="update_account_modal_form_group">
               <label className="startTime">Start Time</label>
               <input
               type="date"
@@ -179,7 +179,7 @@ const UpdateAccountModal: React.FC<UpdateAccountModalProps> = ({ isOpen, onClose
               onChange={handleChange}
               required
               />
-            </div>
+            </div>}
             
           </div>
 
@@ -197,7 +197,7 @@ const UpdateAccountModal: React.FC<UpdateAccountModalProps> = ({ isOpen, onClose
                   disabled={status === FETCH_STATUS.LOADING}
                 />
               </div>
-            <div className="update_account_modal_form_group">
+            {formData.type === "temporaire" && <div className="update_account_modal_form_group">
               <label className="finishTime">Finish Time</label>
               <input
               type="date"
@@ -206,7 +206,7 @@ const UpdateAccountModal: React.FC<UpdateAccountModalProps> = ({ isOpen, onClose
               onChange={handleChange}
               required
               />
-            </div>
+            </div>}
             
           </div>
 
@@ -256,9 +256,10 @@ const UpdateAccountModal: React.FC<UpdateAccountModalProps> = ({ isOpen, onClose
             <button 
               type="submit" 
               className="update_account_modal_submit"
+              id='submit_account'
               disabled={status === FETCH_STATUS.LOADING}
             >
-              {status === FETCH_STATUS.LOADING ? 'Adding...' : 'Add'}
+              {status === FETCH_STATUS.LOADING ? 'Updating...' : 'Update'}
             </button>
           </div>
         </form>

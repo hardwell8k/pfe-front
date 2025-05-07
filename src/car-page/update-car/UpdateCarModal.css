@@ -1,5 +1,5 @@
 /* AddCarModal.css */
-.add_car_modal_overlay {
+.update_car_modal_overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -12,7 +12,7 @@
     z-index: 1000;
   }
   
-  .add_car_modal {
+  .update_car_modal {
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -33,21 +33,21 @@
     }
   }
   
-  .add_car_modal_header {
+  .update_car_modal_header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
   }
   
-  .add_car_modal_header h2 {
+  .update_car_modal_header h2 {
     font-size: 20px;
     font-weight: 500;
     color: #111827;
     margin: 0;
   }
   
-  .add_car_modal_close {
+  .update_car_modal_close {
     background: none;
     border: none;
     cursor: pointer;
@@ -60,12 +60,12 @@
     transition: background-color 0.2s;
   }
   
-  .add_car_modal_close:hover {
+  .update_car_modal_close:hover {
     background-color: #f3f4f6;
     color: #111827;
   }
   
-  .add_car_modal_form {
+  .update_car_modal_form {
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -73,53 +73,51 @@
     margin-right: auto;
   }
   
-  .add_car_modal_form_row {
+  .update_car_modal_form_row {
     display: flex;
-    width: 100%;
     gap: 16px;
+    width: 100%;
   }
   
-  .add_car_modal_form_group {
+  .update_car_modal_form_group {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
   
-  .add_car_modal_form_group label {
+  .update_car_modal_form_group label {
     font-size: 14px;
     font-weight: 500;
     color: #374151;
-    min-width: fit-content;
   }
   
-  .add_car_modal_form_group input,
-  .add_car_modal_form_group select {
+  .update_car_modal_form_group input,
+  .update_car_modal_form_group select {
     padding: 10px 14px;
     border: 1px solid #d1d5db;
     border-radius: 6px;
     font-size: 14px;
     color: #1f2937;
     transition: border-color 0.2s, box-shadow 0.2s;
-    width: 100%;
   }
   
-  .add_car_modal_form_group input:focus,
-  .add_car_modal_form_group select:focus {
+  .update_car_modal_form_group input:focus,
+  .update_car_modal_form_group select:focus {
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
   }
   
-  .add_car_modal_form_group input::placeholder {
+  .update_car_modal_form_group input::placeholder {
     color: #9ca3af;
   }
   
-  .add_car_modal_select_wrapper {
+  .update_car_modal_select_wrapper {
     position: relative;
   }
   
-  .add_car_modal_select_wrapper::after {
+  .update_car_modal_select_wrapper::after {
     content: "";
     position: absolute;
     top: 50%;
@@ -131,7 +129,7 @@
     border-top: 5px solid #6b7280;
   }
   
-  .add_car_modal_form_group select {
+  .update_car_modal_form_group select {
     appearance: none;
     padding-right: 36px;
     cursor: pointer;
@@ -139,7 +137,7 @@
     background-color: white;
   }
   
-  .add_car_modal_actions {
+  .update_car_modal_actions {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
@@ -148,7 +146,7 @@
     margin-right: auto;
   }
 
-  #add_car_submit{
+  #update_car_submit{
     margin: 0;
     padding: 10px 18px;
     border-radius: 6px;
@@ -158,8 +156,8 @@
     transition: background-color 0.2s;
   }
   
-  .add_car_modal_cancel,
-  .add_car_modal_submit {
+  .update_car_modal_cancel,
+  .update_car_modal_submit {
     padding: 10px 18px;
     border-radius: 6px;
     font-size: 14px;
@@ -169,45 +167,45 @@
     width: 7rem;
   }
   
-  .add_car_modal_cancel {
+  .update_car_modal_cancel {
     background-color: white;
     color: #374151;
     border: 1px solid #d1d5db;
   }
   
-  .add_car_modal_cancel:hover {
+  .update_car_modal_cancel:hover {
     background-color: #f3f4f6;
   }
   
-  .add_car_modal_submit {
+  .update_car_modal_submit {
     background-color: #6366f1;
     color: white;
     border: none;
   }
   
-  .add_car_modal_submit:hover {
+  .update_car_modal_submit:hover {
     background-color: #4f46e5;
   }
   
   /* Disabled state styles */
-  .add_car_modal_form_group input:disabled,
-  .add_car_modal_form_group select:disabled {
+  .update_car_modal_form_group input:disabled,
+  .update_car_modal_form_group select:disabled {
     background-color: #f9fafb;
     cursor: not-allowed;
     opacity: 0.7;
   }
   
-  .add_car_modal_cancel:disabled,
-  .add_car_modal_submit:disabled,
-  .add_car_modal_close:disabled {
+  .update_car_modal_cancel:disabled,
+  .update_car_modal_submit:disabled,
+  .update_car_modal_close:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
   
-  .add_car_modal_submit:disabled {
+  .update_car_modal_submit:disabled {
     background-color: #a5a6f6;
   }
   
-  .add_car_modal_cancel:disabled {
+  .update_car_modal_cancel:disabled {
     background-color: #f3f4f6;
   }

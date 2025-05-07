@@ -76,6 +76,7 @@
   .add_account_modal_form_row {
     display: flex;
     gap: 16px;
+    width: 100%;
   }
   
   .add_account_modal_form_group {
@@ -83,6 +84,9 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    width: 50%;
+    min-width: 50%;
+    max-width: 50%;
   }
   
   .add_account_modal_form_group label {
@@ -99,6 +103,7 @@
     font-size: 14px;
     color: #1f2937;
     transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
   }
   
   .add_account_modal_form_group input:focus,
@@ -153,6 +158,7 @@
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s;
+    width: 5rem;
   }
 
   .add_account_modal_cancel,
@@ -185,7 +191,7 @@
     background-color: #4f46e5;
   }
   
-  /* Disabled state styles */
+
   .add_account_modal_form_group input:disabled,
   .add_account_modal_form_group select:disabled {
     background-color: #f9fafb;

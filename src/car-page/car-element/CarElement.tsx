@@ -15,9 +15,11 @@ interface CarElementProps{
     item:CarElement;
     isSelected:boolean;
     onselect:(id:number,isSelected:boolean)=>void;
+    setUpdate:(item:CarElement)=>void;
+    setIsUpdateModalOpen:(isOpen:boolean)=>void;
 }
 
-const CarElement:React.FC<CarElementProps> = ({item,isSelected,onselect})=>{
+const CarElement:React.FC<CarElementProps> = ({item,isSelected,onselect,setUpdate,setIsUpdateModalOpen})=>{
 
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -64,9 +66,7 @@ const CarElement:React.FC<CarElementProps> = ({item,isSelected,onselect})=>{
                     </button >
                     {dropdownOpen && (
                         <div className="car_element_dropdown_menu">
-                            <button className="dropdown_item">Edit</button>
-                            <button className="dropdown_item">Activate</button>
-                            <button className="dropdown_item">Deactivate</button>
+                            <button className="dropdown_item" onClick={()=>{setUpdate(item);setIsUpdateModalOpen(true)}}>Edit</button>
                         </div>
                     )}
                 </div>

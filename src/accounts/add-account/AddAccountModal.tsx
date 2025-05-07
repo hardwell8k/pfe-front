@@ -19,7 +19,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, getA
     role: '',
     email: '',
     password: '',
-    type: '',
+    type: 'permanent',
     activation_date: '',
     deactivation_date: ''
   });
@@ -71,7 +71,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, getA
         role: '',
         email: '',
         password: '',
-        type: '',
+        type: 'permanent',
         activation_date: '',
         deactivation_date: ''
     });
@@ -145,7 +145,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, getA
                     </select>
                 </div>
             </div>
-            <div className="add_account_modal_form_group">
+            {formData.type === "temporaire" && <div className="add_account_modal_form_group">
               <label className="startTime">Start Time</label>
               <input
               type="dateTime-local"
@@ -154,7 +154,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, getA
               onChange={handleChange}
               required
               />
-            </div>
+            </div>}
             
           </div>
 
@@ -172,7 +172,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, getA
                   disabled={status === FETCH_STATUS.LOADING}
                 />
               </div>
-            <div className="add_account_modal_form_group">
+            {formData.type === "temporaire" && <div className="add_account_modal_form_group">
               <label className="finishTime">Finish Time</label>
               <input
               type="dateTime-local"
@@ -181,7 +181,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, getA
               onChange={handleChange}
               required
               />
-            </div>
+            </div>}
             
           </div>
 

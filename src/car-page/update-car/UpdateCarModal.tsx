@@ -1,21 +1,43 @@
-import React, { useState } from 'react';
-import './AddCarModal.css';
+import React, { useEffect, useState } from 'react';
+import './UpdateCarModal.css';
 import { X } from 'lucide-react';
 import { FETCH_STATUS } from '../../fetchStatus';
+import { toast } from 'react-toastify';
 
-interface AddCarModalProps {
+interface CarElement {
+  ID: number;
+  nom: string;
+  matricule: string;
+  nbr_place: number;
+  categorie: string;
+}
+
+interface UpdateCarModalProps {
   isOpen: boolean;
   onClose: () => void;
   getCars: () => void;
+  item:CarElement;
 }
 
-const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) => {
+const UpdateCarModal: React.FC<UpdateCarModalProps> = ({ isOpen, onClose, getCars, item }) => {
   const [formData, setFormData] = useState({
-    nom: '',
-    matricule: '',
-    nbr_place: null,
-    categorie: 'Sedan'
+    nom: item.nom??"",
+    matricule: item.matricule??"",
+    nbr_place: item.nbr_place??0,
+    categorie: item.categorie??""
   });
+
+  useEffect(() => {
+    if (item) {
+      setFormData({
+        nom: item.nom??"",
+        matricule: item.matricule??"",
+        nbr_place: item.nbr_place??0,
+        categorie: item.categorie??""
+      });
+    }
+  }, [item]);
+
   const [status, setStatus] = useState<string>(FETCH_STATUS.IDLE);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -30,11 +52,12 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
     e.preventDefault();
     
     try {
+        const submitData = {...formData,ID:item.ID}
       setStatus(FETCH_STATUS.LOADING);      
-      const response = await fetch('http://localhost:5000/api/addCar', {
-        method: 'POST',
+      const response = await fetch('http://localhost:5000/api/updateCar', {
+        method: 'PUT',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submitData),
         credentials: 'include',
       });
       
@@ -43,15 +66,15 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
         throw { status: response.status, message: result.message };
       }
       
-      console.log("Car created successfully");
+      toast.success("Car created successfully");
       setStatus(FETCH_STATUS.SUCCESS);
       resetForm();
-      getCars(); // Refresh the car list
+      getCars();
       onClose();
     } catch (error: any) {
-      console.error("Error creating car:", error.message);
+      console.error("Error updating car:", error.message);
       setStatus(FETCH_STATUS.ERROR);
-      alert(`Error creating car: ${error.message || 'Unknown error'}`);
+      alert(`Error updating car: ${error.message || 'Unknown error'}`);
     }
   };
 
@@ -59,7 +82,7 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
     setFormData({
       nom: '',
       matricule: '',
-      nbr_place: null,
+      nbr_place: 0,
       categorie: 'Sedan'
     });
   };
@@ -67,12 +90,12 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
   if (!isOpen) return null;
 
   return (
-    <div className="add_car_modal_overlay">
-      <div className="add_car_modal">
-        <div className="add_car_modal_header">
+    <div className="update_car_modal_overlay">
+      <div className="update_car_modal">
+        <div className="update_car_modal_header">
           <h2>Vehicles</h2>
           <button 
-            className="add_car_modal_close" 
+            className="update_car_modal_close" 
             onClick={()=>{resetForm();onClose()}}
             disabled={status === FETCH_STATUS.LOADING}
           >
@@ -80,9 +103,9 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="add_car_modal_form">
-          <div className="add_car_modal_form_row">
-            <div className="add_car_modal_form_group">
+        <form onSubmit={handleSubmit} className="update_car_modal_form">
+          <div className="update_car_modal_form_row">
+            <div className="update_car_modal_form_group">
               <label htmlFor="nom">Name</label>
               <input
                 type="text"
@@ -96,7 +119,7 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
               />
             </div>
             
-            <div className="add_car_modal_form_group">
+            <div className="update_car_modal_form_group">
               <label htmlFor="matricule">Matricule</label>
               <input
                 type="text"
@@ -111,8 +134,8 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
             </div>
           </div>
           
-          <div className="add_car_modal_form_row">
-            <div className="add_car_modal_form_group">
+          <div className="update_car_modal_form_row">
+            <div className="update_car_modal_form_group">
               <label htmlFor="nbr_place">Number of places</label>
               <input
                 type="number"
@@ -127,9 +150,9 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
               />
             </div>
             
-            <div className="add_car_modal_form_group">
+            <div className="update_car_modal_form_group">
               <label htmlFor="categorie">Category</label>
-              <div className="add_car_modal_select_wrapper">
+              <div className="update_car_modal_select_wrapper">
                 <select
                   id="categorie"
                   name="categorie"
@@ -147,10 +170,10 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
             </div>
           </div>
           
-          <div className="add_car_modal_actions">
+          <div className="update_car_modal_actions">
             <button 
               type="button" 
-              className="add_car_modal_cancel" 
+              className="update_car_modal_cancel" 
               onClick={()=>{resetForm();onClose()}}
               disabled={status === FETCH_STATUS.LOADING}
             >
@@ -158,11 +181,11 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
             </button>
             <button 
               type="submit" 
-              id="add_car_submit"
-              className="add_car_modal_submit"
+              id="update_car_submit"
+              className="update_car_modal_submit"
               disabled={status === FETCH_STATUS.LOADING}
             >
-              {status === FETCH_STATUS.LOADING ? 'Adding...' : 'Add'}
+              {status === FETCH_STATUS.LOADING ? 'updating...' : 'update'}
             </button>
           </div>
         </form>
@@ -171,4 +194,4 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
   );
 };
 
-export default AddCarModal;
+export default UpdateCarModal;
