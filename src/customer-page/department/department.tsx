@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import './department.css'
 import { URLS } from '../../URLS';
+import { toast, ToastContainer } from 'react-toastify';
 
 function Department(props:any){
 
@@ -8,7 +9,7 @@ function Department(props:any){
         
         try {
             
-            data = {...data,"client_id":props.clientID,};
+            data = {...data,"client_id":props.clientID,num_tel:Number(data.num_tel)};
             
             
             const reponse = await fetch(`${URLS.ServerIpAddress}/api/addDepartment`,{
@@ -26,9 +27,8 @@ function Department(props:any){
             reset();
         } catch (error:any) {
             console.error("failed to add department",error.message)
-            alert("failed to add department");
-            alert(error.message);
-            alert(JSON.stringify(data));
+            toast.error("failed to add department");
+
         }
     }
 
@@ -76,6 +76,7 @@ function Department(props:any){
                     
             </div>
         </form>
+        <ToastContainer />
     </div>
 );
 }
