@@ -13,6 +13,7 @@ import arrowForward from '../assets/arrow_forward_black.svg';
 import AddAccountModal from './add-account/AddAccountModal';
 import UpdateAccountModal from './update-account/UpdateAccountModal';
 import deleteGreyImg from '../assets/delete_24dp_grey.svg';
+import { URLS } from '../URLS';
 
 interface accountItem{
 ID:number;
@@ -36,7 +37,7 @@ function Accounts_page(){
     const getAllAccounts = async() =>{
         try {
             setStatus(FETCH_STATUS.LOADING);
-            const reponse = await fetch("http://localhost:5000/api/getAcounts",{
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/getAcounts`,{
                 method:'GET',
                 headers:{'content-type':'application/json'},
                 credentials:'include',
@@ -60,7 +61,7 @@ function Accounts_page(){
     const deleteAccounts = async (ids: number[]) => {
         try {
           setStatus(FETCH_STATUS.LOADING);
-          const response = await fetch("http://localhost:5000/api/deleteAccount", {
+          const response = await fetch(`${URLS.ServerIpAddress}/api/deleteAccount`, {
             method: "DELETE",
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',

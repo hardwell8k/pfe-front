@@ -2,12 +2,18 @@ import './customer.css';
 
 function Customer(props:any){
     return(
-        <div className="customer_containing_div" onClick={()=>{props.setSelectedClient(props.client_id)}}>
+        <div className="customer_containing_div" onClick={()=>{if(props.selectedClient!==props.client_id){props.setSelectedClient(props.client_id)}else{props.setSelectedClient(-1)}}}>
             <div className='customer_containing_subdiv checkbox'>
-                <input type="checkbox" name='customer_checkbox' id='customer_checkbox'/>
+                <input 
+                type="checkbox"
+                name='customer_checkbox' 
+                id='customer_checkbox'
+                checked={props.isSelected}
+                onChange={(e)=>{props.onselect(props.client_id,e.target.checked)}}
+                />
             </div>
             <div className='customer_containing_subdiv'>
-                <h3>{props.id??"id"}</h3>
+                <h3>{props.client_id??"id"}</h3>
             </div>
             <div className='customer_containing_subdiv'>
                 <h3>{props.name??"name"}</h3>

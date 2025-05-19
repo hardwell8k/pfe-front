@@ -1,158 +1,488 @@
 import React, { useState, useEffect } from 'react';
 import './UpdateEquipment.css';
 import Sidebar from '../sidebar/Sidebar';
+import SubCategoryModal from './add-sub_category/SubCategoryModal';
+import CategoryModal from './add-category/CategoryModal';
+import { toast, ToastContainer } from 'react-toastify';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { URLS } from '../URLS';
+
+interface Category {
+  id: number;
+  nom: string;
+}
+
+interface SubCategory {
+  id: number;
+  nom: string;
+  category_id: number;
+}
+
+interface CategoriesAndSubCategories {
+  sub_category_id: number;
+  sub_category_name: string;
+  category_id: number;
+  category_name: string;
+}
+
+interface equipmentprops{
+  equipmentIds: number[]; 
+  nom: string; 
+  RFID: string; 
+  category_id: string; 
+  type: string; 
+  date_location: string; 
+  date_retour: string; 
+  prix: string; 
+  code_bar: string; 
+  fournisseur: string; 
+  sub_category_id: string; 
+  date_achat: string; 
+  details: string;
+  quantite: number
+  
+}
+
+const parseDate = (dateString: string) => {
+  if (!dateString) return '';
+  const [day, month, year] = dateString.split('/');
+  return `${year}-${month}-${day}`;
+};
 
 export default function UpdateEquipment() {
-  const [formData, setFormData] = useState({
-    equipmentId: '',
-    nom: '',
-    RFID: '',
-    price: '',
-    code_bar: '',
-    rentalDate: '',
-    returnDate: '',
+  const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state;
+
+  const [formData, setFormData] = useState<equipmentprops>({
+    equipmentIds: state?.ids,
+    nom: state?.item.nom,
+    RFID: state?.item.RFID,
+    category_id: state?.item.category_id,
+    type: state?.item.type,
+    date_location: state?.item.date_location,
+    date_retour: state?.item.date_retour,
+    prix: state?.item.prix,
+    code_bar: state?.item.code_bar,
+    fournisseur: state?.item.fournisseur,
+    sub_category_id: state?.item.sub_category_id,
+    date_achat: state?.item.date_achat,
+    details: state?.item.details,
+    quantite: state?.item.quantite
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const [categoriesAndSubCategories, setCategoriesAndSubCategories] = useState<CategoriesAndSubCategories[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+  const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCategoryDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target;
+    
+    if (value === "addNewSubCategory") {
+      setIsSubCategoryModalOpen(true);
+      e.target.value = formData.sub_category_id || "";
+    } else if(value === "addNewCategory"){
+      setIsCategoryModalOpen(true);
+      e.target.value = formData.category_id || "";
+    } else {
+      handleInputChange(e);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const submitData = {
+      const submitData = Object.fromEntries(Object.entries({
         ...formData,
-        rentalDate: formData.rentalDate ? new Date(formData.rentalDate).getTime() : '',
-        returnDate: formData.returnDate ? new Date(formData.returnDate).getTime() : '',
-      };
-      const response = await fetch(`http://localhost:5000/api/equipment/${formData.equipmentId}`, {
+        quantite: Number(formData.quantite),
+        prix: Number(formData.prix),
+        IDs: formData.equipmentIds,
+        date_location: formData.date_location ? new Date(formData.date_location).getTime() : '',
+        date_retour: formData.date_retour ? new Date(formData.date_retour).getTime() : '',
+        date_achat: formData.date_achat ? new Date(formData.date_achat).getTime() : ''
+      }).filter(([_, value]) => value !== '' && value !== null && value !== undefined));
+      console.log("formData",JSON.stringify(formData));
+      console.log("submitData",JSON.stringify(submitData));
+      const response = await fetch(`${URLS.ServerIpAddress}/api/updateEquipment`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submitData)
+        body: JSON.stringify(submitData),
+        credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to update equipment');
       await response.json();
-      setFormData({ equipmentId: '', nom: '', RFID: '', price: '', code_bar: '', rentalDate: '', returnDate: '' });
-      alert('Equipment updated successfully!');
+      setFormData({
+        equipmentIds: [], 
+        nom: '', 
+        RFID: '', 
+        category_id: '', 
+        type: '', 
+        date_location: '', 
+        date_retour: '', 
+        prix: '', 
+        code_bar: '', 
+        fournisseur: '', 
+        sub_category_id: '', 
+        date_achat: '', 
+        details: '',
+        quantite: 0
+      });
+      toast.success('Equipment updated successfully!');
+      navigate('/equipment');
     } catch (error: any) {
-      alert('Failed to update equipment: ' + error.message);
+      toast.error('Failed to update equipment: ' + error.message);
     }
   };
 
-  const fetchEquipmentDetails = async (id: string) => {
+  const getCategoriesAndSubCategories = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/equipment/${id}`);
-      if (!response.ok) throw new Error('Equipment not found');
-      const data = await response.json();
-      setFormData(prev => ({ ...prev, ...data }));
-    } catch (error: any) {
-      alert('Failed to fetch equipment details: ' + error.message);
+      const response = await fetch(`${URLS.ServerIpAddress}/api/getCategory`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch categories');
+      }
+  
+      const result = await response.json();
+      setCategoriesAndSubCategories(result.data);
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Failed to fetch categories and subcategories');
     }
   };
+
+  const handleCategoriesAndSubCategories = () => {
+    const tempCategories: Category[] = [];
+    const tempSubCategories: SubCategory[] = [];
+    
+    categoriesAndSubCategories.forEach((item: CategoriesAndSubCategories) => {
+      if(item.category_id && !tempCategories.some(cat => cat.id === item.category_id)) {
+        tempCategories.push({id: item.category_id, nom: item.category_name});
+      }
+      if(item.sub_category_id) {
+        tempSubCategories.push({
+          id: item.sub_category_id,
+          nom: item.sub_category_name,
+          category_id: item.category_id
+        });
+      }
+    });
+    
+    setCategories(tempCategories);
+    setSubCategories(tempSubCategories);
+  };
+
+  const handleSubCategoryAdded = () => {
+    getCategoriesAndSubCategories();
+  };
+
+  const handleCategoryAdded = () => {
+    getCategoriesAndSubCategories();
+  };
+
+  useEffect(() => {
+    getCategoriesAndSubCategories();
+  }, []);
+
+  useEffect(() => {
+    handleCategoriesAndSubCategories();
+  }, [categoriesAndSubCategories]);
+
+  useEffect(() => {
+    if(location.state&&location.state.item&&location.state.ids){
+      console.log("location.state",location.state.item);
+      setFormData({
+        equipmentIds: location.state.ids,
+        nom: location.state.item.nom,
+        RFID: location.state.item.RFID,
+        category_id: location.state.item.category_id,
+        type: location.state.item.type,
+        date_location: location.state.item.date_location,
+        date_retour: location.state.item.date_retour,
+        prix: location.state.item.prix,
+        code_bar: location.state.item.code_bar,
+        fournisseur: location.state.item.fournisseur,
+        sub_category_id: location.state.item.sub_category_id,
+        date_achat: location.state.item.date_achat,
+        details: location.state.item.details,
+        quantite: location.state.item.quantite
+      });
+    }
+  }, [location.state]);
 
   return (
-    <div className="aeq-dashboard-container">
+    <div className="dashboard-container">
       <Sidebar />
-      <div className="aeq-main-content">
-        <h1 className="aeq-page-title">Update Equipment</h1>
-        <div className="aeq-form-card">
+      <div className="main-content">
+        <h1 className="page-title">Update Equipment</h1>
+        
+        <div className="form-card">
+          <h2 className="form-title">Update Equipment</h2>
+          
           <form onSubmit={handleSubmit}>
-            <div className="aeq-form-grid">
+            <div className="form-grid">
+              {/* Left Column */}
               <div>
-                <div className="aeq-form-group">
-                  <label className="aeq-form-label">Equipment ID</label>
+                <div className="form-group">
+                  <label className="form-label">Equipment ID</label>
                   <input
                     type="text"
-                    name="equipmentId"
+                    name="quantite"
                     placeholder="Enter equipment ID"
-                    className="aeq-form-input"
-                    value={formData.equipmentId}
+                    className="form-input"
+                    value={formData.quantite}
                     onChange={handleInputChange}
-                    onBlur={(e) => e.target.value && fetchEquipmentDetails(e.target.value)}
+                    onBlur={handleInputChange}
                     required
                   />
                 </div>
-                <div className="aeq-form-group">
-                  <label className="aeq-form-label">Name</label>
+                
+                <div className="form-group">
+                  <label className="form-label">Name</label>
                   <input
                     type="text"
                     name="nom"
                     placeholder="Enter equipment name"
-                    className="aeq-form-input"
+                    className="form-input"
                     value={formData.nom}
                     onChange={handleInputChange}
-                    required
+                    
                   />
                 </div>
-                <div className="aeq-form-group">
-                  <label className="aeq-form-label">RFID</label>
+                
+                <div className="form-group">
+                  <label className="form-label">RFID</label>
                   <input
                     type="text"
                     name="RFID"
                     placeholder="Enter RFID"
-                    className="aeq-form-input"
+                    className="form-input"
                     value={formData.RFID}
                     onChange={handleInputChange}
-                    required
+                    
                   />
                 </div>
-                <div className="aeq-form-group">
-                  <label className="aeq-form-label">Rental Date</label>
-                  <input
-                    type="datetime-local"
-                    name="rentalDate"
-                    className="aeq-form-input"
-                    value={formData.rentalDate}
-                    onChange={handleInputChange}
-                  />
+                
+                <div className="form-group">
+                  <label className="form-label">Category</label>
+                  <div className="select-wrapper">
+                    <select
+                      name="category_id"
+                      className="form-select"
+                      value={formData.category_id}
+                      onChange={handleCategoryDropdownChange}
+                      
+                    >
+                      <option value="" disabled>Select category</option>
+                      {categories.map((category: Category) => (
+                        <option key={category.id} value={category.id}>{category.nom}</option>
+                      ))}
+                      <option value="addNewCategory">+Add New category</option>
+                    </select>
+                    <div className="select-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
+                
+                <div className="form-group">
+                  <label className="form-label">Type</label>
+                  <div className="select-wrapper">
+                    <select
+                      name="type"
+                      className="form-select"
+                      value={formData.type}
+                      onChange={handleInputChange}
+                    >
+                      <option value="" disabled>Select type</option>
+                      <option value="rented">Rented</option>
+                      <option value="purchased">Purchased</option>
+                    </select>
+                    <div className="select-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                
+                {(formData.type === 'rented') && (
+                  <>
+                    <div className="form-group">
+                      <label className="form-label">Rental Date</label>
+                      <div className="date-picker-wrapper">
+                        <input
+                          type="date"
+                          name="date_location"
+                          placeholder="Select date"
+                          className="form-input"
+                          value={formData.date_location}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
+              
+              {/* Right Column */}
               <div>
-                <div className="aeq-form-group">
-                  <label className="aeq-form-label">Price</label>
+                <div className="form-group">
+                  <label className="form-label">Price</label>
                   <input
                     type="text"
-                    name="price"
+                    name="prix"
                     placeholder="Enter price"
-                    className="aeq-form-input"
-                    value={formData.price}
+                    className="form-input"
+                    value={formData.prix}
                     onChange={handleInputChange}
-                    required
+                    
                   />
                 </div>
-                <div className="aeq-form-group">
-                  <label className="aeq-form-label">Barcode</label>
+                
+                <div className="form-group">
+                  <label className="form-label">Barcode</label>
                   <input
                     type="text"
                     name="code_bar"
                     placeholder="Enter barcode"
-                    className="aeq-form-input"
+                    className="form-input"
                     value={formData.code_bar}
                     onChange={handleInputChange}
-                    required
+                    
                   />
                 </div>
-                <div className="aeq-form-group">
-                  <label className="aeq-form-label">Return Date</label>
+                
+                <div className="form-group">
+                  <label className="form-label">Fournisseur</label>
                   <input
-                    type="datetime-local"
-                    name="returnDate"
-                    className="aeq-form-input"
-                    value={formData.returnDate}
+                    type="text"
+                    name="fournisseur"
+                    placeholder="Enter supplier"
+                    className="form-input"
+                    value={formData.fournisseur}
                     onChange={handleInputChange}
                   />
                 </div>
+                
+                <div className="form-group">
+                  <label className="form-label">Sub-Category</label>
+                  <div className="select-wrapper">
+                    <select
+                      name="sub_category_id"
+                      className="form-select"
+                      value={formData.sub_category_id}
+                      onChange={handleCategoryDropdownChange}
+                    >
+                      <option value="" disabled>Select sub-category</option>
+                      {subCategories.map((subCategory: SubCategory) => (
+                        <option key={subCategory.id} value={subCategory.id}>{subCategory.nom}</option>
+                      ))}
+                      <option value="addNewSubCategory">+Add New subcategorie</option>
+                    </select>
+                    <div className="select-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                
+                {(formData.type === 'rented') && (
+                  <div className="form-group">
+                    <label className="form-label">Return Date</label>
+                    <div className="date-picker-wrapper">
+                      <input
+                        type="date"
+                        name="date_retour"
+                        placeholder="Select date"
+                        className="form-input"
+                        value={formData.date_retour}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </div>
+                )}
+                
+                {(formData.type === 'purchased') && (
+                  <div className="form-group">
+                    <label className="form-label">Purchase Date</label>
+                    <div className="date-picker-wrapper">
+                      <input
+                        type="date"
+                        name="date_achat"
+                        placeholder="Select date"
+                        className="form-input"
+                        value={formData.date_achat}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-            <div className="aeq-buttons-container">
-              <button type="submit" className="aeq-submit-button">
+            
+            {/* Specific Details - Full Width */}
+            <div className="form-group">
+              <label className="form-label">Specific Details</label>
+              <textarea
+                name="details"
+                placeholder="Details"
+                rows={4}
+                className="form-textarea"
+                value={formData.details}
+                onChange={handleInputChange}
+              ></textarea>
+            </div>
+            
+            {/* Submit Button */}
+            <div className="button-container">
+              <button
+                type="submit"
+                className="submit-button"
+              >
                 Update Equipment
               </button>
             </div>
           </form>
         </div>
       </div>
+
+      <SubCategoryModal 
+        isOpen={isSubCategoryModalOpen}
+        onClose={() => setIsSubCategoryModalOpen(false)}
+        onSubCategoryAdded={handleSubCategoryAdded}
+        categories={categories}
+      />
+      
+      <CategoryModal 
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        onCategoryAdded={handleCategoryAdded}
+      />
+      
+      <ToastContainer 
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+      />
     </div>
   );
-} 
+}

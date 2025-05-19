@@ -1,77 +1,126 @@
-import React, { useState } from 'react';
-import { Calendar } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+//import { Calendar } from 'lucide-react';
 import Sidebar from '../sidebar/Sidebar';
 import './AddEquipment.css';
+import SubCategoryModal from './add-sub_category/SubCategoryModal';
+import CategoryModal from './add-category/CategoryModal';
+import { toast, ToastContainer} from 'react-toastify';
+import { useLocation } from 'react-router-dom';
+import { URLS } from '../URLS';
 
-// Add date formatting utility functions
-const formatDate = (dateString: string) => {
+
+/*const formatDate = (dateString: string) => {
   if (!dateString) return '';
   const [year, month, day] = dateString.split('-');
   return `${day}/${month}/${year}`;
-};
+};*/
 
 const parseDate = (dateString: string) => {
   if (!dateString) return '';
-  const [day, month, year] = dateString.split('/');
+  const [year, month, day] = dateString.split('-');
   return `${year}-${month}-${day}`;
 };
 
+
+interface Category {
+  id: number;
+  nom: string;
+}
+
+interface SubCategory {
+  id: number;
+  nom: string;
+  category_id: number;
+}
+
+interface CategoriesAndSubCategories {
+  sub_category_id: number;
+  sub_category_name: string;
+  category_id: number;
+  category_name: string;
+}
+
+
+
 export default function AddEquipment() {
-  // State for form inputs
+  
+  const location = useLocation();
+  
+
   const [formData, setFormData] = useState({
     nom: '',
     RFID: '',
     category: '',
-    type: '',
-    rentalDate: '',
-    returnDate: '',
-    price: '',
+    type: 'achete',
+    date_location: '',
+    date_retour: '',
+    prix: '',
     code_bar: '',
     fournisseur: '',
-    purchaseDate: '',
+    date_achat: '',
     details: '',
-    subcategorie: ''
+    subcategorie: '',
+    quantite: 0
   });
 
-  // State to track which date picker is open
-  const [activeDatePicker, setActiveDatePicker] = useState(null);
+  
+  /*const [activeDatePicker, setActiveDatePicker] = useState(null);*/
 
   const handleInputChange = (e:any) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleDateInputClick = (fieldName:any) => {
+  /*const handleDateInputClick = (fieldName:any) => {
     setActiveDatePicker(fieldName);
-  };
+  };*/
 
-  // Update the date input handler
-  const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
+  
+  /*const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
     const value = e.target.value;
     handleInputChange({
       target: { name: fieldName, value: value }
     });
-    setActiveDatePicker(null); // Close the dropdown when a date is selected
+    setActiveDatePicker(null); 
+  };*/
+  
+  const handleCategoryDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target;
+    
+    if (value === "addNewSubCategory") {
+      setIsSubCategoryModalOpen(true);
+      e.target.value = formData.subcategorie || "";
+    } else if(value === "addNewCategory"){
+      setIsCategoryModalOpen(true);
+      e.target.value = formData.category || "";
+    } else {
+      handleInputChange(e);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-      // Create a copy of formData with parsed dates
-      const submitData = {
+      
+      const submitData = Object.fromEntries(Object.entries({
         ...formData,
-        rentalDate: formData.rentalDate ? parseDate(formData.rentalDate) : '',
-        returnDate: formData.returnDate ? parseDate(formData.returnDate) : '',
-        purchaseDate: formData.purchaseDate ? parseDate(formData.purchaseDate) : ''
-      };
-
-      const response = await fetch('http://localhost:5000/api/equipment', {
+        prix: Number(formData.prix),
+        quantite: Number(formData.quantite),
+        category: Number(formData.category),
+        sub_category: Number(formData.subcategorie),
+        date_location: formData.date_location ? parseDate(formData.date_location) : '',
+        date_retour: formData.date_retour ? parseDate(formData.date_retour) : '',
+        date_achat: formData.date_achat ? parseDate(formData.date_achat) : ''
+      }).filter(([_, value]) => value !== '' && value !== null && value !== undefined));
+      console.log("submitData : ",JSON.stringify(submitData, null, 2));
+      const response = await fetch(`${URLS.ServerIpAddress}/api/addEquipment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(submitData)
+        body: JSON.stringify(submitData),
+        credentials: 'include',
       });
   
       if (!response.ok) {
@@ -81,28 +130,116 @@ export default function AddEquipment() {
       const result = await response.json();
       console.log('Equipment added successfully:', result);
       
-      // Clear form
+      
       setFormData({
         nom: '',
         RFID: '',
         category: '',
         type: '',
-        rentalDate: '',
-        returnDate: '',
-        price: '',
+        date_location: '',
+        date_retour: '',
+        prix: '',
         code_bar: '',
         fournisseur: '',
         subcategorie: '',
-        purchaseDate: '',
+        date_achat: '',
         details: '',
+        quantite: 0
       });
   
-      alert('Equipment added successfully!');
+      toast.success('Equipment added successfully!');
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to add equipment');
+      toast.error('Failed to add equipment');
     }
   };
+
+  const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const handleSubCategoryAdded = () => {
+    getCategoriesAndSubCategories();
+  };
+
+  const handleCategoryAdded = () => {
+    getCategoriesAndSubCategories();
+  };
+  
+
+
+  const [categoriesAndSubCategories, setCategoriesAndSubCategories] = useState<CategoriesAndSubCategories[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+
+  const getCategoriesAndSubCategories = async () => {
+    try {
+
+      const response = await fetch(`${URLS.ServerIpAddress}/api/getCategory`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to add equipment');
+      }
+  
+      const result = await response.json();
+
+      setCategoriesAndSubCategories(result.data);
+      console.log(result.data);
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Failed to fetch categories and subcategories');
+    }
+  };
+
+  const handleCategoriesAndSubCategories = () => {
+    const tempCategories:Category[] = [];
+    const tempSubCategories:SubCategory[] = [];
+    categoriesAndSubCategories.forEach((item:CategoriesAndSubCategories) => {
+      if(item.category_id){
+        tempCategories.push({id:item.category_id,nom:item.category_name});
+      }
+      if(item.sub_category_id){
+        tempSubCategories.push({id:item.sub_category_id,nom:item.sub_category_name,category_id:item.category_id})
+      }
+  });
+  console.log(tempCategories);
+  console.log(tempSubCategories);
+    setCategories(tempCategories);
+    setSubCategories(tempSubCategories);
+  }
+
+  useEffect(() => {
+    getCategoriesAndSubCategories();
+  }, []);
+
+  useEffect(() => {
+    handleCategoriesAndSubCategories();
+  }, [categoriesAndSubCategories]);
+
+  useEffect(() => {
+    if(location.state&&location.state.item){
+      setFormData({
+        nom: location.state.item.nom,
+        RFID: location.state.item.RFID,
+        category: location.state.item.category_id,
+        type: location.state.item.type,
+        date_location: location.state.item.date_location,
+        date_retour: location.state.item.date_retour,
+        prix: location.state.item.prix,
+        code_bar: location.state.item.code_bar,
+        fournisseur: location.state.item.fournisseur,
+        subcategorie: location.state.item.sub_category_id,
+        date_achat: location.state.item.date_achat,
+        details: location.state.item.details,
+        quantite: location.state.item.quantite
+      });
+    }
+    console.log(location.state);
+  }, [location.state]);
 
   return (
     <div className="dashboard-container">
@@ -151,13 +288,14 @@ export default function AddEquipment() {
                       name="category"
                       className="form-select"
                       value={formData.category}
-                      onChange={handleInputChange}
+                      onChange={handleCategoryDropdownChange}
+                      required
                     >
                       <option value="" disabled>Select category</option>
-                      <option value="audio">Audio</option>
-                      <option value="video">Video</option>
-                      <option value="lighting">Lighting</option>
-                      <option value="staging">Staging</option>
+                      {categories.map((category:Category) => (
+                        <option key={category.id} value={category.id}>{category.nom}</option>
+                      ))}
+                      <option value="addNewCategory">+Add New category</option>
                     </select>
                     <div className="select-icon">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -177,8 +315,8 @@ export default function AddEquipment() {
                       onChange={handleInputChange}
                     >
                       <option value="" disabled>Select type</option>
-                      <option value="rented">Rented</option>
-                      <option value="purchased">Purchased</option>
+                      <option value="loue">Rented</option>
+                      <option value="achete">Purchased</option>
                     </select>
                     <div className="select-icon">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -187,19 +325,37 @@ export default function AddEquipment() {
                     </div>
                   </div>
                 </div>
+
+                {/* Show purchase date only if type is 'achete' or not selected */}
+                {(formData.type === 'achete') && (
+                  <div className="form-group">
+                    <label className="form-label">purchase date</label>
+                    <div className="date-picker-wrapper">
+                      <input
+                        type="date"
+                        name="date_achat"
+                        placeholder="Select date"
+                        className="form-input"
+                        value={formData.date_achat}
+                        onChange={handleInputChange}
+
+                      />
+                    </div>
+                  </div>
+                )}
                 
                 {/* Show rental date and return date only if type is 'rented' or not selected */}
-                {(formData.type === 'rented') && (
+                {(formData.type === 'loue') && (
                   <>
                     <div className="form-group">
                       <label className="form-label">rental date</label>
                       <div className="date-picker-wrapper">
                         <input
                           type="date"
-                          name="rentalDate"
+                          name="date_location"
                           placeholder="Select date"
                           className="form-input"
-                          value={formData.rentalDate}
+                          value={formData.date_location}
                           onChange={handleInputChange}
                         />
                       </div>
@@ -210,10 +366,10 @@ export default function AddEquipment() {
                       <div className="date-picker-wrapper">
                         <input
                           type="date"
-                          name="returnDate"
+                          name="date_retour"
                           placeholder="Select date"
                           className="form-input"
-                          value={formData.returnDate}
+                          value={formData.date_retour}
                           onChange={handleInputChange}
                         />
                       </div>
@@ -225,13 +381,13 @@ export default function AddEquipment() {
               {/* Right Column */}
               <div>
                 <div className="form-group">
-                  <label className="form-label">price</label>
+                  <label className="form-label">prix</label>
                   <input
-                    type="text"
-                    name="price"
-                    placeholder="Select price"
+                    type="number"
+                    name="prix"
+                    placeholder="Select prix"
                     className="form-input"
-                    value={formData.price}
+                    value={formData.prix}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -268,13 +424,13 @@ export default function AddEquipment() {
                       name="subcategorie"
                       className="form-select"
                       value={formData.subcategorie}
-                      onChange={handleInputChange}
+                      onChange={handleCategoryDropdownChange}
                     >
                       <option value="" disabled>Select category</option>
-                      <option value="audio">Audio</option>
-                      <option value="video">Video</option>
-                      <option value="lighting">Lighting</option>
-                      <option value="staging">Staging</option>
+                      {subCategories.map((subCategory:SubCategory) => (
+                        <option key={subCategory.id} value={subCategory.id}>{subCategory.nom}</option>
+                      ))}
+                      <option value="addNewSubCategory">+Add New subcategorie</option>
                     </select>
                     <div className="select-icon">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -284,25 +440,20 @@ export default function AddEquipment() {
                   </div>
                 </div>
 
+                <div className="form-group">
+                  <label className="form-label">quantite</label>
+                  <input
+                    type="number"
+                    name="quantite"
+                    placeholder="Select quantite"
+                    className="form-input"
+                    value={formData.quantite}
+                    onChange={handleInputChange}
+                  />
+                </div>
 
 
-                {/* Show purchase date only if type is 'purchased' or not selected */}
-                {(formData.type === 'purchased') && (
-                  <div className="form-group">
-                    <label className="form-label">purchase date</label>
-                    <div className="date-picker-wrapper">
-                      <input
-                        type="date"
-                        name="purchaseDate"
-                        placeholder="Select date"
-                        className="form-input"
-                        value={formData.purchaseDate}
-                        onChange={handleInputChange}
-
-                      />
-                    </div>
-                  </div>
-                )}
+                
               </div>
             </div>
             
@@ -331,6 +482,27 @@ export default function AddEquipment() {
           </form>
         </div>
       </div>
+
+      <SubCategoryModal 
+        isOpen={isSubCategoryModalOpen}
+        onClose={() => setIsSubCategoryModalOpen(false)}
+        onSubCategoryAdded={handleSubCategoryAdded}
+        categories={categories}
+      />
+      
+      <CategoryModal 
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        onCategoryAdded={handleCategoryAdded}
+      />
+      <ToastContainer 
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+      />
     </div>
   );
 }

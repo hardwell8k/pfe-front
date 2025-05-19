@@ -11,6 +11,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import deleteGreyImg from '../assets/delete_24dp_grey.svg';
 import UpdateCarModal from './update-car/UpdateCarModal';
+import { URLS } from '../URLS';
 
 interface CarElement {
   ID: number;
@@ -80,7 +81,7 @@ function CarPage() {
   const getCars = async () => {
     try {
       setStatus(FETCH_STATUS.LOADING);
-      const response = await fetch("http://localhost:5000/api/getAllCars", {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/getAllCars`, {
         method: "GET",
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -103,7 +104,7 @@ function CarPage() {
   const deleteCars = async (ids: number[]) => {
     try {
       setStatus(FETCH_STATUS.LOADING);
-      const response = await fetch("http://localhost:5000/api/deleteCar", {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/deleteCar`, {
         method: "DELETE",
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

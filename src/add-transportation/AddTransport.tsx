@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Sidebar from '../sidebar/Sidebar';
 import './AddTransport.css';
+import { URLS } from '../URLS';
 
 export default function AddTransport() {
   // State for form inputs
@@ -36,7 +37,7 @@ export default function AddTransport() {
         dateDebut: formData.dateDebut ? new Date(formData.dateDebut).getTime() : '',
       };
 
-      const response = await fetch('http://localhost:5000/api/transportation', {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/transportation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

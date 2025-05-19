@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { FETCH_STATUS } from '../../fetchStatus';
 import { toast } from 'react-toastify';
 import Cookies from 'js-cookie';
+import { URLS } from '../../URLS';
 
 
 interface AddAccountModalProps {
@@ -41,7 +42,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, getA
     
     try {
       setStatus(FETCH_STATUS.LOADING);      
-      const response = await fetch('http://localhost:5000/api/signUp', {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/signUp`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(formData),

@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import './department.css'
-
+import { URLS } from '../../URLS';
 
 function Department(props:any){
 
@@ -11,7 +11,7 @@ function Department(props:any){
             data = {...data,"client_id":props.clientID,};
             
             
-            const reponse = await fetch('http://localhost:5000/api/addDepartment',{
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/addDepartment`,{
                 method:"POST",
                 headers:{"Content-Type":"application/json"},
                 body:JSON.stringify(data),

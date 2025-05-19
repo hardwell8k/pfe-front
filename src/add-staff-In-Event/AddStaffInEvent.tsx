@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './AddStaffInEvent.css';
 import Sidebar from '../sidebar/Sidebar';
+import { URLS } from '../URLS';
 
 export default function AddStaffInEvent() {
   const [addMultiple, setAddMultiple] = useState(false);
@@ -35,7 +36,7 @@ export default function AddStaffInEvent() {
     e.preventDefault();
     
     try {
-      const response = await fetch('http://localhost:5000/api/agence-staff', {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/agence-staff`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

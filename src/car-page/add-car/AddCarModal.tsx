@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import './AddCarModal.css';
 import { X } from 'lucide-react';
 import { FETCH_STATUS } from '../../fetchStatus';
+import { toast } from 'react-toastify';
+import { URLS } from '../../URLS';
 
 interface AddCarModalProps {
   isOpen: boolean;
@@ -31,7 +33,7 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
     
     try {
       setStatus(FETCH_STATUS.LOADING);      
-      const response = await fetch('http://localhost:5000/api/addCar', {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/addCar`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(formData),
@@ -46,12 +48,12 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
       console.log("Car created successfully");
       setStatus(FETCH_STATUS.SUCCESS);
       resetForm();
-      getCars(); // Refresh the car list
+      getCars();
       onClose();
     } catch (error: any) {
       console.error("Error creating car:", error.message);
       setStatus(FETCH_STATUS.ERROR);
-      alert(`Error creating car: ${error.message || 'Unknown error'}`);
+      toast.error(`Error creating car: ${error.message || 'Unknown error'}`);
     }
   };
 

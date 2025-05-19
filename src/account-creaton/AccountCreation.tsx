@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Calendar } from 'lucide-react';
 import './AccountCreation.css'
 import Sidebar from '../sidebar/Sidebar';
-
+import { URLS } from '../URLS';
 export default function AccountCreation() {
   const [formData, setFormData] = useState({
     name: '',
@@ -23,7 +23,7 @@ export default function AccountCreation() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/accounts', {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/accounts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

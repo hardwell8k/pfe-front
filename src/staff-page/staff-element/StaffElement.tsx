@@ -1,7 +1,8 @@
 import moreHorizontalIcon from '../../assets/more_horiz_black.svg';
+import { URLS } from '../../URLS';
 import './StaffElement.css';
 
-import {useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function StaffElement(props:any){
@@ -10,7 +11,7 @@ function StaffElement(props:any){
     const deleteStaff = async ()=>{
         try {
           
-            const reponse = await fetch("http://localhost:5000/api/deleteStaff",{
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/deleteStaff`,{
                 method:"DELETE",
                 headers:{'Content-Type':'application/json'},
                 credentials:'include',
@@ -30,11 +31,26 @@ function StaffElement(props:any){
         }
       }
 
-
+    
     const [isOptionsVisible, setIsOptionsVisible] = useState(false);
     const [deleted,setDeleted] = useState(false);
+
+    const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+    function handleClickOutside(event: MouseEvent) {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            setIsOptionsVisible(false);
+        }
+      }
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+
     return(
-        <div className={`accounts_element_container ${deleted ? "deleted":""}`}>
+        <div className={`accounts_element_container ${deleted ? "deleted":""}`} onClick={()=>{if(props.selectedStaffId !== props.id){props.setSelectedStaffId(props.id)}else{props.setSelectedStaffId(0)}}}>
             
             {<div className='accounts_containing_subdiv checkbox'>
                 <input type="checkbox" name='equipment_checkbox' id='equipment_checkbox'/>
@@ -65,9 +81,9 @@ function StaffElement(props:any){
             </div>*/}
 
             <div className='accounts_containing_subdiv'>
-                <img src={moreHorizontalIcon} alt="" onClick={() => setIsOptionsVisible(!isOptionsVisible)}/>
+                <img src={moreHorizontalIcon} alt="" onClick={() => setIsOptionsVisible((prev)=>(!prev))}/>
             </div>
-            {isOptionsVisible && <div className='StaffElement_options_div'>
+            {isOptionsVisible && <div className='StaffElement_options_div' ref={dropdownRef}>
                 <h3 onClick={() => {navigate('/UpdateStaff',{state:{ID:props.id,nom:props.name,prenom:props.surname,num_tel:props.tel,email:props.email,team:props.team}})}}>edit</h3>
                 <h3 onClick={()=>{deleteStaff()}}>delete</h3>
             </div>}

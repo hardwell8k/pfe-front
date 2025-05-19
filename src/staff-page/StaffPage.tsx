@@ -1,8 +1,8 @@
 import Sidebar from '../sidebar/Sidebar';
 import { useEffect, useState } from 'react';
 import './StaffPage.css';
-import arrow_back from '../assets/arrow_back_black.svg';
-import arrow_forward from '../assets/arrow_forward_black.svg';
+import arrowBack from '../assets/arrow_back_black.svg';
+import arrowForward from '../assets/arrow_forward_black.svg';
 import searchIcon from '../assets/search_black.svg';
 import StaffElement from './staff-element/StaffElement';
 
@@ -22,6 +22,7 @@ import {
   } from 'chart.js';
 import Loading from '../loading/loading';
 import { useNavigate } from 'react-router-dom';
+import { URLS } from '../URLS';
 
   ChartJS.register(
     CategoryScale,
@@ -33,13 +34,32 @@ import { useNavigate } from 'react-router-dom';
     Legend
 );
 
+interface staffItem{
+    ID:number;
+    nom:string;
+    prenom:string;
+    departement:string;
+    email:string;
+    team:string;
+    role:string;
+    type:string;
+    num_tel:number;
+}
+
+interface participation{
+  evenement_id:number;
+  staff_id:number;
+  date_debut:string;
+  date_fin:string;
+}
+
 function StaffPage(){
     const navigate = useNavigate();
 
     const getAllStaff = async ()=>{
       try {
         setStatus(FETCH_STATUS.LOADING);
-        const reponse = await fetch("http://localhost:5000/api/getAllStaff",{
+        const reponse = await fetch(`${URLS.ServerIpAddress}/api/getAllStaff`,{
             method:"GET",
             headers:{'Content-Type':'application/json'},
             credentials:'include',
@@ -58,10 +78,68 @@ function StaffPage(){
         setStatus(FETCH_STATUS.ERROR)
       }
     }
+
+    const getParticipation = async ()=>{
+      try {
+        setStatus(FETCH_STATUS.LOADING);
+        const reponse = await fetch(`${URLS.ServerIpAddress}/api/getParticipation`,{
+            method:"GET",
+            headers:{'Content-Type':'application/json'},
+            credentials:'include',
+        });
+
+        const result = await reponse.json();
+        if(!result.success){
+            throw({status: reponse.status,message:result.message});
+        }
+        
+        setParticipationData(result.data);
+        setStatus(FETCH_STATUS.SUCCESS);
+      }catch (error:any) {
+        console.error("error while getting upcoming events",error.message);
+        alert(error.message);
+        setStatus(FETCH_STATUS.ERROR)
+      }
+    }
     
 
     const [status,setStatus] = useState(FETCH_STATUS.IDLE);
-    const [staff,setStaff] = useState([]);
+    const [staff,setStaff] = useState<staffItem[]>([]);
+    const [participationData,setParticipationData] = useState<participation[]>([]);
+    const [selectedStaffId,setSelectedStaffId] = useState<number>(0);
+    const [totalEvents,setTotalEvents] = useState<number[]>([0,0,0,0,0,0]);
+    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [filter, setFilter] = useState<string>("nom");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemPerPage = 7;
+
+    const IndexOfLastItem = itemPerPage * currentPage;
+    const IndexOfFirstItem = IndexOfLastItem - itemPerPage;
+
+
+    const filteredStaff = staff.filter((item)=>{
+      
+        switch(filter){ 
+          case "nom":
+            const staff_name = item.nom + " " + item.prenom;
+            return(staff_name&&(staff_name).toLowerCase().includes(searchTerm.toLowerCase()));
+          case "email":
+            return(item.email&&(item.email).toLowerCase().includes(searchTerm.toLowerCase()));
+          case "role":
+            return(item.role&&(item.role).toLowerCase().includes(searchTerm.toLowerCase()));
+          case "team":
+            return(item.team&&(item.team).toLowerCase().includes(searchTerm.toLowerCase()));
+          case "depatement":
+            return(item.departement&&(item.departement).toLowerCase().includes(searchTerm.toLowerCase()));
+          case "num_tel":
+            return(item.num_tel&&String(item.num_tel).toLowerCase().includes(searchTerm.toLowerCase()));
+          default:
+            return(item.nom&&(item.nom).toLowerCase().includes(searchTerm.toLowerCase()));
+        }
+    });
+
+    const shownStaff = filteredStaff.slice(IndexOfFirstItem,IndexOfLastItem);
+
 
     useEffect(()=>{getAllStaff()},[]);
 
@@ -85,15 +163,77 @@ function StaffPage(){
           },
         },
     };
+     const [barLabels, setBarLabels] = useState<string[]>([]);
+     const [barData, setBarData] = useState<number[]>([]);
     
+    useEffect(()=>{getParticipation()},[]);
+
+    const getMonths = ()=>{
+      const monthOrder = [
+        "January", "February", "March", "April", "May", "June", 
+        "July", "August", "September", "October", "November", "December"
+      ];
     
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth();
+      const months = [];
     
+      for (let i = 5; i >=0; i--) {
+        const monthIndex = (currentMonth - i + 12) % 12;
+        months.push(monthOrder[monthIndex]);
+      }
+      setBarLabels(months);
+    }
+
+    const getBarData = ()=>{
+      const monthCount:any = {};
+
+      participationData.forEach((item)=>{
+        if(item.staff_id === selectedStaffId){
+          const month = (new Date(item.date_debut)).toLocaleString('en-US', { month: 'long' });
+          if(monthCount[month]){
+            monthCount[month]++;
+          }else{
+            monthCount[month] = 1;
+          }
+        }
+      })
+      const sortedCount = barLabels.map((month:any)=>monthCount[month]||0);
+      setBarData(sortedCount);
+    }
+
+    const getTotalEvents = ()=>{
+      const monthCount:any = {};
+      participationData.forEach((item)=>{
+        const month = (new Date(item.date_debut)).toLocaleString('en-US', { month: 'long' });
+        if(monthCount[month]){
+          monthCount[month]++;
+        }else{
+          monthCount[month] = 1;
+        }
+      })
+      const sortedCount = barLabels.map((month:any)=>monthCount[month]||0);
+      setTotalEvents(sortedCount);
+    }
+
+    useEffect(()=>{
+      getMonths();
+    },[participationData]);
+
+    useEffect(()=>{
+      getBarData();
+    },[selectedStaffId,barLabels]);
+
+    useEffect(()=>{
+      getTotalEvents();
+    },[participationData,barLabels]);
+
     const BarData = {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        labels: barLabels,
         datasets: [
           {
             label: 'participated events',
-            data: [5, 6, 6, 4, 1],
+            data: barData,
             backgroundColor: 'rgba(0, 68, 255, 0.6)',
             barPercentage: 0.6,
             categoryPercentage: 1.0,
@@ -101,7 +241,7 @@ function StaffPage(){
           },
           {
             label: 'total events',
-            data: [8, 7, 6, 9, 13],
+            data: totalEvents,
             backgroundColor: 'rgba(153, 102, 255, 0.3)',
             barPercentage: 0.6,
             categoryPercentage: 1.0,
@@ -164,14 +304,24 @@ function StaffPage(){
                     <div className='staff_search_filter_div'>
                         <div className='staff_serch_div'>
                             <img src={searchIcon} alt="" />
-                            <input type="text" placeholder='Search'/>
+                            <input 
+                            type="text" 
+                            placeholder='Search'
+                            value={searchTerm}
+                            onChange={(e)=>{setSearchTerm(e.target.value)}}
+                            />
                         </div>
-                        <select name="filter_staff" id="filter_staff">
+                        <select 
+                        name="filter_staff" 
+                        id="filter_staff"
+                        value={filter}
+                        onChange={(e)=>{setFilter(e.target.value)}}
+                        >
                             <option value="nom">nom</option>
-                            <option value="email">role</option>
-                            <option value="team">email</option>
-                            <option value="departement">team</option>
-                            
+                            <option value="depatement">depatement</option>
+                            <option value="email">email</option>
+                            <option value="team">team</option>
+                            <option value="num_tel">num_tel</option>
                         </select>
                     </div>
                 </div>
@@ -185,18 +335,31 @@ function StaffPage(){
                 </div>
                 <div className='staff_elements_div'>
                     {status === FETCH_STATUS.LOADING?<Loading/>
-                    :staff.map((item:any)=>(
-                        <StaffElement id={item.ID} name={item.nom} surname={item.prenom} departement={item.departement} email={item.email} team={item.team_nom} tel={item.num_tel}/>
+                    :shownStaff.map((item:any)=>(
+                        <StaffElement id={item.ID} name={item.nom} surname={item.prenom} departement={item.departement} email={item.email} team={item.team_nom} tel={item.num_tel} selectedStaffId={selectedStaffId} setSelectedStaffId={setSelectedStaffId}/>
                     ))}
                 </div>
                 <div className='staff_page_footer'>
-                    <button><img src={arrow_back} alt="" /></button>
-                    <button>1</button>
-                    {staff.length>1 && <button>2</button>}
-                    {staff.length>3 && <button>...</button>}
-                    {staff.length>2 && <button>{staff.length}</button>}
-                    <button><img src={arrow_forward} alt="" /></button>
-                </div>
+                        <button className='accounts_page_table_prev' onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}>
+                        <img src={arrowBack} alt="" />
+                        </button>
+                        <button onClick={() => setCurrentPage(1)} className={currentPage === 1 ? 'active_page_button' : ''}>1</button>
+                        {(filteredStaff.length / itemPerPage) > 1 && (
+                        <button onClick={() => setCurrentPage(2)} className={currentPage === 2 ? 'active_page_button' : ''}>2</button>
+                        )}
+                        {(filteredStaff.length / itemPerPage) > 2 && (
+                        <button onClick={() => setCurrentPage(3)} className={currentPage === 3 ? 'active_page_button' : ''}>3</button>
+                        )}
+                        {(filteredStaff.length / itemPerPage) > 4 && <button disabled>...</button>}
+                        {(filteredStaff.length / itemPerPage) > 3 && (
+                        <button onClick={() => setCurrentPage(Math.floor(filteredStaff.length / itemPerPage) + 1)} className={currentPage === (Math.floor(filteredStaff.length / itemPerPage) + 1) ? 'active_page_button' : ''}>
+                            {Math.floor(filteredStaff.length / itemPerPage) + 1}
+                        </button>
+                        )}
+                        <button className='accounts_page_table_next' onClick={() => currentPage < Math.floor(filteredStaff.length / itemPerPage) + 1 && setCurrentPage(currentPage + 1)}>
+                        <img src={arrowForward} alt="" />
+                        </button>
+                    </div>
                 </div>
 
             </div>

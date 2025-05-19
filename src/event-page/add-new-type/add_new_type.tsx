@@ -1,3 +1,4 @@
+import { URLS } from '../../URLS';
 import './add_new_type.css'
 import { useForm } from 'react-hook-form'
 
@@ -5,7 +6,7 @@ function Add_new_type (props:any){
 
     const submitNewType = async (data:any)=>{
         try{
-            const reponse = await fetch('http://localhost:5000/api/addEventType',{
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/addEventType`,{
                 method:"POST",
                 headers:{"Content-Type":"application/json"},
                 body:JSON.stringify(data),

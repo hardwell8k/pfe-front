@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './AddStaff.css';
 import Sidebar from '../sidebar/Sidebar';
+import { URLS } from '../URLS';
 
 export default function AddStaff() {
   const [formData, setFormData] = useState({
@@ -21,7 +22,7 @@ export default function AddStaff() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/staff', {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/staff`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

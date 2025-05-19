@@ -7,6 +7,7 @@ import { Search } from 'lucide-react';
 import HistoryEvent from './history-element/HistoryEvent'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { URLS } from '../URLS';
 
 
 interface HistoryItem {
@@ -37,7 +38,7 @@ function HistoryPage() {
   const getHistory = async () => {
     try {
       setStatus(FETCH_STATUS.LOADING);
-      const response = await fetch("http://localhost:5000/api/getEventsHistory", {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/getEventsHistory`, {
         method: "GET",
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

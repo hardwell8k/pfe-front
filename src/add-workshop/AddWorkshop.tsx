@@ -6,6 +6,7 @@ import InstructorModal from './add-instructor/InstructorModal';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { URLS } from '../URLS';
 
 interface instructorsData {
   ID: number;
@@ -60,7 +61,7 @@ export default function AddWorkshop() {
                           nbr_max_invite:Number(formData.nbr_max_invite),
                           instructeur_id: Number(formData.instructeur_id)
                         }
-      const response = await fetch('http://localhost:5000/api/addWorkshop', {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/addWorkshop`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -94,7 +95,7 @@ export default function AddWorkshop() {
 
   const getInstructors = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/getInstructorsForWorkshop', {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/getInstructorsForWorkshop`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

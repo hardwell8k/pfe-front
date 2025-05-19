@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { URLS } from "../../URLS";
 
 interface EventFormData extends FieldValues {
     nom: string;
@@ -36,7 +37,7 @@ function Event_creation_form(props:any,ref:any){
         try {
             
             setClient_interfaceStatus(FETCH_STATUS.LOADING);
-            const reponse = await fetch('http://localhost:5000/api/getAllClients',{
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/getAllClients`,{
                 method:'GET',
                 headers:{"Content-Type":"application/json"},
                 credentials: 'include',
@@ -63,7 +64,7 @@ function Event_creation_form(props:any,ref:any){
             props.setStatus(FETCH_STATUS.LOADING);
              
             console.log("trying to create");
-            const reponse = await fetch('http://localhost:5000/api/addEvent',{
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/addEvent`,{
                 method:'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(data),
@@ -88,7 +89,7 @@ function Event_creation_form(props:any,ref:any){
 
     const getEventTypes = async ()=>{
         try{
-            const reponse = await fetch('http://localhost:5000/api/getEventTypes',{
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/getEventTypes`,{
                 method:'GET',
                 headers:{'Content-Type':'application/json'},
                 credentials: 'include',
@@ -126,7 +127,7 @@ function Event_creation_form(props:any,ref:any){
         try {
             props.setStatus(FETCH_STATUS.LOADING);
             
-            const reponse = await fetch('http://localhost:5000/api/updateEvent',{
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/updateEvent`,{
                 method:'PUT',
                 headers:{'Content-Type':'application/json'},
                 body:JSON.stringify({...data,"ID":id}),
@@ -160,7 +161,7 @@ function Event_creation_form(props:any,ref:any){
     const deleteEvent = async(id:number)=>{
         try {
             props.setStatus(FETCH_STATUS.LOADING);
-            const reponse = await fetch('http://localhost:5000/api/deleteEvent',{
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/deleteEvent`,{
                 method:'DELETE',
                 headers:{'Content-Type':'application/json'},
                 body:JSON.stringify({"ID":id}),
@@ -229,7 +230,7 @@ function Event_creation_form(props:any,ref:any){
         }
     }
 
-    const {register,control,getValues,setValue,reset,handleSubmit,watch,formState:{ errors }} = useForm<EventFormData>();
+    const {register,control,getValues,setValue,handleSubmit,watch,formState:{ errors }} = useForm<EventFormData>();
 
     const [EventTypes,setEventTypes] = useState<string[]>([]);
     const [newTypeIsVisible,setNewTypeIsvisible] =useState(false);

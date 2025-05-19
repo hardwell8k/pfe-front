@@ -1,7 +1,7 @@
 .equipment_page_container{
     background-color: #f8f9fa;
     min-height: 100vh;
-    position: fixed;
+    position: absolute;
     right: 0;
     top: 0;
     width: calc(100vw - 50px);
@@ -11,6 +11,7 @@
     padding: 32px;
     box-sizing: border-box;
     align-items: center;
+    overflow-y: auto;
 }
 
 .equipment_page_container > * {
