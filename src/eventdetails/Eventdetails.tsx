@@ -16,13 +16,13 @@ export default function Eventdetails() {
 
 
   const items = [
-    { title: 'Staff', icon: '🫁', highlighted: true, path: '/staff' },
-    { title: 'Equipment', icon: '👜', path: '/equipment' },
+    { title: 'Staff', icon: '🫁', highlighted: true, path: '/event-staff' },
+    { title: 'Equipment', icon: '👜', path: '/event-equipment' },
     { title: 'Workshops/presentations', icon: '📊', path: '/addworkshop' },
     { title: 'Location', icon: '📍', highlighted: true, path: '/location' },
     { title: 'Soirée', icon: '🎉', path: '/addSoiree' },
     { title: 'Transportation', icon: '🚗', highlighted: true, path: '/addTransport' },
-    { title: 'Accommodation', icon: '🏨', path: '/addUserAccomodation' },
+    { title: 'Accommodation', icon: '🏨', path: '/addAccomodation' },
     { title: 'Break', icon: '☕', path: '/addPause' },
   ];
 

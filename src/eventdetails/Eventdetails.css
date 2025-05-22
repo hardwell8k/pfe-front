@@ -7,7 +7,11 @@
 
 .evd-main-content {
   flex: 1;
-  padding: 2rem;
+  
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 0.8rem;
+  padding-bottom: 0rem;
   overflow: auto;
 }
 

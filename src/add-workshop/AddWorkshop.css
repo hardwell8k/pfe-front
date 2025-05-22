@@ -68,12 +68,14 @@
 }
 
 .add-workshop-form-input {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
+  width: 20rem;
+  padding: 0.75rem;
   border: 1px solid #d1d5db;
   border-radius: 0.375rem;
   outline: none;
-  height: 40px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  
 }
 
 .add-workshop-form-input:focus {
@@ -157,4 +159,3 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   padding-right: 0.5rem;  
   
 }
-

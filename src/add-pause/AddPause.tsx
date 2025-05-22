@@ -4,7 +4,7 @@ import './AddPause.css';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const formatDate = (dateString: string) => {
   if (!dateString) return '';
@@ -20,6 +20,7 @@ const parseDate = (dateString: string) => {
 
 export default function AddPause() {
   const location = useLocation();
+  const navigate = useNavigate();
   const evenement_id = useRef<number | null>(null);
 
   useEffect(() => {
@@ -63,6 +64,10 @@ export default function AddPause() {
     } catch (error: any) {
       toast.error('Failed to add break: ' + error.message);
     }
+  };
+
+  const navigateToPauses = () => {
+    navigate('/in-pauses');
   };
 
   return (
@@ -139,6 +144,9 @@ export default function AddPause() {
             <div className="ap-buttons-container">
               <button type="submit" className="ap-submit-button">
                 Add Break
+              </button>
+              <button type="button" className="ap-check-button" onClick={navigateToPauses}>
+                Check Pauses
               </button>
             </div>
           </form>

@@ -325,3 +325,23 @@
 .ap-form-group.details-center input {
   margin-bottom: 1rem;
 }
+
+.ap-check-button {
+  padding: 0.85rem 2rem;
+  background: linear-gradient(90deg, #4f46e5 0%, #2563eb 100%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(80,80,80,0.08);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+  margin-left: 15px;
+}
+
+.ap-check-button:hover {
+  background: linear-gradient(90deg, #2563eb 0%, #4f46e5 100%);
+  box-shadow: 0 6px 24px rgba(80,80,80,0.13);
+  transform: translateY(-2px) scale(1.03);
+}

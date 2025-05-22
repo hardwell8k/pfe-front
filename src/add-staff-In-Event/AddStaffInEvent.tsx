@@ -1,262 +1,295 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import './AddStaffInEvent.css';
-import Sidebar from '../sidebar/Sidebar';
 
-export default function AddStaffInEvent() {
-  const [addMultiple, setAddMultiple] = useState(false);
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    contact: '+216',
+interface Staff {
+  ID: number;
+  nom: string;
+  prenom: string;
+  email: string;
+  role: string;
+}
+
+interface Event {
+  ID: number;
+  nom: string;
+}
+
+interface FormData {
+  fullName: string;
+  email: string;
+  agency: string;
+  role: string;
+  startDate: string;
+  endDate: string;
+  salary: string;
+  count?: string;
+}
+
+interface ApiResponse {
+  success: boolean;
+  data?: any;
+  message?: string;
+}
+
+function AddStaffInEvent() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [staff, setStaff] = useState<Staff[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isMultiple, setIsMultiple] = useState(false);
+  const [selectedStaff, setSelectedStaff] = useState<number[]>([]);
+  const [formData, setFormData] = useState<FormData>({
+    fullName: '',
     email: '',
-    department: '',
+    agency: '',
     role: '',
-    agence: '',
-    number: ''  // Added number field
+    startDate: '',
+    endDate: '',
+    salary: '',
+    count: ''
   });
 
-  const handleInputChange = (e: any) => {
-    const { name, value } = e.target;
+  useEffect(() => {
+    getStaff();
+    getEvents();
     
-    // Special handling for contact field
-    if (name === 'contact') {
-      // Only allow numbers and keep the +216 prefix
-      const numericValue = value.replace(/[^\d+]/g, '');
-      if (numericValue.startsWith('+216')) {
-        setFormData(prev => ({ ...prev, [name]: numericValue }));
+    // Check if we have data from navigation state
+    console.log('Location state:', location.state);
+    
+    if (location.state?.staffData) {
+      console.log('Setting form data from navigation state:', location.state.staffData);
+      const { fullName, email, agency, role, employees } = location.state.staffData;
+      setFormData(prev => ({
+        ...prev,
+        fullName,
+        email,
+        agency,
+        role
+      }));
+      if (employees) {
+        setIsMultiple(true);
+        setFormData(prev => ({
+          ...prev,
+          count: employees.toString()
+        }));
       }
-      return;
     }
+  }, [location.state]);
 
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const getStaff = async () => {
+    try {
+      const response = await axios.get<{ success: boolean; data: Staff[] }>('http://localhost:3000/api/staff');
+      if (response.data.success) {
+        setStaff(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching staff:', error);
+    }
+  };
+
+  const getEvents = async () => {
+    try {
+      const response = await axios.get<{ success: boolean; data: Event[] }>('http://localhost:3000/api/events');
+      if (response.data.success) {
+        setEvents(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     try {
-      const response = await fetch('http://localhost:5000/api/agence-staff', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to add staff member');
-      }
-
-      const result = await response.json();
-      console.log('Staff member added successfully:', result);
-      
-      // Clear form if not adding multiple
-      if (!addMultiple) {
-        setFormData({
-          firstName: '',
-          lastName: '',
-          contact: '+216',
-          email: '',
-          department: '',
-          role: '',
-          agence: '',
-          number: ''
+      if (isMultiple) {
+        // Handle multiple staff submission
+        const response = await axios.post<ApiResponse>('http://localhost:3000/api/staff-in-event/multiple', {
+          staffIds: selectedStaff,
+          role: formData.role,
+          startDate: formData.startDate,
+          endDate: formData.endDate,
+          salary: formData.salary
         });
+        if (response.data.success) {
+          navigate('/event-staff');
+        }
+      } else {
+        // Handle single staff submission
+        const response = await axios.post<ApiResponse>('http://localhost:3000/api/staff-in-event', {
+          fullName: formData.fullName,
+          email: formData.email,
+          agency: formData.agency,
+          role: formData.role,
+          startDate: formData.startDate,
+          endDate: formData.endDate,
+          salary: formData.salary
+        });
+        if (response.data.success) {
+          navigate('/event-staff');
+        }
       }
-
-      alert('Staff member added successfully!');
     } catch (error) {
-      console.error('Error:', error);
-      alert('Failed to add staff member');
+      console.error('Error submitting form:', error);
     }
   };
 
+  const handleStaffSelect = (staffId: number) => {
+    setSelectedStaff(prev => {
+      if (prev.includes(staffId)) {
+        return prev.filter(id => id !== staffId);
+      } else {
+        return [...prev, staffId];
+      }
+    });
+  };
+
   return (
-    <div className="dashboard-container">
-      <Sidebar/>
-      <div className="main-content">
-        <h1 className="page-title">Add Staff</h1>
-        
-        <div className="form-card">
-          <div className="multiple-checkbox">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={addMultiple}
-                onChange={(e) => setAddMultiple(e.target.checked)}
-              />
-              Add Multiple
-            </label>
-          </div>
-          
+    <div className="asie-dashboard-container">
+      <div className="asie-main-content">
+        <h1 className="asie-page-title">Add Staff to Event</h1>
+        <div className="asie-form-card">
           <form onSubmit={handleSubmit}>
-            <div className="form-grid">
-              {/* Left Column */}
-              <div>
-                {!addMultiple && (
-                  <>
-                    <div className="form-group">
-                      <label className="form-label">First Name</label>
-                      <input
-                        type="text"
-                        name="firstName"
-                        placeholder="Enter first name"
-                        className="form-input"
-                        value={formData.firstName}
-                        onChange={handleInputChange}
-                        required={!addMultiple}
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label">Last Name</label>
-                      <input
-                        type="text"
-                        name="lastName"
-                        placeholder="Enter last name"
-                        className="form-input"
-                        value={formData.lastName}
-                        onChange={handleInputChange}
-                        required={!addMultiple}
-                      />
-                    </div>
-                  </>
-                )}
-
-                <div className="form-group">
-                  <label className="form-label">Contact</label>
-                  <input
-                    type="tel"
-                    name="contact"
-                    placeholder="+216"
-                    className="form-input"
-                    value={formData.contact}
-                    onChange={handleInputChange}
-                    pattern="\\+216[0-9]{8}"
-                    title="Phone number must start with +216 followed by 8 digits"
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Enter email address"
-                    className="form-input"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-
-                {addMultiple && (
-                  <div className="form-group">
-                    <label className="form-label">Number</label>
+            <div className="asie-form-grid">
+              {!isMultiple && (
+                <>
+                  <div className="asie-form-group">
+                    <label className="asie-form-label">Full Name</label>
                     <input
                       type="text"
-                      name="number"
-                      placeholder="Enter number"
-                      className="form-input"
-                      value={formData.number}
+                      name="fullName"
+                      value={formData.fullName}
                       onChange={handleInputChange}
-                      required={addMultiple}
+                      className="asie-form-input"
+                      required
                     />
                   </div>
-                )}
-              </div>
-
-              {/* Right Column */}
-              <div>
-                {!addMultiple && (
-                  <div className="form-group">
-                    <label className="form-label">Department</label>
-                    <div className="select-wrapper">
-                      <select
-                        name="department"
-                        className="form-select"
-                        value={formData.department}
-                        onChange={handleInputChange}
-                        required={!addMultiple}
-                      >
-                        <option value="" disabled>Select department</option>
-                        <option value="technical">Technical</option>
-                        <option value="operations">Operations</option>
-                        <option value="management">Management</option>
-                        <option value="logistics">Logistics</option>
-                      </select>
-                      <div className="select-icon">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <div className="form-group">
-                  <label className="form-label">Role</label>
-                  <div className="select-wrapper">
-                    <select
-                      name="role"
-                      className="form-select"
-                      value={formData.role}
+                  <div className="asie-form-group">
+                    <label className="asie-form-label">Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
                       onChange={handleInputChange}
+                      className="asie-form-input"
                       required
-                    >
-                      <option value="" disabled>Select role</option>
-                      <option value="manager">Manager</option>
-                      <option value="supervisor">Supervisor</option>
-                      <option value="technician">Technician</option>
-                      <option value="operator">Operator</option>
-                    </select>
-                    <div className="select-icon">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </div>
+                    />
                   </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Agence</label>
-                  <div className="select-wrapper">
-                    <select
-                      name="agence"
-                      className="form-select"
-                      value={formData.agence}
+                  <div className="asie-form-group">
+                    <label className="asie-form-label">Agency</label>
+                    <input
+                      type="text"
+                      name="agency"
+                      value={formData.agency}
                       onChange={handleInputChange}
+                      className="asie-form-input"
                       required
-                    >
-                      <option value="" disabled>Select agence</option>
-                      <option value="tunis">Tunis</option>
-                      <option value="sfax">Sfax</option>
-                      <option value="sousse">Sousse</option>
-                      <option value="bizerte">Bizerte</option>
-                    </select>
-                    <div className="select-icon">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </div>
+                    />
                   </div>
-                </div>
+                </>
+              )}
+              <div className="asie-form-group">
+                <label className="asie-form-label">Role</label>
+                <input
+                  type="text"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleInputChange}
+                  className="asie-form-input"
+                  required
+                />
               </div>
+              <div className="asie-form-group">
+                <label className="asie-form-label">Start Date</label>
+                <input
+                  type="date"
+                  name="startDate"
+                  value={formData.startDate}
+                  onChange={handleInputChange}
+                  className="asie-form-input"
+                  required
+                />
+              </div>
+              <div className="asie-form-group">
+                <label className="asie-form-label">End Date</label>
+                <input
+                  type="date"
+                  name="endDate"
+                  value={formData.endDate}
+                  onChange={handleInputChange}
+                  className="asie-form-input"
+                  required
+                />
+              </div>
+              <div className="asie-form-group">
+                <label className="asie-form-label">Salary</label>
+                <input
+                  type="number"
+                  name="salary"
+                  value={formData.salary}
+                  onChange={handleInputChange}
+                  className="asie-form-input"
+                  required
+                />
+              </div>
+              {isMultiple && (
+                <div className="asie-form-group">
+                  <label className="asie-form-label">Count</label>
+                  <input
+                    type="number"
+                    name="count"
+                    value={formData.count}
+                    onChange={handleInputChange}
+                    className="asie-form-input"
+                    required
+                    min="1"
+                  />
+                </div>
+              )}
             </div>
 
-            {/* Submit Button */}
-            <div className="button-container">
-              <button
-                type="submit"
-                className="submit-button"
-              >
-                Add Staff
-              </button>
+            
+
+            <div className="asie-form-actions">
+            <div className="asie-multiple-checkbox">
+                <input
+                  type="checkbox"
+                  id="multiple"
+                  checked={isMultiple}
+                  onChange={(e) => setIsMultiple(e.target.checked)}
+                  className="asie-checkbox-input"
+                />
+                <label htmlFor="multiple" className="asie-checkbox-label"></label>
+                <span>Add Multiple Staff</span>
+              </div>
+              <div className="asie-button-group">
+                <button type="submit" className="asie-submit-button">
+                  Add Staff
+                </button>
+                <button 
+                  type="button" 
+                  className="asie-back-button"
+                  onClick={() => navigate('/event-staff')}
+                >
+                  Go Back
+                </button>
+              </div>
+
             </div>
           </form>
         </div>
       </div>
     </div>
   );
-} 
+}
+
+export default AddStaffInEvent; 
