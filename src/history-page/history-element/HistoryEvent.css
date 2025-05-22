@@ -126,6 +126,10 @@
     border-radius: 4px;
     transition: background-color 0.2s, color 0.2s;
   }
+
+  .history_event_more_actions:focus{
+    outline: none;
+  }
   
   .history_event_more_actions:hover {
     background-color: #f0f0f0;

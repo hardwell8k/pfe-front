@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import "./client_departments.css"
 import ClientDepartment from "./client_department/client_department";
 import { URLS } from "../../../URLS";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ClientDepartments(props:any){
 
@@ -11,10 +13,10 @@ function ClientDepartments(props:any){
         try {
             //alert("trying to get client department");
             //alert(JSON.stringify({user_id:props.clientID}));
-            const reponse = await fetch(`${URLS.ServerIpAddress}/api/getClientDepartments`,{
-                method:'POST',
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/getClientDepartments/${props.clientID}`,{
+                method:'GET',
                 headers:{"Content-Type":"application/json"},
-                body:JSON.stringify({client_id:props.clientID}),
+                //body:JSON.stringify({client_id:props.clientID}),
                 credentials:'include'
             });
 
@@ -33,12 +35,29 @@ function ClientDepartments(props:any){
     useEffect(()=>{getClientDepartments()},[])
 
     return(
-        departments.length > 0 && <div className="client_departments_div">
-            {departments.map((item:any)=>(
-                <ClientDepartment nom={item.nom} department={item.department} num_tel={item.num_tel} email={item.email}/>
-            ))}
-        </div>
-        
+        <>
+            {departments.length > 0 && <div className="client_departments_div">
+                {departments.map((item:any)=>(
+                    <ClientDepartment 
+                        key={item.ID}
+                        ID={item.ID}
+                        nom={item.nom} 
+                        department={item.department} 
+                        num_tel={item.num_tel} 
+                        email={item.email}
+                        onUpdate={getClientDepartments}
+                    />
+                ))}
+            </div>}
+            <ToastContainer 
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                pauseOnHover
+            />
+        </>
     )
 }
 

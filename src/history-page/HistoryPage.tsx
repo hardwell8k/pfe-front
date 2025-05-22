@@ -113,26 +113,26 @@ function HistoryPage() {
             <thead>
               <tr>
                 <th className='history_page_checkbox_header'>
-                  <input 
+                  {/*<input 
                     type="checkbox" 
                     checked={isAllSelected}
                     onChange={handleSelectAll}
-                  />
+                  />*/}
                 </th>
                 <th className='history_page_phone_header'>
-                  phone number <span className='history_page_sort_icon'>↓</span>
+                  phone number 
                 </th>
                 <th className='history_page_name_header'>
-                  Name <span className='history_page_sort_icon'>↓</span>
+                  Name 
                 </th>
                 <th className='history_page_event_header'>
-                  event <span className='history_page_sort_icon'>↓</span>
+                  event 
                 </th>
                 <th className='history_page_date_header'>
-                  Date <span className='history_page_sort_icon'>↓</span>
+                  Date 
                 </th>
                 <th className='history_page_status_header'>
-                  Type <span className='history_page_sort_icon'>↓</span>
+                  Type 
                 </th>
                 <th className='history_page_email_header'>email</th>
                 <th className='history_page_actions_header'></th>
@@ -169,98 +169,6 @@ function HistoryPage() {
   );
 }
 
-// Mock data for development and demo purposes
-const mockData: HistoryItem[] = [
-  {
-    ID: '876364',
-    num_tel: 876364,
-    client_nom: 'Google',
-    event_nom: 'InnovateFest',
-    date: '12 Dec, 2020',
-    type: 'finance',
-    email: 'google@gmail.com'
-  },
-  {
-    ID: '876133',
-    num_tel: 876133,
-    client_nom: 'amazon',
-    event_nom: 'Smart Money',
-    date: '10 Dec, 2020',
-    type: 'finance',
-    email: 'amazon@gmail.com'
-  },
-  {
-    ID: '876213',
-    num_tel: 876213,
-    client_nom: 'charles Schwab',
-    event_nom: 'Code Clash',
-    date: '09 Dec, 2020',
-    type: 'technology',
-    email: 'charlesschwab@gmail.com'
-  },
-  {
-    ID: '876987',
-    num_tel: 876987,
-    client_nom: 'vanguard',
-    event_nom: 'InnovateFest',
-    date: '09 Dec, 2020',
-    type: 'e-commerce',
-    email: 'vanguard@gmail.com'
-  },
-  {
-    ID: '871345',
-    num_tel: 871345,
-    client_nom: 'apple',
-    event_nom: 'Stock Market',
-    date: '10 Dec, 2020',
-    type: 'finance',
-    email: 'apple@gmail.com'
-  },
-  {
-    ID: '872345',
-    num_tel: 872345,
-    client_nom: 'paypal',
-    event_nom: 'Smart Money',
-    date: '10 Dec, 2020',
-    type: 'finance',
-    email: 'paypal@gmail.com'
-  },
-  {
-    ID: '873346',
-    num_tel: 873346,
-    client_nom: 'microsoft',
-    event_nom: 'Code Clash',
-    date: '10 Dec, 2020',
-    type: 'technology',
-    email: 'microsoft@gmail.com'
-  },
-  {
-    ID: '873245',
-    num_tel: 873245,
-    client_nom: 'alibaba',
-    event_nom: 'Digital Retail',
-    date: '08 Dec, 2020',
-    type: 'e-commerce',
-    email: 'alibaba@gmail.com'
-  },
-  {
-    ID: '876364b',
-    num_tel: 876364,
-    client_nom: 'walmart',
-    event_nom: 'Stock Market',
-    date: '02 Dec, 2020',
-    type: 'finance',
-    email: 'walmart@gmail.com'
-  },
-  {
-    ID: '878760',
-    num_tel: 878760,
-    client_nom: 'tesla',
-    event_nom: 'Dropshipping',
-    date: '01 Dec, 2020',
-    type: 'e-commerce',
-    email: 'tesla@gmail.com'
-  }
-];
+
 
 export default HistoryPage;
