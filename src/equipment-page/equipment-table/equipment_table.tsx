@@ -54,7 +54,7 @@ interface SubCategory{
     sub_category_id:number;
 }
 
-function Equipment_table(){
+function Equipment_table(props:any){
     
 
     const getAllEquipment = async()=>{
@@ -67,13 +67,12 @@ function Equipment_table(){
                 minute: "2-digit",
                 hour12: false,
               }).replace(",", "");
-            const SubmitData = {timestamp:String(current_time)}
+            //const SubmitData = {timestamp:String(current_time)}
             //console.log(JSON.stringify(SubmitData));
             setStatus(FETCH_STATUS.LOADING);
-            const reponse = await fetch(`${URLS.ServerIpAddress}/api/getAllEquipment`,{
-                method:"POST",
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/getAllEquipment/${current_time}`,{
+                method:"GET",
                 headers:{'Content-Type':'application/json'},
-                body:JSON.stringify(SubmitData),
                 credentials:'include',
             });
     
@@ -90,10 +89,9 @@ function Equipment_table(){
             setStatus(FETCH_STATUS.ERROR)
         }
     }
+
+
     
-    const create_graph_data = (equipments:any)=>{
-        
-    }
 
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [equipments,setEquipments] = useState<Equipment[]>([]);
@@ -208,6 +206,7 @@ function Equipment_table(){
     console.log("compressedEquipments: ",JSON.stringify(compressedEquipments, null, 2));
     console.log("subCategories: ",JSON.stringify(subCategories, null, 2));*/
     console.log("selectedSubCategory: ",selectedSubCategory);
+
     return(
         <div className='equipment_table_containing_div'>
             
@@ -287,7 +286,7 @@ function Equipment_table(){
 
             </div>
 
-            <div className='equipment_table_elements_div'>
+            {/*<div className='equipment_table_elements_div'>
                 {status === FETCH_STATUS.LOADING?<Loading/>
                 :shownEquipment.map((item:any,index:number)=>{
                     return(<div key={index} onClick={()=>{if(selectedSubCategory !== index){setSelectedSubCategory(index)}else{setSelectedSubCategory(-1)}}}>
@@ -300,6 +299,92 @@ function Equipment_table(){
                         }))
                     }
                     </div>)
+                })}
+            </div>*/}
+
+
+            <div className='equipment_table_elements_div'>
+                {status === FETCH_STATUS.LOADING ? <Loading/> :
+                shownEquipment.map((item: any, index: number) => {
+                    return (
+                        <div key={index}>
+                            <div onClick={(e) => {
+                                if (item.isSubCategory) {
+                                    e.stopPropagation(); 
+                                    if (selectedSubCategory !== index) {
+                                        setSelectedSubCategory(index);
+                                    } else {
+                                        setSelectedSubCategory(-1);
+                                    }
+                                }
+                            }}>
+                                <Equipment_element 
+                                    key={index} 
+                                    index={index} 
+                                    id={item.ID} 
+                                    name={item.nom} 
+                                    categorie={item.category_name} 
+                                    type={item.type} 
+                                    quantite={item.quantite} 
+                                    disponibilite={item.disponibilite} 
+                                    details={item.details} 
+                                    ids={item.ids} 
+                                    category_id={item.category_id} 
+                                    sub_category_id={item.sub_category_id} 
+                                    date_location={item.date_location} 
+                                    date_retour={item.date_retour} 
+                                    prix={item.prix} 
+                                    code_bar={item.code_bar} 
+                                    fournisseur={item.fournisseur} 
+                                    date_achat={item.date_achat} 
+                                    onselect={handleSelectItem} 
+                                    isSelected={selectedItems[item.ID]} 
+                                    setSelectedIds={setSelectedIds} 
+                                    setEquipementSelected={setEquipementSelected} 
+                                    equipementSelected={equipementSelected}
+                                    isSubCategory={item.isSubCategory} 
+                                />
+                            </div>
+                            
+                            
+                            {((selectedSubCategory === index) && (item.isSubCategory)) && (
+                                <div style={{ marginLeft: '20px' }}> 
+                                    {compressedEquipments.map((compresseditem: any, compressedindex: number) => {
+                                        if (compresseditem.sub_category_id === item.sub_category_id) {
+                                            return (
+                                                <Equipment_element 
+                                                    key={`compressed-${compressedindex}`} 
+                                                    index={1000 + compressedindex} 
+                                                    id={compresseditem.ID} 
+                                                    name={compresseditem.nom} 
+                                                    categorie={compresseditem.category_name} 
+                                                    type={compresseditem.type} 
+                                                    quantite={compresseditem.quantite} 
+                                                    disponibilite={compresseditem.disponibilite} 
+                                                    details={compresseditem.details} 
+                                                    ids={compresseditem.ids} 
+                                                    category_id={compresseditem.category_id} 
+                                                    sub_category_id={compresseditem.sub_category_id} 
+                                                    date_location={compresseditem.date_location} 
+                                                    date_retour={compresseditem.date_retour} 
+                                                    prix={compresseditem.prix} 
+                                                    code_bar={compresseditem.code_bar} 
+                                                    fournisseur={compresseditem.fournisseur} 
+                                                    date_achat={compresseditem.date_achat} 
+                                                    onselect={handleSelectItem} 
+                                                    isSelected={selectedItems[compresseditem.ID]} 
+                                                    setSelectedIds={setSelectedIds} 
+                                                    setEquipementSelected={setEquipementSelected} 
+                                                    equipementSelected={equipementSelected}
+                                                    isSubCategory={false} 
+                                                />
+                                            );
+                                        }
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    );
                 })}
             </div>
 

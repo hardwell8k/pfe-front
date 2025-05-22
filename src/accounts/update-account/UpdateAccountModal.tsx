@@ -68,7 +68,7 @@ const UpdateAccountModal: React.FC<UpdateAccountModalProps> = ({ isOpen, onClose
         const submitData = {...formData,ID:account.ID}
       setStatus(FETCH_STATUS.LOADING);      
       const response = await fetch(`${URLS.ServerIpAddress}/api/updateAccount`, {
-        method: 'POST',
+        method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(submitData),
         credentials: 'include',

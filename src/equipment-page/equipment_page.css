@@ -18,3 +18,10 @@
     
     width: 100%;
 }
+
+.equipment_page_container_header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 24px;
+}

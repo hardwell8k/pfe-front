@@ -57,7 +57,7 @@ function StaffElement(props:any){
             </div>}
 
             <div className='accounts_containing_subdiv'>
-                <h3>{props.name?`${props.name} ${props.surname}`:"nom"}</h3>
+                <h3>{props.name?`${props.name} ${props.surname?props.surname:""}`:"-"}</h3>
             </div>
 
             <div className='accounts_containing_subdiv'>
