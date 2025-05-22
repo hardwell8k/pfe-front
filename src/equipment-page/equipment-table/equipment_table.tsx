@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { Search } from 'lucide-react';
+import { useEffect, useState, useRef } from 'react';
 import Equipment_element from './equipment-element/equipment_element';
 import dropdown from '../../assets/arrow_drop_down_black.svg';
 import deleteIcon from '../../assets/delete_black.svg' ;
@@ -6,43 +7,205 @@ import filterIcon from '../../assets/filter_black.svg'
 import './equipment_table.css'
 import { FETCH_STATUS } from '../../fetchStatus';
 import Loading from '../../loading/loading';
+import DeleteEquipmentModal from '../delete-equipment/DeleteEquipmentModal';
 
 import arrow_back from '../../assets/arrow_back_black.svg';
 import arrow_forward from '../../assets/arrow_forward_black.svg';
+import printImg from '../../assets/cloud_download_black.svg';
+import { toast, ToastContainer } from 'react-toastify';
+import { URLS } from '../../URLS';
 
-function Equipment_table(){
+interface Equipment{
+    ID:number;
+    nom:string;
+    sub_category_id:number;
+    category_id:number;
+    type:string;
+    details:string;
+    category_name:string;
+    sub_category_name:string;
+    disponible:boolean;   
+    date_location: string; 
+    date_retour: string; 
+    prix: string; 
+    code_bar: string; 
+    fournisseur: string; 
+    date_achat: string; 
+    
+
+}
+interface compressedEquipment extends Equipment{
+    quantite:number;
+    ids:number[];
+    disponibilite:number;
+}
+interface selectedItems {
+    [key: string]: boolean;
+  }
+
+interface SubCategory{
+    ID:number;
+    nom:string;
+    category_id:number;
+    category_name:string;
+    quantite:number;
+    disponibilite:number;
+    isSubCategory:boolean;
+    sub_category_id:number;
+}
+
+function Equipment_table(props:any){
+    
 
     const getAllEquipment = async()=>{
         try {
-                    setStatus(FETCH_STATUS.LOADING);
-                    const reponse = await fetch("http://localhost:5000/api/getAllEquipment",{
-                        method:"POST",
-                        headers:{'Content-Type':'application/json'},
-                        credentials:'include',
-                    });
-        
-                    const result = await reponse.json();
-                    if(!result.success){
-                        throw({status: reponse.status,message:result.message});
-                    }
-                    
-                    setEquipments(result.data);
-                    setStatus(FETCH_STATUS.SUCCESS);
-                } catch (error:any) {
-                    console.error("error while getting upcoming events",error.message);
-                    alert(error.message);
-                    setStatus(FETCH_STATUS.ERROR)
-                }
-    }
+            const current_time = new Date().toLocaleString("en-CA", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              }).replace(",", "");
+            //const SubmitData = {timestamp:String(current_time)}
+            //console.log(JSON.stringify(SubmitData));
+            setStatus(FETCH_STATUS.LOADING);
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/getAllEquipment/${current_time}`,{
+                method:"GET",
+                headers:{'Content-Type':'application/json'},
+                credentials:'include',
+            });
     
-    const create_graph_data = (equipments:any)=>{
-        
+            const result = await reponse.json();
+            if(!result.success){
+                throw({status: reponse.status,message:result.message});
+            }
+            //console.log(result.data); //somehow fixes the graph taking the hole page problem
+            setEquipments(result.data);
+            setStatus(FETCH_STATUS.SUCCESS);
+        } catch (error:any) {
+            console.error("error while getting equipments",error.message);
+            toast.error("failed to get equipments");
+            setStatus(FETCH_STATUS.ERROR)
+        }
     }
 
-    const [equipments,setEquipments] = useState([]);
+
+    
+
+    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [equipments,setEquipments] = useState<Equipment[]>([]);
+    const [compressedEquipments,setCompressedEquipments] = useState<compressedEquipment[]>([]);
+    const [subCategories,setSubCategories] = useState<SubCategory[]>([]);
+    const [restOfEquipment,setRestOfEquipment] = useState<Equipment[]>([]);
+    const [selectedIds,setSelectedIds] = useState<number[]>([]);
+    const [equipementSelected,setEquipementSelected] = useState<{index:number,selected:boolean}>({index:-1,selected:false});
+    const [selectedItems, setSelectedItems] = useState<selectedItems>({});
     const [status,setStatus] = useState(FETCH_STATUS.IDLE);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemPerPage = 7;
+
+    const IndexOfLastItem = itemPerPage * currentPage;
+    const IndexOfFirstItem = IndexOfLastItem - itemPerPage;
+
+    const filteredEquipment = compressedEquipments.filter((item:any)=>{
+        return (item.nom.toLowerCase().includes(searchTerm.toLowerCase()));
+    });
+
+    const shownEquipment = [...subCategories,...restOfEquipment].slice(IndexOfFirstItem, IndexOfLastItem);
+    //console.log("shownEquipment : ",JSON.stringify(shownEquipment, null, 2));
+    const allSelected = shownEquipment.length > 0 && shownEquipment.every((item:any) => selectedItems[item.ID]);
+
+    const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isSelected = e.target.checked;
+        const tempSelectedItems: selectedItems = {};
+    
+        shownEquipment.forEach((item:any) => {
+          tempSelectedItems[item.ID] = isSelected;
+        });
+        setSelectedItems(tempSelectedItems);
+      };
+    
+      const handleSelectItem = (id: number, isSelected: boolean) => {
+        setSelectedItems((prev) => ({
+          ...prev,
+          [id]: isSelected,
+        }));
+      };
 
     useEffect(()=>{getAllEquipment()},[]);
+
+    const handleSubCategory = ()=>{
+        const tempSubCategories:SubCategory[] = [];
+        const tempRestOfEquipment:Equipment[] = [];
+        filteredEquipment.forEach((item:any)=>{
+            if(item.sub_category_id){
+                const existingSubCategor = tempSubCategories.find(subCategor => subCategor.ID === item.sub_category_id);
+                if(!existingSubCategor){
+                    tempSubCategories.push({ID:item.sub_category_id,nom:item.sub_category_name,category_id:item.category_id,category_name:item.category_name,quantite:item.quantite,disponibilite:item.disponibilite,isSubCategory:true,sub_category_id:item.sub_category_id});
+                }else{
+                    existingSubCategor.quantite += item.quantite;
+                    existingSubCategor.disponibilite += item.disponibilite;
+                }
+            }else{
+                tempRestOfEquipment.push(item);
+            }
+        });
+        setSubCategories(tempSubCategories);
+        setRestOfEquipment(tempRestOfEquipment);
+        //console.log("rest of equipment : ",JSON.stringify(tempRestOfEquipment, null, 2));
+        //console.log("sub categories : ",JSON.stringify(tempSubCategories, null, 2));
+    }
+
+    useEffect(()=>{handleSubCategory()},[searchTerm,compressedEquipments]);
+
+    const handleCompressedEquipment = ()=>{
+        const tempCompressedEquipments:compressedEquipment[] = [];
+        let disponibilite = 0;
+        equipments.forEach((item:Equipment)=>{
+            const tempCompressedEquipment = tempCompressedEquipments.find((compressedItem:compressedEquipment)=>compressedItem.nom === item.nom&&compressedItem.details === item.details);
+            if(item.disponible){
+                disponibilite=1;
+            }else{
+                disponibilite=0;
+            }
+            if(tempCompressedEquipment){
+                tempCompressedEquipment.quantite++;
+                tempCompressedEquipment.ids.push(item.ID);
+                tempCompressedEquipment.disponibilite = tempCompressedEquipment.disponibilite+disponibilite;
+            }else{
+                tempCompressedEquipments.push({...item,quantite:1,ids:[item.ID],disponibilite:disponibilite});
+            }
+        });
+        
+        setCompressedEquipments(tempCompressedEquipments);
+    }
+
+    useEffect(()=>{handleCompressedEquipment()},[equipments]);
+
+    const [isDeleteEquipmentModalOpen, setIsDeleteEquipmentModalOpen] = useState(false);
+    const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+    const filterDropdownRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (filterDropdownRef.current && !filterDropdownRef.current.contains(event.target as Node)) {
+                setIsFilterDropdownOpen(false);
+            }
+        }
+        if (isFilterDropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isFilterDropdownOpen]);
+
+    const [selectedSubCategory,setSelectedSubCategory] = useState<number>(-1);
+    /*console.log("shownEquipment: ",JSON.stringify(shownEquipment, null, 2));
+    console.log("compressedEquipments: ",JSON.stringify(compressedEquipments, null, 2));
+    console.log("subCategories: ",JSON.stringify(subCategories, null, 2));*/
+    console.log("selectedSubCategory: ",selectedSubCategory);
 
     return(
         <div className='equipment_table_containing_div'>
@@ -52,20 +215,41 @@ function Equipment_table(){
                 <div className='equipment_table_header_subdiv'>
                     <h3>Equipments</h3>
 
-                    <div className='search_equipments'>
-
+                    <div className='equipment_page_container_search'>
+                        <Search className='equipment_page_search_icon' size={20} />
+                        <input
+                        type="text"
+                        placeholder='Search'
+                        className='equipment_page_container_search_input'
+                        value={searchTerm}
+                        onChange={(e) => { setSearchTerm(e.target.value) }}
+                        />
                     </div>
 
-                    <div className='quiment_table_header_subdiv_buttons'>
-                        <button id='quiment_table_header_subdiv_delete_button'><img src={deleteIcon}/>delete</button>
-                        <button id='quiment_table_header_subdiv_filter_button'><img src={filterIcon}/>Filter</button>
-                        <button id='quiment_table_header_subdiv_print_button'></button>
+                    <div className='quiment_table_header_subdiv_buttons' style={{position: 'relative'}}>
+                        <button id='quiment_table_header_subdiv_delete_button' onClick={() =>{if(selectedIds.length > 0){setIsDeleteEquipmentModalOpen(true)}else{toast.error("Please select at least one equipment")}}}><img src={deleteIcon}/>delete</button>
+                        <button id='quiment_table_header_subdiv_filter_button' onClick={() => setIsFilterDropdownOpen((prev) => !prev)}><img src={filterIcon}/>Filter</button>
+                        <button id='quiment_table_header_subdiv_print_button'><img src={printImg}/>Print</button>
+                        {isFilterDropdownOpen && (
+                            <div ref={filterDropdownRef} className="equipment_table_filter_dropdown">
+                                <div className="dropdown_item">Category</div>
+                                <div className="dropdown_item">Type</div>
+                                <div className="dropdown_item">Availability</div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 <div className='equipment_table_header_names_subdiv'>
                     <div className='equipment_table_header_names_subdiv_subdiv checkbox'>
-                        <input type="checkbox" name='equipment_checkbox' id='equipment_checkbox'/>
+                        <input 
+                        type="checkbox"
+                         name='equipment_checkbox'
+                          id='equipment_checkbox'
+                          checked={allSelected}
+                          onChange={handleSelectAll}
+                          hidden={true}
+                          />
                     </div>
 
                     <div className='equipment_table_header_names_subdiv_subdiv'>
@@ -102,21 +286,145 @@ function Equipment_table(){
 
             </div>
 
-            <div className='equipment_table_elements_div'>
+            {/*<div className='equipment_table_elements_div'>
                 {status === FETCH_STATUS.LOADING?<Loading/>
-                :equipments.map((item:any)=>(
-                    <Equipment_element name={item.nom} categorie={item.category_nom} type={item.type_nom} quantite={item.quantity} disponibilite={item.disponibility} details={item.details}/>
-                ))}
+                :shownEquipment.map((item:any,index:number)=>{
+                    return(<div key={index} onClick={()=>{if(selectedSubCategory !== index){setSelectedSubCategory(index)}else{setSelectedSubCategory(-1)}}}>
+                    <Equipment_element key={index} index={index} id={item.ID} name={item.nom} categorie={item.category_name} type={item.type} quantite={item.quantite} disponibilite={item.disponibilite} details={item.details} ids={item.ids} category_id={item.category_id} sub_category_id={item.sub_category_id} date_location={item.date_location} date_retour={item.date_retour} prix={item.prix} code_bar={item.code_bar} fournisseur={item.fournisseur} date_achat={item.date_achat} onselect={handleSelectItem} isSelected={selectedItems[item.ID]} setSelectedIds={setSelectedIds} setEquipementSelected={setEquipementSelected} equipementSelected={equipementSelected}/>
+                    {((selectedSubCategory === index) && (item.isSubCategory)) && (
+                        compressedEquipments.map((compresseditem:any,compressedindex:number)=>{
+                            if(compresseditem.sub_category_id === item.sub_category_id){
+                                return(<Equipment_element key={compressedindex} index={compressedindex} id={compresseditem.ID} name={compresseditem.nom} categorie={compresseditem.category_name} type={compresseditem.type} quantite={compresseditem.quantite} disponibilite={compresseditem.disponibilite} details={compresseditem.details} ids={compresseditem.ids} category_id={compresseditem.category_id} sub_category_id={compresseditem.sub_category_id} date_location={compresseditem.date_location} date_retour={compresseditem.date_retour} prix={compresseditem.prix} code_bar={compresseditem.code_bar} fournisseur={compresseditem.fournisseur} date_achat={compresseditem.date_achat} onselect={handleSelectItem} isSelected={selectedItems[compresseditem.ID]} setSelectedIds={setSelectedIds} setEquipementSelected={setEquipementSelected} equipementSelected={equipementSelected}/>)
+                            }
+                        }))
+                    }
+                    </div>)
+                })}
+            </div>*/}
+
+
+            <div className='equipment_table_elements_div'>
+                {status === FETCH_STATUS.LOADING ? <Loading/> :
+                shownEquipment.map((item: any, index: number) => {
+                    return (
+                        <div key={index}>
+                            <div onClick={(e) => {
+                                if (item.isSubCategory) {
+                                    e.stopPropagation(); 
+                                    if (selectedSubCategory !== index) {
+                                        setSelectedSubCategory(index);
+                                    } else {
+                                        setSelectedSubCategory(-1);
+                                    }
+                                }
+                            }}>
+                                <Equipment_element 
+                                    key={index} 
+                                    index={index} 
+                                    id={item.ID} 
+                                    name={item.nom} 
+                                    categorie={item.category_name} 
+                                    type={item.type} 
+                                    quantite={item.quantite} 
+                                    disponibilite={item.disponibilite} 
+                                    details={item.details} 
+                                    ids={item.ids} 
+                                    category_id={item.category_id} 
+                                    sub_category_id={item.sub_category_id} 
+                                    date_location={item.date_location} 
+                                    date_retour={item.date_retour} 
+                                    prix={item.prix} 
+                                    code_bar={item.code_bar} 
+                                    fournisseur={item.fournisseur} 
+                                    date_achat={item.date_achat} 
+                                    onselect={handleSelectItem} 
+                                    isSelected={selectedItems[item.ID]} 
+                                    setSelectedIds={setSelectedIds} 
+                                    setEquipementSelected={setEquipementSelected} 
+                                    equipementSelected={equipementSelected}
+                                    isSubCategory={item.isSubCategory} 
+                                />
+                            </div>
+                            
+                            
+                            {((selectedSubCategory === index) && (item.isSubCategory)) && (
+                                <div style={{ marginLeft: '20px' }}> 
+                                    {compressedEquipments.map((compresseditem: any, compressedindex: number) => {
+                                        if (compresseditem.sub_category_id === item.sub_category_id) {
+                                            return (
+                                                <Equipment_element 
+                                                    key={`compressed-${compressedindex}`} 
+                                                    index={1000 + compressedindex} 
+                                                    id={compresseditem.ID} 
+                                                    name={compresseditem.nom} 
+                                                    categorie={compresseditem.category_name} 
+                                                    type={compresseditem.type} 
+                                                    quantite={compresseditem.quantite} 
+                                                    disponibilite={compresseditem.disponibilite} 
+                                                    details={compresseditem.details} 
+                                                    ids={compresseditem.ids} 
+                                                    category_id={compresseditem.category_id} 
+                                                    sub_category_id={compresseditem.sub_category_id} 
+                                                    date_location={compresseditem.date_location} 
+                                                    date_retour={compresseditem.date_retour} 
+                                                    prix={compresseditem.prix} 
+                                                    code_bar={compresseditem.code_bar} 
+                                                    fournisseur={compresseditem.fournisseur} 
+                                                    date_achat={compresseditem.date_achat} 
+                                                    onselect={handleSelectItem} 
+                                                    isSelected={selectedItems[compresseditem.ID]} 
+                                                    setSelectedIds={setSelectedIds} 
+                                                    setEquipementSelected={setEquipementSelected} 
+                                                    equipementSelected={equipementSelected}
+                                                    isSubCategory={false} 
+                                                />
+                                            );
+                                        }
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
             </div>
 
             <div className='equipment_table_footer_div'>
-                <button><img src={arrow_back} alt="" /></button>
-                <button>1</button>
-                {equipments.length>1 && <button>2</button>}
-                {equipments.length>3 && <button>...</button>}
-                {equipments.length>2 && <button>{equipments.length}</button>}
-                <button><img src={arrow_forward} alt="" /></button>
+                <button className='equipment_table_prev' onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}>
+                    <img src={arrow_back} alt="" />
+                </button>
+                <button onClick={() => setCurrentPage(1)} className={currentPage === 1 ? 'active_page_button' : ''}>1</button>
+                {(filteredEquipment.length / itemPerPage) > 1 && (
+                    <button onClick={() => setCurrentPage(2)} className={currentPage === 2 ? 'active_page_button' : ''}>2</button>
+                )}
+                {(filteredEquipment.length / itemPerPage) > 2 && (
+                    <button onClick={() => setCurrentPage(3)} className={currentPage === 3 ? 'active_page_button' : ''}>3</button>
+                )}
+                {(filteredEquipment.length / itemPerPage) > 4 && <button disabled>...</button>}
+                {(filteredEquipment.length / itemPerPage) > 3 && (
+                <button onClick={() => setCurrentPage(Math.floor(filteredEquipment.length / itemPerPage) + 1)} className={currentPage === (Math.floor(filteredEquipment.length / itemPerPage) + 1) ? 'active_page_button' : ''}>
+                    {Math.floor(filteredEquipment.length / itemPerPage) + 1}
+                </button>
+                )}
+                <button className='equipment_table_next' onClick={() => currentPage < filteredEquipment.length / itemPerPage && setCurrentPage(currentPage + 1)}>
+                  <img src={arrow_forward} alt="" />
+                </button>
             </div>
+            <DeleteEquipmentModal
+            isOpen={isDeleteEquipmentModalOpen}
+            onClose={() => setIsDeleteEquipmentModalOpen(false)}
+            getEquipment={getAllEquipment}
+            ids={selectedIds}
+            />
+
+            <ToastContainer 
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                pauseOnHover
+            />
+            
         </div>
     );
 }

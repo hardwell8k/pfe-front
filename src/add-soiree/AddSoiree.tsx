@@ -3,7 +3,10 @@ import Sidebar from '../sidebar/Sidebar';
 import './AddSoiree.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 import { useLocation, useNavigate } from 'react-router-dom';
+import { URLS } from '../URLS';
+
 
 export default function AddSoiree() {
   const location = useLocation();
@@ -38,7 +41,7 @@ export default function AddSoiree() {
         evenement_id: evenement_id.current,
         prix: Number(formData.prix),
       };
-      const response = await fetch('http://localhost:5000/api/addSoiree', {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/addSoiree`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(submitData),

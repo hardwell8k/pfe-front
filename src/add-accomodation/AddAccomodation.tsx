@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Sidebar from '../sidebar/Sidebar';
 import './AddAccomodation.css';
+import { URLS } from '../URLS';
 
 // Add date formatting utility functions
 const formatDate = (dateString: string) => {
@@ -38,7 +39,7 @@ export default function AddAccomodation() {
         dateDebut: formData.dateDebut ? new Date(formData.dateDebut).toISOString() : '',
         dateFin: formData.dateFin ? new Date(formData.dateFin).toISOString() : '',
       };
-      const response = await fetch('http://localhost:5000/api/accommodation', {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/accommodation`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(submitData)

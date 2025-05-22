@@ -80,7 +80,7 @@ function AddStaffInEvent() {
 
   const getStaff = async () => {
     try {
-      const response = await axios.get<{ success: boolean; data: Staff[] }>('http://localhost:3000/api/staff');
+      const response = await axios.get<{ success: boolean; data: Staff[] }>('${URLS.ServerIpAddress}/api/staff');
       if (response.data.success) {
         setStaff(response.data.data);
       }
@@ -91,7 +91,7 @@ function AddStaffInEvent() {
 
   const getEvents = async () => {
     try {
-      const response = await axios.get<{ success: boolean; data: Event[] }>('http://localhost:3000/api/events');
+      const response = await axios.get<{ success: boolean; data: Event[] }>('${URLS.ServerIpAddress}/api/events');
       if (response.data.success) {
         setEvents(response.data.data);
       }
@@ -113,7 +113,7 @@ function AddStaffInEvent() {
     try {
       if (isMultiple) {
         // Handle multiple staff submission
-        const response = await axios.post<ApiResponse>('http://localhost:3000/api/staff-in-event/multiple', {
+        const response = await axios.post<ApiResponse>('${URLS.ServerIpAddress}/api/staff-in-event/multiple', {
           staffIds: selectedStaff,
           role: formData.role,
           startDate: formData.startDate,
@@ -125,7 +125,7 @@ function AddStaffInEvent() {
         }
       } else {
         // Handle single staff submission
-        const response = await axios.post<ApiResponse>('http://localhost:3000/api/staff-in-event', {
+        const response = await axios.post<ApiResponse>('${URLS.ServerIpAddress}/api/staff-in-event', {
           fullName: formData.fullName,
           email: formData.email,
           agency: formData.agency,

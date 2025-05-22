@@ -3,6 +3,7 @@ import './UpdateCarModal.css';
 import { X } from 'lucide-react';
 import { FETCH_STATUS } from '../../fetchStatus';
 import { toast } from 'react-toastify';
+import { URLS } from '../../URLS';
 
 interface CarElement {
   ID: number;
@@ -54,7 +55,7 @@ const UpdateCarModal: React.FC<UpdateCarModalProps> = ({ isOpen, onClose, getCar
     try {
         const submitData = {...formData,ID:item.ID}
       setStatus(FETCH_STATUS.LOADING);      
-      const response = await fetch('http://localhost:5000/api/updateCar', {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/updateCar`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(submitData),

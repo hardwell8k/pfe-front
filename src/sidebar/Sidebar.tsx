@@ -41,21 +41,26 @@ function Sidebar(){
 
     const navigate = useNavigate();
 
+    const user = Cookies.get('user');
+    const role = Cookies.get('role');
+    const userData = user ? JSON.parse(user) : null;
+    const nom = userData?.nom;
+    
+    
+    
+
     return(
         
         <div className="sidebarholder">
             <img id="logo" src={eventImg}></img>
             
             <ul>
-                
                 <li>
                     <Element imgUrl={eventImg} link="/event" name="event"/>
                 </li>
-
                 <li>
                     <Element imgUrl={clientImg} link="/customer" name="customer"/>
                 </li>
-
                 <li>
                     <span>
                         <Element imgUrl={equipmentImg} link="/equipment" name="equipment"/>
@@ -63,14 +68,11 @@ function Sidebar(){
                     </span>
                     <ul className={`sub_menu ${menuIsVisible.equipment? 'visible':''}`}>
                         <li><a href="/AddEquipment">add equipment</a></li>
-                        <li><a href="/UpdateEquipment">update equipment</a></li>
                     </ul>
                 </li>
-
                 <li>
                     <Element imgUrl={teamImg} link="/teamPage" name="Teams"/>
                 </li>
-
                 <li>
                     <span>
                         <Element imgUrl={staffImg} link="/staff" name="Staff"/>
@@ -78,20 +80,17 @@ function Sidebar(){
                     </span>
                     <ul className={`sub_menu ${menuIsVisible.staff? 'visible':''}`}>
                         <li><a href="/AddStaff">add staff</a></li>
-                        <li><a href="/UpdateStaff">update staff</a></li>
                     </ul>
                 </li>
 
                 <li>
                     <Element imgUrl={historyImg} link="/history" name="History"/>
                 </li>
-
                 <li>
                     <Element imgUrl={accountsImg} link="/Accounts" name="Accounts"/>
-                </li>
-                    <Element imgUrl={carImg} link="/car" name="car"/>
+                </li>                   
                 <li>
-
+                    <Element imgUrl={carImg} link="/car" name="car"/>
                 </li>
             </ul>
 
@@ -99,10 +98,10 @@ function Sidebar(){
                 <img id="setting" src={settingsImg} alt="problem" />
                 <img id="accountimg" src={staffImg} alt="problem"/>
                 <div className="username">
-                    <h3>Easin Arafat</h3>
-                    <p>Admin</p>
+                    <h3>{nom}</h3>
+                    <p>{role}</p>
                 </div>
-                <img src={logoutImg} alt="problem" onClick={()=>{Cookies.remove("isLogedIn",{secure:true,sameSite:"strict"});navigate("/")}}/>
+                <img src={logoutImg} alt="problem" onClick={()=>{Cookies.remove("isLogedIn",/*{secure:true,sameSite:"strict"}*/);navigate("/")}}/>
             </div>
         </div>
         

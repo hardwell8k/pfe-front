@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import './StaffUpdate.css';
 import Sidebar from '../sidebar/Sidebar';
+import { URLS } from '../URLS';
 
 export default function StaffUpdate() {
   const location = useLocation();
@@ -28,7 +29,7 @@ export default function StaffUpdate() {
     e.preventDefault();
     
     try {
-      const response = await fetch(`http://localhost:5000/api/updateStaff`, {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/updateStaff`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json',},
         credentials:'include',

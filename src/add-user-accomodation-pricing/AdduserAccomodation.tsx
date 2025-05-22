@@ -5,6 +5,7 @@ import Sidebar from '../sidebar/Sidebar';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FETCH_STATUS } from '../fetchStatus';
+import { URLS } from '../URLS';
 
 export default function AdduserAccomodation() {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ export default function AdduserAccomodation() {
     try {
       setStatus(FETCH_STATUS.LOADING);
       const submitData = {...formData,evenement_id:evenement_id.current,number:Number(formData.number),prix:Number(formData.prix)}
-      const response = await fetch('http://localhost:5000/api/addAccomodation', {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/addAccomodation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

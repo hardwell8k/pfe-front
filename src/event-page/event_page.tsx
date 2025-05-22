@@ -4,6 +4,7 @@ import Current_events from "./current-events/current_events";
 import Event_creation from "./event-creation/event_creation";
 //import Add_new_type from "./add-new-type/add_new_type";
 import { FETCH_STATUS } from "../fetchStatus";
+import { URLS } from "../URLS";
 
 import "./event_page.css"
 import { toast } from "react-toastify";
@@ -13,7 +14,7 @@ function Event_page(){
     const getUpcomingEvents = async ()=>{
         try {
             setStatus(FETCH_STATUS.LOADING);
-            const reponse = await fetch("http://localhost:5000/api/getUPcomingEvents",{
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/getUPcomingEvents`,{
                 method:"GET",
                 headers:{'Content-Type':'application/json'},
                 credentials:'include',

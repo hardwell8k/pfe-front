@@ -6,14 +6,15 @@ import Cookies from 'js-cookie';
 import './login_page.css';
 import Loading from '../loading/loading';
 import LeftImage from '../assets/Illustration.svg';
-
+import {toast, ToastContainer} from 'react-toastify';
+import { URLS } from '../URLS';
 
 function Login_page(){
     const navigate = useNavigate();
     const logIn = async (data:any)=>{
         try {
             setStatus(FETCH_STATUS.LOADING);
-            const reponse = await fetch("http://localhost:5000/api/LogIn",{
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/logIn`,{
                 method:"POST",
                 headers:{'Content-Type':'application/json'},
                 body:JSON.stringify({email:data.email,password:data.password}),
@@ -28,12 +29,16 @@ function Login_page(){
             
             setStatus(FETCH_STATUS.SUCCESS);
 
-            Cookies.set('isLogedIn',result.success,{expires:1/3,secure:true,sameSite:'strict'});
-            Cookies.set('role',result.data,{expires:1/3,secure:true,sameSite:'strict'})
+            Cookies.set('isLogedIn',result.success,{expires:1/3,sameSite:'lax'});
+            Cookies.set('role',(result.data).role,{expires:1/3,sameSite:'lax'});
+            Cookies.set("user", JSON.stringify(result.data), {expires: 1, sameSite: "lax",});
+            console.log("connected successfully");
+            console.log(Cookies.get("isLogedIn"));
+            console.log(Cookies.get("role"));
+            console.log(Cookies.get("user"));
             navigate('/firstPage');
         } catch (error:any) {
-            console.error("error while getting upcoming events",error.message);
-            alert(error.message);
+            toast.error("failed to log in",error.message);
             setStatus(FETCH_STATUS.ERROR)
         }
     }
@@ -68,6 +73,14 @@ function Login_page(){
                 <button type='submit'>Log In</button>
             </form>}
         </div>
+        <ToastContainer 
+            position="top-center"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            pauseOnHover
+        />
     </div>)
 }
 

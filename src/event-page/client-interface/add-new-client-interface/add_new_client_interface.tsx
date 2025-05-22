@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import Loading from '../../../loading/loading';
 import './add_new_client_interface.css'
+import { URLS } from '../../../URLS';
 
 function Add_new_client_interface(props:any){
 
@@ -11,7 +12,7 @@ function Add_new_client_interface(props:any){
         try {
             setStatus(FETCH_STATUS.LOADING);
             alert('adding client');
-            const reponse = await fetch('http://localhost:5000/api/addClient',{
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/addClient`,{
                 method:"POST",
                 headers:{"Content-type":"application/json"},
                 body: JSON.stringify(data),

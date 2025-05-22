@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Sidebar from '../sidebar/Sidebar';
 import './AddPause.css';
-
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { URLS } from '../URLS';
 
 const formatDate = (dateString: string) => {
   if (!dateString) return '';
@@ -52,7 +52,7 @@ export default function AddPause() {
         price_per_person:Number(formData.prixPersonne),
         evenement_id:evenement_id.current,
       };
-      const response = await fetch('http://localhost:5000/api/addPause', {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/addPause`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(submitData)

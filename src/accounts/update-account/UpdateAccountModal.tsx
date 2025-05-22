@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { FETCH_STATUS } from '../../fetchStatus';
 import { toast } from 'react-toastify';
 import Cookies from 'js-cookie';
+import { URLS } from '../../URLS';
 
 interface accountItem{
     ID:number;
@@ -66,8 +67,8 @@ const UpdateAccountModal: React.FC<UpdateAccountModalProps> = ({ isOpen, onClose
     try {
         const submitData = {...formData,ID:account.ID}
       setStatus(FETCH_STATUS.LOADING);      
-      const response = await fetch('http://localhost:5000/api/updateAccount', {
-        method: 'POST',
+      const response = await fetch(`${URLS.ServerIpAddress}/api/updateAccount`, {
+        method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(submitData),
         credentials: 'include',

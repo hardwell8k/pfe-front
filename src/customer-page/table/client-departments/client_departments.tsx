@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./client_departments.css"
 import ClientDepartment from "./client_department/client_department";
+import { URLS } from "../../../URLS";
 
 function ClientDepartments(props:any){
 
@@ -10,10 +11,11 @@ function ClientDepartments(props:any){
         try {
             //alert("trying to get client department");
             //alert(JSON.stringify({user_id:props.clientID}));
-            const reponse = await fetch('http://localhost:5000/api/getClientDepartments',{
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/getClientDepartments`,{
                 method:'POST',
                 headers:{"Content-Type":"application/json"},
                 body:JSON.stringify({client_id:props.clientID}),
+                credentials:'include'
             });
 
             const result = await reponse.json();

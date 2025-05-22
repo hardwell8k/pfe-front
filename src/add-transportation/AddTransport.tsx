@@ -1,49 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../sidebar/Sidebar';
 import './AddTransport.css';
+import { URLS } from '../URLS';
 import { useNavigate } from 'react-router-dom';
 
-// Custom checkbox component
-const CustomCheckbox = ({ checked, onChange, id, label }: { 
-  checked: boolean; 
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; 
-  id: string;
-  label: string;
-}) => {
-  return (
-    <div className="transport-specific-checkbox-wrapper">
-      <input
-        type="checkbox"
-        id={id}
-        name="selfDone"
-        checked={checked}
-        onChange={onChange}
-        className="transport-specific-checkbox"
-        style={{
-          appearance: 'none',
-          WebkitAppearance: 'none',
-          MozAppearance: 'none',
-          width: '16px',
-          height: '16px',
-          backgroundColor: 'white',
-          border: '1.5px solid #cbd5e1',
-          borderRadius: '4px',
-          position: 'relative',
-          cursor: 'pointer',
-          display: 'inline-block'
-        }}
-      />
-      <label 
-        htmlFor={id} 
-        className="transport-specific-checkbox-label"
-      >
-        {label}
-      </label>
-    </div>
-  );
-};
-
-// Define the form data interface
 interface TransportFormData {
   startAddress: string;
   arrivalAddress: string;
@@ -56,6 +16,26 @@ interface TransportFormData {
   durationMinutes: string;
   selfDone: boolean;
 }
+
+interface CustomCheckboxProps {
+  checked: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  id: string;
+  label: string;
+}
+
+const CustomCheckbox: React.FC<CustomCheckboxProps> = ({ checked, onChange, id, label }) => (
+  <div className="transport-form-group">
+    <input
+      type="checkbox"
+      id={id}
+      name="selfDone"
+      checked={checked}
+      onChange={onChange}
+    />
+    <label htmlFor={id}>{label}</label>
+  </div>
+);
 
 export default function AddTransport() {
   // Add navigation hook
@@ -127,7 +107,7 @@ export default function AddTransport() {
       // Remove the separate duration fields as they're now combined
       const { durationHours, durationMinutes, ...dataToSubmit } = submitData;
 
-      const response = await fetch('http://localhost:5000/api/transportation', {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/transportation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

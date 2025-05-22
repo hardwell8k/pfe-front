@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-
+import { URLS } from '../../URLS';
 import './AddCustomer.css'
 
 function AddCustomer(props:any){
@@ -8,11 +8,12 @@ function AddCustomer(props:any){
 
     const Onsubmit =async (data:any)=>{
         try {
-            
-            const reponse = await fetch('http://localhost:5000/api/addClient',{
+            const submitData = {...data,num_tel:Number(data.num_tel)}
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/addClient`,{
                 method:"POST",
                 headers:{"Content-type":"application/json"},
-                body: JSON.stringify(data),
+                body: JSON.stringify(submitData),
+                credentials:'include'
             })
 
             const result = await reponse.json();
