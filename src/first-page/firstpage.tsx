@@ -1,10 +1,10 @@
 import React from 'react';
 import './firstpage.css';
-import businessImg from '../assets/first_page_business.png';
-import advertisementImg from '../assets/first_page_advertisement.png';
-import digitalImg from '../assets/first_page_digital.png';
+import businessImage from '../assets/first_page_business.png';
+import advertisementImage from '../assets/first_page_advertisement.png';
+import digitalImage from '../assets/first_page_digital.png';
 
-const FirstPage: React.FC = () => {
+const FirstPage = () => {
   return (
     <div className="first-page-container">
       <div className="top-gradient-section">
@@ -16,6 +16,14 @@ const FirstPage: React.FC = () => {
           </div>
         </header>
       </div>
+      
+      {/* Welcome Section */}
+      <section className="welcome-section">
+        <div className="welcome-content">
+          <h1 className="welcome-title">Welcome back, John!</h1>
+          <p className="welcome-subtitle">Ready to discover amazing events and connect with like-minded people?</p>
+        </div>
+      </section>
       
       <main>
         {/* Upcoming Events Heading */}
@@ -30,7 +38,6 @@ const FirstPage: React.FC = () => {
               <p className="event-description">Tech Innovation Summit: Join industry leaders to discuss emerging technologies and future trends in the tech industry.</p>
               <div className="divider"></div>
               <div className="event-info">
-                <img src="https://via.placeholder.com/120" alt="Event Profile" className="profile-img" />
                 <div>
                   <div className="event-company">TechCon</div>
                   <div className="event-position">Convention Center, Main Hall</div>
@@ -46,7 +53,6 @@ const FirstPage: React.FC = () => {
               <p className="event-description">Marketing Workshop: Learn the latest digital marketing strategies and networking opportunities with marketing professionals.</p>
               <div className="divider"></div>
               <div className="event-info">
-                <img src="https://via.placeholder.com/120" alt="Event Profile" className="profile-img" />
                 <div>
                   <div className="event-company">DigitalSummit</div>
                   <div className="event-position">Downtown Business Center</div>
@@ -62,7 +68,6 @@ const FirstPage: React.FC = () => {
               <p className="event-description">Networking Mixer: An evening of professional networking with entrepreneurs and business leaders from various industries.</p>
               <div className="divider"></div>
               <div className="event-info">
-                <img src="https://via.placeholder.com/120" alt="Event Profile" className="profile-img" />
                 <div>
                   <div className="event-company">BizConnect</div>
                   <div className="event-position">Skyline Lounge</div>
@@ -110,7 +115,7 @@ const FirstPage: React.FC = () => {
         <section className="event-categories-section">
           <div className="event-category">
             <div className="event-illustration">
-              <img src={businessImg} alt="Business networking illustration" />
+              <img src={businessImage} alt="Business networking illustration" />
             </div>
             <div className="event-details">
               <span className="category-number">5</span>
@@ -121,7 +126,7 @@ const FirstPage: React.FC = () => {
           
           <div className="event-category">
             <div className="event-illustration">
-              <img src={advertisementImg} alt="Advertising events illustration" />
+              <img src={advertisementImage} alt="Advertising events illustration" />
             </div>
             <div className="event-details">
               <span className="category-number">4</span>
@@ -132,7 +137,7 @@ const FirstPage: React.FC = () => {
           
           <div className="event-category">
             <div className="event-illustration">
-              <img src={digitalImg} alt="Technology events illustration" />
+              <img src={digitalImage} alt="Technology events illustration" />
             </div>
             <div className="event-details">
               <span className="category-number">4</span>
@@ -146,5 +151,4 @@ const FirstPage: React.FC = () => {
   );
 };
 
-export { FirstPage };
 export default FirstPage;

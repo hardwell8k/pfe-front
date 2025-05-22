@@ -1,29 +1,94 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../sidebar/Sidebar';
 import './AddTransport.css';
 import { URLS } from '../URLS';
+import { useNavigate } from 'react-router-dom';
+
+interface TransportFormData {
+  startAddress: string;
+  arrivalAddress: string;
+  numberOfPlaces: string;
+  price: string;
+  dateDebut: string;
+  agence: string;
+  description: string;
+  durationHours: string;
+  durationMinutes: string;
+  selfDone: boolean;
+}
+
+interface CustomCheckboxProps {
+  checked: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  id: string;
+  label: string;
+}
+
+const CustomCheckbox: React.FC<CustomCheckboxProps> = ({ checked, onChange, id, label }) => (
+  <div className="transport-form-group">
+    <input
+      type="checkbox"
+      id={id}
+      name="selfDone"
+      checked={checked}
+      onChange={onChange}
+    />
+    <label htmlFor={id}>{label}</label>
+  </div>
+);
 
 export default function AddTransport() {
-  // State for form inputs
-  const [formData, setFormData] = useState({
-    startAddress: '',      // Starting location
-    arrivalAddress: '',    // Destination
-    numberOfPlaces: '',    // Number of seats/places
-    price: '',             // Price
-    dateDebut: '',         // Start date
-    agence: '',            // Agency name
-    description: '',       // Transportation details
-    selfDone: false        // Self-arranged transportation checkbox
+  // Add navigation hook
+  const navigate = useNavigate();
+
+  // State for form inputs with initial values from localStorage if available
+  const [formData, setFormData] = useState<TransportFormData>(() => {
+    // Try to get saved data from localStorage
+    const savedData = localStorage.getItem('transportFormData');
+    if (savedData) {
+      return JSON.parse(savedData);
+    }
+    // Default initial state
+    return {
+      startAddress: '',      // Starting location
+      arrivalAddress: '',    // Destination
+      numberOfPlaces: '',    // Number of seats/places
+      price: '',             // Price
+      dateDebut: '',         // Start date
+      agence: '',            // Agency name
+      description: '',       // Transportation details
+      durationHours: '',     // Duration hours
+      durationMinutes: '',   // Duration minutes
+      selfDone: false        // Self-arranged transportation checkbox
+    };
   });
+
+  // Save form data to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('transportFormData', JSON.stringify(formData));
+  }, [formData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     
     if (type === 'checkbox') {
       const target = e.target as HTMLInputElement;
-      setFormData(prev => ({ ...prev, [name]: target.checked }));
+      setFormData((prev: TransportFormData) => ({ ...prev, [name]: target.checked }));
+    } else if (name === 'durationHours' || name === 'durationMinutes') {
+      // Ensure only numbers are entered for duration
+      let numericValue = value.replace(/[^0-9]/g, '');
+      
+      // Enforce maximum of 59 for minutes
+      if (name === 'durationMinutes' && numericValue !== '') {
+        const minutesValue = parseInt(numericValue);
+        if (minutesValue > 59) {
+          numericValue = '59';
+        }
+      }
+      
+      setFormData((prev: TransportFormData) => ({ ...prev, [name]: numericValue }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev: TransportFormData) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -35,14 +100,19 @@ export default function AddTransport() {
       const submitData = {
         ...formData,
         dateDebut: formData.dateDebut ? new Date(formData.dateDebut).getTime() : '',
+        // Format duration as "Xh YYmin" for submission
+        duration: `${formData.durationHours || '0'}h ${formData.durationMinutes || '00'}min`,
       };
+
+      // Remove the separate duration fields as they're now combined
+      const { durationHours, durationMinutes, ...dataToSubmit } = submitData;
 
       const response = await fetch(`${URLS.ServerIpAddress}/api/transportation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(submitData)
+        body: JSON.stringify(dataToSubmit)
       });
   
       if (!response.ok) {
@@ -52,7 +122,8 @@ export default function AddTransport() {
       const result = await response.json();
       console.log('Transportation added successfully:', result);
       
-      // Clear form
+      // Clear form but preserve selfDone state
+      const selfDoneValue = formData.selfDone;
       setFormData({
         startAddress: '',
         arrivalAddress: '',
@@ -61,7 +132,9 @@ export default function AddTransport() {
         dateDebut: '',
         agence: '',
         description: '',
-        selfDone: false
+        durationHours: '',
+        durationMinutes: '',
+        selfDone: selfDoneValue // Keep the selfDone value
       });
   
       alert('Transportation added successfully!');
@@ -71,40 +144,42 @@ export default function AddTransport() {
     }
   };
 
-  // Functions for the additional buttons
+  // Functions for the additional buttons with localStorage preservation
   const handleAddParticipant = () => {
     console.log("Add participant clicked");
-    // Add navigation or modal logic here
+    // Navigate while preserving state in localStorage
   };
 
   const handleCheckParticipants = () => {
     console.log("Check participants clicked");
-    // Add navigation or modal logic here
+    // Navigate while preserving state in localStorage
   };
 
   const handleAddStaff = () => {
     console.log("Add staff clicked");
-    // Add navigation or modal logic here
+    // Form data is already saved in localStorage before navigation
+    navigate('/in-staff');
   };
 
   const handleCheckStaff = () => {
     console.log("Check staff clicked");
-    // Add navigation or modal logic here
+    // Navigate while preserving state in localStorage
   };
 
   const handleAddCar = () => {
     console.log("Add car clicked");
-    // Add navigation or modal logic here
+    // Form data is already saved in localStorage before navigation
+    navigate('/in-car');
   };
 
   const handleCheckCar = () => {
     console.log("Check car clicked");
-    // Add navigation or modal logic here
+    // Navigate while preserving state in localStorage
   };
 
   const handleCheckTransportations = () => {
     console.log("Check transportations clicked");
-    // Add navigation or modal logic here
+    // Navigate while preserving state in localStorage
   };
 
   return (
@@ -154,6 +229,35 @@ export default function AddTransport() {
                     onChange={handleInputChange}
                     required
                   />
+                </div>
+
+                <div className="transport-form-group duration-group">
+                  <label>duration</label>
+                  <div className="duration-inputs">
+                    <div className="duration-hours">
+                      <input
+                        type="text"
+                        name="durationHours"
+                        placeholder="0"
+                        value={formData.durationHours}
+                        onChange={handleInputChange}
+                        maxLength={2}
+                      />
+                      <span className="duration-label">h</span>
+                    </div>
+                    <div className="duration-minutes">
+                      <input
+                        type="text"
+                        name="durationMinutes"
+                        placeholder="00"
+                        value={formData.durationMinutes}
+                        onChange={handleInputChange}
+                        maxLength={2}
+                        aria-label="Minutes"
+                      />
+                      <span className="duration-label">min</span>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="transport-form-group description-group">
@@ -206,45 +310,43 @@ export default function AddTransport() {
                   />
                 </div>
 
-                <div className="transport-form-group checkbox-group">
-                  <label className="self-done-label">self done</label>
-                  <input
-                    type="checkbox"
-                    name="selfDone"
-                    checked={formData.selfDone}
-                    onChange={handleInputChange}
-                    className="self-done-checkbox"
-                  />
-                </div>
-                
-                <div className="transport-action-buttons">
-                  <div className="button-row">
-                    <button type="button" className="action-button blue" onClick={handleAddParticipant}>
-                      + Add participant
-                    </button>
-                    <button type="button" className="action-button gray" onClick={handleCheckParticipants}>
-                      check participants
-                    </button>
+                <CustomCheckbox
+                  checked={formData.selfDone}
+                  onChange={handleInputChange}
+                  id="selfDoneCheck"
+                  label="self done"
+                />
+
+                {formData.selfDone && (
+                  <div className="transport-action-buttons">
+                    <div className="button-row">
+                      <button type="button" className="action-button blue" onClick={handleAddParticipant}>
+                        + Add participant
+                      </button>
+                      <button type="button" className="action-button gray" onClick={handleCheckParticipants}>
+                        check participants
+                      </button>
+                    </div>
+                    
+                    <div className="button-row">
+                      <button type="button" className="action-button blue" onClick={handleAddStaff}>
+                        + Add staff
+                      </button>
+                      <button type="button" className="action-button gray" onClick={handleCheckStaff}>
+                        check staff
+                      </button>
+                    </div>
+                    
+                    <div className="button-row">
+                      <button type="button" className="action-button blue" onClick={handleAddCar}>
+                        + Add car
+                      </button>
+                      <button type="button" className="action-button gray" onClick={handleCheckCar}>
+                        check car
+                      </button>
+                    </div>
                   </div>
-                  
-                  <div className="button-row">
-                    <button type="button" className="action-button blue" onClick={handleAddStaff}>
-                      + Add staff
-                    </button>
-                    <button type="button" className="action-button gray" onClick={handleCheckStaff}>
-                      check staff
-                    </button>
-                  </div>
-                  
-                  <div className="button-row">
-                    <button type="button" className="action-button blue" onClick={handleAddCar}>
-                      + Add car
-                    </button>
-                    <button type="button" className="action-button gray" onClick={handleCheckCar}>
-                      check car
-                    </button>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
             

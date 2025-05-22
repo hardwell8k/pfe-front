@@ -3,12 +3,15 @@ import Sidebar from '../sidebar/Sidebar';
 import './AddSoiree.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useLocation } from 'react-router-dom';
+
+import { useLocation, useNavigate } from 'react-router-dom';
 import { URLS } from '../URLS';
+
 
 export default function AddSoiree() {
   const location = useLocation();
   const evenement_id = useRef<number | null>(null);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     nom: '',
@@ -16,8 +19,8 @@ export default function AddSoiree() {
     prix: 0,
     code_bar: '',
     startDate: '',
-    endDate: '',
   });
+
   useEffect(() => {
     if (location.state && location.state.evenement_id) {
       evenement_id.current = location.state.evenement_id;
@@ -35,22 +38,21 @@ export default function AddSoiree() {
       const submitData = {
         ...formData,
         date: formData.startDate ? new Date(formData.startDate).toISOString() : '',
-        endDate: formData.endDate ? new Date(formData.endDate).toISOString() : '',
-        evenement_id:evenement_id.current,
-        prix:Number(formData.prix),
+        evenement_id: evenement_id.current,
+        prix: Number(formData.prix),
       };
       const response = await fetch(`${URLS.ServerIpAddress}/api/addSoiree`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(submitData),
-        credentials:"include",
+        credentials: "include",
       });
 
       if(!response.ok){
         throw new Error('Failed to add soiree');
       }
       await response.json();
-      setFormData({ nom: '', address: '', prix: 0, code_bar: '', startDate: '', endDate: '' });
+      setFormData({ nom: '', address: '', prix: 0, code_bar: '', startDate: '' });
       toast.success('Soiree added successfully!');
     } catch (error: any) {
       toast.error('Failed to add soiree: ' + error.message);
@@ -91,6 +93,7 @@ export default function AddSoiree() {
                   />
                 </div>
               </div>
+              
               <div>
                 <div className="as-form-group">
                   <label className="as-form-label">Prix</label>
@@ -130,23 +133,14 @@ export default function AddSoiree() {
                   />
                 </div>
               </div>
-              <div>
-                <div className="as-form-group">
-                  <label className="as-form-label">Date fin</label>
-                  <input
-                    type="date"
-                    name="endDate"
-                    className="as-form-input"
-                    value={formData.endDate}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-              </div>
             </div>
+            
             <div className="as-buttons-container">
               <button type="submit" className="as-submit-button">
                 Add Soiree
+              </button>
+              <button type="button" className="as-submit-button" onClick={() => navigate('/in-soiree')}>
+                Check Soiree
               </button>
             </div>
           </form>
@@ -154,13 +148,13 @@ export default function AddSoiree() {
       </div>
 
       <ToastContainer 
-            position="top-center"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            pauseOnHover
-        />
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+      />
     </div>
   );
 }

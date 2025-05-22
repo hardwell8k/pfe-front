@@ -124,14 +124,6 @@ export default function AddWorkshop() {
     getInstructors();
   };
 
-  const handleGoBack = () => {
-    navigate(-1);
-  };
-
-  const handleCheckWorkshops = () => {
-    navigate('/workshops');
-  };
-
   useEffect(() => {
     getInstructors();
   }, []);
@@ -154,7 +146,7 @@ export default function AddWorkshop() {
                     type="text"
                     name="nom"
                     placeholder="Enter workshop name"
-                    className="add-workshop-form-input"
+                    className="add-workshop-form-input large-input"
                     value={formData.nom}
                     onChange={handleInputChange}
                     required
@@ -167,7 +159,7 @@ export default function AddWorkshop() {
                     type="text"
                     name="categorie"
                     placeholder="Enter workshop type"
-                    className="add-workshop-form-input"
+                    className="add-workshop-form-input large-input"
                     value={formData.categorie}
                     onChange={handleInputChange}
                     required
@@ -180,7 +172,7 @@ export default function AddWorkshop() {
                     type="number"
                     name="prix"
                     placeholder="Enter workshop fee"
-                    className="add-workshop-form-input"
+                    className="add-workshop-form-input large-input"
                     value={formData.prix}
                     onChange={handleInputChange}
                     min="0"
@@ -194,7 +186,7 @@ export default function AddWorkshop() {
                     type="number"
                     name="nbr_max_invite"
                     placeholder="Enter maximum users"
-                    className="add-workshop-form-input"
+                    className="add-workshop-form-input large-input"
                     value={formData.nbr_max_invite}
                     onChange={handleInputChange}
                     min="1"
@@ -210,7 +202,7 @@ export default function AddWorkshop() {
                   <select 
                     id="instructeur_id" 
                     name="instructeur_id"
-                    className="add-workshop-form-input"
+                    className="add-workshop-form-input large-input"
                     value={formData.instructeur_id ?? ""}
                     onChange={handleInstructorDropdownChange}
                     required
@@ -229,7 +221,7 @@ export default function AddWorkshop() {
                     type="text"
                     name="address"
                     placeholder="Enter workshop address"
-                    className="add-workshop-form-input"
+                    className="add-workshop-form-input large-input"
                     value={formData.address}
                     onChange={handleInputChange}
                     required
@@ -241,7 +233,7 @@ export default function AddWorkshop() {
                   <input
                     type="datetime-local"
                     name="temp_debut"
-                    className="add-workshop-form-input"
+                    className="add-workshop-form-input large-input"
                     value={formData.temp_debut}
                     onChange={handleInputChange}
                     required
@@ -253,7 +245,7 @@ export default function AddWorkshop() {
                   <input
                     type="datetime-local"
                     name="temp_fin"
-                    className="add-workshop-form-input"
+                    className="add-workshop-form-input large-input"
                     value={formData.temp_fin}
                     onChange={handleInputChange}
                     required
@@ -271,14 +263,14 @@ export default function AddWorkshop() {
                 <button 
                   type="button" 
                   className="add-workshop-secondary-button" 
-                  onClick={handleGoBack}
+                  onClick={() => navigate('/eventDetails')}
                 >
                   Go Back
                 </button>
                 <button 
                   type="button" 
                   className="add-workshop-secondary-button" 
-                  onClick={handleCheckWorkshops}
+                  onClick={() => navigate('/in-workshops')}
                 >
                   Check Workshops
                 </button>

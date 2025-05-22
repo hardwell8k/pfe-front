@@ -145,6 +145,13 @@ export default function AddAccomodation() {
               <button type="submit" className="aac-submit-button">
                 Add Accommodation
               </button>
+              <button
+                type="button"
+                className="aac-add-btn"
+                onClick={() => window.location.href = '/in-accomodation'}
+              >
+                Check Accommodation
+              </button>
             </div>
           </form>
         </div>
