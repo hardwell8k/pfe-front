@@ -29,7 +29,7 @@ import AddPause from './add-pause/AddPause.tsx';
 import AddSoiree from './add-soiree/AddSoiree.tsx';
 import AdduserAccomodation from './add-user-accomodation-pricing/AdduserAccomodation.tsx';
 import AddTransport from './add-transportation/AddTransport.tsx';
-
+import TeamPage from './team-page/TeamPage.tsx';
 import FirstPage from './first-page/firstpage.tsx';
 import ProjectDashboard from './upcomingevent/upcomingevent.tsx';
 import InWorkshops from './in-workshops/InWorkshops';
@@ -181,7 +181,11 @@ const router = createBrowserRouter([
     element:<ProtectedRoute element={<AddTransport/>} />,
     errorElement:<div> 404 PAGE NOT FOUND</div>
   },
-
+  {
+    path:'/teamPage',
+    element:<ProtectedRoute element={<TeamPage/>} />,
+    errorElement:<div> 404 PAGE NOT FOUND</div>
+  },
   {
     path:'/firstPage',
     element:<ProtectedRoute element={<FirstPage/>} />,
