@@ -6,6 +6,7 @@ import { FETCH_STATUS } from '../fetchStatus';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import { URLS } from '../URLS';
 
 interface EquipmentElement {
   ID: number;
@@ -69,7 +70,7 @@ function EventEquipment() {
   const getEquipment = async () => {
     try {
       setStatus(FETCH_STATUS.LOADING);
-      const response = await fetch("http://localhost:5000/api/getAllEquipment", {
+      const response = await fetch(`http://${URLS.ServerIpAddress}/api/getAllEquipment`, {
         method: "GET",
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

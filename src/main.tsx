@@ -47,6 +47,7 @@ import InAddEquipment from './in-add-equipment/InAddEquipment';
 import AddStaffEventTable from './add-staff-event-table/AddStaffEventTable';
 import AgencyStaffInEvent from './agency-staff-in-event/AgencyStaffInEvent';
 import InStaffTeam from './in-staff-team/InStaffTeam';
+import EquipmentHistoryPage from './equipment-history-page/EquipmentHistoryPage.tsx';
 
 
 
@@ -270,7 +271,12 @@ const router = createBrowserRouter([
     path: '/in-staff-team',
     element: <ProtectedRoute element={<InStaffTeam />} />,
     errorElement: <div>404 PAGE NOT FOUND</div>
-  }
+  },
+  {
+    path: '/equipment-history',
+    element: <ProtectedRoute element={<EquipmentHistoryPage />} />,
+    errorElement: <div>404 PAGE NOT FOUND</div>
+  },
 
 ])
 

@@ -24,7 +24,8 @@ function Sidebar(){
 
     const [menuIsVisible,setMenuIsVisible] = useState<MenuState>({
         equipment:false,
-        staff:false
+        staff:false,
+        history:false
     });
 
     const updateInvisible = (name : string):void=>{
@@ -84,7 +85,13 @@ function Sidebar(){
                 </li>
 
                 <li>
-                    <Element imgUrl={historyImg} link="/history" name="History"/>
+                    <span>
+                        <Element imgUrl={historyImg} link="/history" name="History"/>
+                        <img className="dropdownarrow" onClick={()=>{updateInvisible("history")}} src={dropdown} alt="problem" />
+                    </span>
+                    <ul className={`sub_menu ${menuIsVisible.history? 'visible':''}`}>
+                        <li><a href="/equipment-history">Equipment History</a></li>
+                    </ul>
                 </li>
                 <li>
                     <Element imgUrl={accountsImg} link="/Accounts" name="Accounts"/>

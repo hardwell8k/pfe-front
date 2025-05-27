@@ -214,6 +214,7 @@ function StaffPage(){
       })
       const sortedCount = barLabels.map((month:any)=>monthCount[month]||0);
       setTotalEvents(sortedCount);
+      console.log("total Events : ",totalEvents);
     }
 
     useEffect(()=>{
