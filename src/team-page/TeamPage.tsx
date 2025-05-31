@@ -203,18 +203,18 @@ function TeamPage(){
             <Sidebar />
             <div className='team_page_container'>
                 <div className='team_page_header'>
-                    <h1 className='team_page_title'>Teams</h1>
+                    <h1 className='team_page_title'>Équipes</h1>
                     <div className='team_page_search'>
                         <input
                         type="text"
-                        placeholder="Search"
+                        placeholder="Rechercher"
                         className='team_page_search_input'
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         <Search className='team_page_search_icon' size={20} />
                     </div>
-                    <button className='team_page_add_button' onClick={() => setIsModalOpen(true)}>Add Team</button>
+                    <button className='team_page_add_button' onClick={() => setIsModalOpen(true)}>Ajouter une équipe</button>
                 </div>
 
                 <div className='team_page_table_container'>
@@ -230,10 +230,10 @@ function TeamPage(){
                                 />
                             </div>
                             <div className='team_page_name_header'>
-                                Name <span className='team_page_sort_icon'>↓</span>
+                                Nom <span className='team_page_sort_icon'>↓</span>
                             </div>
                             <div className='team_page_members_header'>
-                                Members <span className='team_page_sort_icon'>↓</span>
+                                Membres <span className='team_page_sort_icon'>↓</span>
                             </div>
                             <div className='team_page_date_header'>
                                 Date <span className='team_page_sort_icon'>↓</span>
@@ -245,13 +245,13 @@ function TeamPage(){
                         
                         <div className='team_page_table_body'>
                             {status === FETCH_STATUS.LOADING ? (
-                                <div className="team_page_loading">Loading data...</div>
+                                <div className="team_page_loading">Chargement des données...</div>
                             ) : shownTeams.length > 0 ? (
                                 shownTeams.map((item) => (
                                     <TeamElement key={item.ID} item={item} isSelected={selectedItems[item.ID]} onSelect={handleSelectItem} staff={staff} setIsAddStaffToTeamModalOpen={setIsAddStaffToTeamModalOpen} setTeamId={setTeamId} setStaffInfo={setStaffInfo} setTeamInfo={setTeamInfo} setIsRemoveStaffFromTeamModalOpen={setIsRemoveStaffFromTeamModalOpen}/>
                                 ))
                             ) : (
-                                <div className="team_page_no_data">No history data found</div>
+                                <div className="team_page_no_data">Aucune donnée trouvée</div>
                             )}
                         </div>
                     </div>

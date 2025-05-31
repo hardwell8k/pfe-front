@@ -74,30 +74,33 @@
 }
 
 .car_page_container_add_car_button {
-  background-color: 
-#2563eb;
+  background-color: #2563eb;
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
-  margin:0;
-  height: 2.7rem;
-  width:6rem;
+  transition: background-color 0.2s;
+  min-width: 8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .car_page_container_add_car_button:hover {
-  background-color: 
-#1d4ed8;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  background-color: #1d4ed8;
 }
 
-.car_page_container_add_car_button:active {
-  transform: translateY(0);
+.car_page_container_add_car_button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.car_page_container_add_car_button:disabled {
+  background-color: #93c5fd;
+  cursor: not-allowed;
 }
 
 .car_page_container_table_container {

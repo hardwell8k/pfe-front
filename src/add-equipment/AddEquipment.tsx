@@ -147,10 +147,10 @@ export default function AddEquipment() {
         quantite: 0
       });
   
-      toast.success('Equipment added successfully!');
+      toast.success('Équipement ajouté avec succès!');
     } catch (error) {
       console.error('Error:', error);
-      toast.error('Failed to add equipment');
+      toast.error('Échec de l\'ajout de l\'équipement');
     }
   };
 
@@ -191,7 +191,7 @@ export default function AddEquipment() {
       console.log(result.data);
     } catch (error) {
       console.error('Error:', error);
-      toast.error('Failed to fetch categories and subcategories');
+      toast.error('Échec de la récupération des catégories et sous-catégories');
     }
   };
 
@@ -247,22 +247,22 @@ export default function AddEquipment() {
       <Sidebar/>
       {/* Main Content */}
       <div className="main-content">
-        <h1 className="page-title">equipment</h1>
+        <h1 className="page-title">Équipement</h1>
         
         {/* Equipment Form Card */}
         <div className="form-card">
-          <h2 className="form-title">add equipment</h2>
+          <h2 className="form-title">Ajouter un équipement</h2>
           
           <form onSubmit={handleSubmit}>
             <div className="form-grid">
               {/* Left Column */}
               <div>
                 <div className="form-group">
-                  <label className="form-label">Name</label>
+                  <label className="form-label">Nom</label>
                   <input
                     type="text"
                     name="nom"
-                    placeholder="Select name"
+                    placeholder="Sélectionner un nom"
                     className="form-input"
                     value={formData.nom}
                     onChange={handleInputChange}
@@ -274,7 +274,7 @@ export default function AddEquipment() {
                   <input
                     type="text"
                     name="RFID"
-                    placeholder="Select RFID"
+                    placeholder="Sélectionner un RFID"
                     className="form-input"
                     value={formData.RFID}
                     onChange={handleInputChange}

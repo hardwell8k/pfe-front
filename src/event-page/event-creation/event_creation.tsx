@@ -11,17 +11,17 @@ import Loading from "../../loading/loading";
 
 function Event_creation(props:any){
 
-    const [date,setDate]= useState<string|Date>("chose a date");
-    const [address , setAddress] = useState("select location") ;
-    const [Event_name,setEvent_name] = useState("Your Event Name");
-    const [description ,setDescription] = useState("write a small description for the event");
+    const [date,setDate]= useState<string|Date>("Choisir une date");
+    const [address , setAddress] = useState("Sélectionner un lieu") ;
+    const [Event_name,setEvent_name] = useState("Nom de votre événement");
+    const [description ,setDescription] = useState("Écrivez une petite description pour l'événement");
     const [status,setStatus] = useState(FETCH_STATUS.IDLE);
 
     const Event_creation_form_ref = useRef<{updateEventCall:()=>Promise<void>,deleteEventCall:()=>Promise<void>}>(null);
 
     const handlesetEvent_name = (nameParam :string)=>{
         if(nameParam === ""){
-            setEvent_name("Your Event Name");
+            setEvent_name("Nom de votre événement");
         }else{
             setEvent_name(nameParam)
         }
@@ -29,7 +29,7 @@ function Event_creation(props:any){
 
     const handlesetDate = (dateParam :Date)=>{
         if(!dateParam){
-            setDate("chose a date");
+            setDate("Choisir une date");
         }else{
             setDate(dateParam)
         }
@@ -37,7 +37,7 @@ function Event_creation(props:any){
 
     const handlesetAddress = (addressParam :string)=>{
         if(addressParam === ""){
-            setAddress("select location");
+            setAddress("Sélectionner un lieu");
         }else{
             setAddress(addressParam)
         }
@@ -46,7 +46,7 @@ function Event_creation(props:any){
 
     const handlesetDescription = (descriptionParam :string)=>{
         if(!descriptionParam){
-            setDescription("write a small description for the event");
+            setDescription("Écrivez une petite description pour l'événement");
         }else{
             setDescription(descriptionParam)
         }

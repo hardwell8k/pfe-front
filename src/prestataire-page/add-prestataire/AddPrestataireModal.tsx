@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
-import './AddCarModal.css';
+import './AddPrestataireModal.css';
 import { X } from 'lucide-react';
 import { FETCH_STATUS } from '../../fetchStatus';
 import { toast } from 'react-toastify';
 import { URLS } from '../../URLS';
 
-interface AddCarModalProps {
+interface AddPrestataireModalProps {
   isOpen: boolean;
   onClose: () => void;
-  getCars: () => void;
+  getPrestataires: () => void;
 }
 
-const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) => {
+const AddPrestataireModal: React.FC<AddPrestataireModalProps> = ({ isOpen, onClose, getPrestataires }) => {
   const [formData, setFormData] = useState({
     nom: '',
-    matricule: '',
-    nbr_place: null,
-    categorie: 'Sedan'
+    adresse: '',
+    telephone: '',
+    email: ''
   });
   const [status, setStatus] = useState<string>(FETCH_STATUS.IDLE);
 
@@ -24,7 +24,7 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'nbr_place' ? parseInt(value) || 0 : value
+      [name]: value
     }));
   };
 
@@ -33,7 +33,7 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
     
     try {
       setStatus(FETCH_STATUS.LOADING);      
-      const response = await fetch(`${URLS.ServerIpAddress}/api/addCar`, {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/addPrestataire`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(formData),
@@ -45,36 +45,36 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
         throw { status: response.status, message: result.message };
       }
       
-      console.log("Car created successfully");
+      toast.success("Prestataire ajouté avec succès");
       setStatus(FETCH_STATUS.SUCCESS);
       resetForm();
-      getCars();
+      getPrestataires();
       onClose();
     } catch (error: any) {
-      console.error("Error creating car:", error.message);
+      console.error("Erreur lors de l'ajout du prestataire:", error.message);
       setStatus(FETCH_STATUS.ERROR);
-      toast.error(`Error creating car: ${error.message || 'Unknown error'}`);
+      toast.error(`Erreur lors de l'ajout du prestataire: ${error.message || 'Erreur inconnue'}`);
     }
   };
 
   const resetForm = () => {
     setFormData({
       nom: '',
-      matricule: '',
-      nbr_place: null,
-      categorie: 'Sedan'
+      adresse: '',
+      telephone: '',
+      email: ''
     });
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="add_car_modal_overlay">
-      <div className="add_car_modal">
-        <div className="add_car_modal_header">
-          <h2>Véhicules</h2>
+    <div className="add_prestataire_modal_overlay">
+      <div className="add_prestataire_modal">
+        <div className="add_prestataire_modal_header">
+          <h2>Ajouter un prestataire</h2>
           <button 
-            className="add_car_modal_close" 
+            className="add_prestataire_modal_close" 
             onClick={()=>{resetForm();onClose()}}
             disabled={status === FETCH_STATUS.LOADING}
           >
@@ -82,9 +82,9 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="add_car_modal_form">
-          <div className="add_car_modal_form_row">
-            <div className="add_car_modal_form_group">
+        <form onSubmit={handleSubmit} className="add_prestataire_modal_form">
+          <div className="add_prestataire_modal_form_row">
+            <div className="add_prestataire_modal_form_group">
               <label htmlFor="nom">Nom</label>
               <input
                 type="text"
@@ -92,67 +92,61 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
                 name="nom"
                 value={formData.nom}
                 onChange={handleChange}
-                placeholder="Nom du véhicule"
+                placeholder="Nom du prestataire"
                 required
                 disabled={status === FETCH_STATUS.LOADING}
               />
             </div>
-            
-            <div className="add_car_modal_form_group">
-              <label htmlFor="matricule">Matricule</label>
+
+            <div className="add_prestataire_modal_form_group">
+              <label htmlFor="adresse">Adresse</label>
               <input
                 type="text"
-                id="matricule"
-                name="matricule"
-                value={formData.matricule}
+                id="adresse"
+                name="adresse"
+                value={formData.adresse}
                 onChange={handleChange}
-                placeholder="matricule"
+                placeholder="Adresse complète"
                 required
                 disabled={status === FETCH_STATUS.LOADING}
               />
             </div>
           </div>
-          
-          <div className="add_car_modal_form_row">
-            <div className="add_car_modal_form_group">
-              <label htmlFor="nbr_place">Nombre de places</label>
+
+          <div className="add_prestataire_modal_form_row">
+            <div className="add_prestataire_modal_form_group">
+              <label htmlFor="telephone">Numéro de téléphone</label>
               <input
-                type="number"
-                id="nbr_place"
-                name="nbr_place"
-                value={formData.nbr_place || ''}
+                type="tel"
+                id="telephone"
+                name="telephone"
+                value={formData.telephone}
                 onChange={handleChange}
-                placeholder="Nombre de places"
-                min="1"
+                placeholder="+212 6XX-XXXXXX"
                 required
                 disabled={status === FETCH_STATUS.LOADING}
               />
             </div>
-            
-            <div className="add_car_modal_form_group">
-              <label htmlFor="categorie">Catégorie</label>
-              <div className="add_car_modal_select_wrapper">
-                <select
-                  id="categorie"
-                  name="categorie"
-                  value={formData.categorie}
-                  onChange={handleChange}
-                  required
-                  disabled={status === FETCH_STATUS.LOADING}
-                >
-                  <option value="Sedan">Berline</option>
-                  <option value="SUV">SUV</option>
-                  <option value="Hatchback">Citadine</option>
-                  <option value="Truck">Camion</option>
-                </select>
-              </div>
+
+            <div className="add_prestataire_modal_form_group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="email@exemple.com"
+                required
+                disabled={status === FETCH_STATUS.LOADING}
+              />
             </div>
           </div>
           
-          <div className="add_car_modal_actions">
+          <div className="add_prestataire_modal_actions">
             <button 
               type="button" 
-              className="add_car_modal_cancel" 
+              className="add_prestataire_modal_cancel" 
               onClick={()=>{resetForm();onClose()}}
               disabled={status === FETCH_STATUS.LOADING}
             >
@@ -160,8 +154,8 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
             </button>
             <button 
               type="submit" 
-              id="add_car_submit"
-              className="add_car_modal_submit"
+              id="add_prestataire_submit"
+              className="add_prestataire_modal_submit"
               disabled={status === FETCH_STATUS.LOADING}
             >
               {status === FETCH_STATUS.LOADING ? 'Ajout en cours...' : 'Ajouter'}
@@ -173,4 +167,4 @@ const AddCarModal: React.FC<AddCarModalProps> = ({ isOpen, onClose, getCars }) =
   );
 };
 
-export default AddCarModal;
+export default AddPrestataireModal; 

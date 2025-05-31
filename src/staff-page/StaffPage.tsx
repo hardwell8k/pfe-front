@@ -233,7 +233,7 @@ function StaffPage(){
         labels: barLabels,
         datasets: [
           {
-            label: 'participated events',
+            label: 'Événements participés',
             data: barData,
             backgroundColor: 'rgba(0, 68, 255, 0.6)',
             barPercentage: 0.6,
@@ -241,7 +241,7 @@ function StaffPage(){
             grouped: false, 
           },
           {
-            label: 'total events',
+            label: 'Total des événements',
             data: totalEvents,
             backgroundColor: 'rgba(153, 102, 255, 0.3)',
             barPercentage: 0.6,
@@ -252,10 +252,10 @@ function StaffPage(){
     };
     
     const DoughnutData = {
-        labels: ['disponible', 'non disponible'],
+        labels: ['Disponible', 'Non disponible'],
         datasets: [
           {
-            label: 'Progress',
+            label: 'Progression',
             data: [70, 30],
             backgroundColor: [
               'rgba(75, 192, 192, 0.8)', 
@@ -274,7 +274,7 @@ function StaffPage(){
           },
           title: {
             display: true,
-            text: 'Progress Overview',
+            text: 'Aperçu de la progression',
           },
         },
         cutout: '95%',
@@ -301,13 +301,13 @@ function StaffPage(){
                 
                 <div className='staff_page_content_table'>
                 <div className='staff_page_header'>
-                    <h2>Staff</h2>
+                    <h2>Personnel</h2>
                     <div className='staff_search_filter_div'>
                         <div className='staff_serch_div'>
                             <img src={searchIcon} alt="" />
                             <input 
                             type="text" 
-                            placeholder='Search'
+                            placeholder='Rechercher'
                             value={searchTerm}
                             onChange={(e)=>{setSearchTerm(e.target.value)}}
                             />
@@ -318,20 +318,20 @@ function StaffPage(){
                         value={filter}
                         onChange={(e)=>{setFilter(e.target.value)}}
                         >
-                            <option value="nom">nom</option>
-                            <option value="depatement">depatement</option>
-                            <option value="email">email</option>
-                            <option value="team">team</option>
-                            <option value="num_tel">num_tel</option>
+                            <option value="nom">Nom</option>
+                            <option value="depatement">Département</option>
+                            <option value="email">Email</option>
+                            <option value="team">Équipe</option>
+                            <option value="num_tel">Téléphone</option>
                         </select>
                     </div>
                 </div>
                 <div className='staff_page_content_table_header'>
-                    <h3>employee</h3>
-                    <h3>departement</h3>
-                    <h3>phone number</h3>
-                    <h3>email</h3>
-                    <h3>team</h3>
+                    <h3>Employé</h3>
+                    <h3>Département</h3>
+                    <h3>Numéro de téléphone</h3>
+                    <h3>Email</h3>
+                    <h3>Équipe</h3>
                     
                 </div>
                 <div className='staff_elements_div'>

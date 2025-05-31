@@ -109,7 +109,7 @@ const UpdateAccountModal: React.FC<UpdateAccountModalProps> = ({ isOpen, onClose
     <div className="update_account_modal_overlay">
       <div className="update_account_modal">
         <div className="update_account_modal_header">
-          <h2>Vehicles</h2>
+          <h2>Modifier le compte</h2>
           <button 
             className="update_account_modal_close" 
             onClick={()=>{resetForm();onClose()}}
@@ -122,7 +122,7 @@ const UpdateAccountModal: React.FC<UpdateAccountModalProps> = ({ isOpen, onClose
         <form onSubmit={handleSubmit} className="update_account_modal_form">
           <div className="update_account_modal_form_row">
             <div className="update_account_modal_form_group">
-              <label htmlFor="nom">Name</label>
+              <label htmlFor="nom">Nom</label>
               <input
                 type="text"
                 id="nom"
@@ -146,8 +146,8 @@ const UpdateAccountModal: React.FC<UpdateAccountModalProps> = ({ isOpen, onClose
                   required
                   disabled={status === FETCH_STATUS.LOADING}
                 >
-                  <option value="permanent">permanent</option>
-                  <option value="temporaire">temporaire</option>
+                  <option value="permanent">Permanent</option>
+                  <option value="temporaire">Temporaire</option>
                 </select>
               </div>
             </div>
@@ -199,7 +199,7 @@ const UpdateAccountModal: React.FC<UpdateAccountModalProps> = ({ isOpen, onClose
                 />
               </div>
             {formData.type === "temporaire" && <div className="update_account_modal_form_group">
-              <label className="finishTime">Finish Time</label>
+              <label className="finishTime">Date de fin</label>
               <input
               type="date"
               name="deactivation_date"
@@ -213,7 +213,7 @@ const UpdateAccountModal: React.FC<UpdateAccountModalProps> = ({ isOpen, onClose
 
           <div className="update_account_modal_form_row">
             <div className="update_account_modal_form_group">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">Mot de passe</label>
               <input
                 type="password"
                 id="password"
@@ -252,7 +252,7 @@ const UpdateAccountModal: React.FC<UpdateAccountModalProps> = ({ isOpen, onClose
               onClick={()=>{resetForm();onClose()}}
               disabled={status === FETCH_STATUS.LOADING}
             >
-              Cancel
+              Annuler
             </button>
             <button 
               type="submit" 
@@ -260,7 +260,7 @@ const UpdateAccountModal: React.FC<UpdateAccountModalProps> = ({ isOpen, onClose
               id='submit_account'
               disabled={status === FETCH_STATUS.LOADING}
             >
-              {status === FETCH_STATUS.LOADING ? 'Updating...' : 'Update'}
+              {status === FETCH_STATUS.LOADING ? 'Modification en cours...' : 'Modifier'}
             </button>
           </div>
         </form>

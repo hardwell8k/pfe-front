@@ -71,7 +71,7 @@ const AddTeamModal: React.FC<AddTeamModalProps> = ({ isOpen, onClose, getTeams }
     <div className="add_team_modal_overlay">
       <div className="add_team_modal">
         <div className="add_team_modal_header">
-          <h2>Teams</h2>
+          <h2>Equipe</h2>
           <button 
             className="add_team_modal_close" 
             onClick={()=>{resetForm();onClose()}}

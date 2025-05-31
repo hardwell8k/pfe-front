@@ -59,8 +59,7 @@
 }
 
 .team_page_add_button {
-    background-color: 
-  #2563eb;
+    background-color: #2563eb;
     color: white;
     border: none;
     border-radius: 8px;
@@ -69,10 +68,22 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin:0;
+    margin: 0;
     height: 2.7rem;
-    width:6rem;
-  }
+    min-width: 8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.team_page_add_button:hover {
+    background-color: #1d4ed8;
+}
+
+.team_page_add_button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
 
 .team_page_table_container {
     border-radius: 0;

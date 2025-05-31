@@ -76,13 +76,13 @@ function Event_creation_form(props:any,ref:any){
                 throw{status:reponse.status,message:result.message};
             }
 
-            toast.success("event created");
+            toast.success("Événement créé avec succès");
             props.setStatus(FETCH_STATUS.SUCCESS);
             clearform();
             props.getUpcomingEvents();
         }catch(error:any){
             console.error(error.message);    
-            toast.error(error.err); 
+            toast.error("Erreur lors de la création de l'événement"); 
             props.setStatus(FETCH_STATUS.ERROR);
         }
     }
@@ -138,19 +138,19 @@ function Event_creation_form(props:any,ref:any){
             if(!result.success){
                 throw({status:reponse.status,message:result.message});
             }
-            toast.success("event updated with success");
+            toast.success("Événement mis à jour avec succès");
             props.setStatus(FETCH_STATUS.SUCCESS);
             props.getUpcomingEvents();
         } catch(error:any){
             console.error(error.message);
-            toast.error(error.message);     
+            toast.error("Erreur lors de la mise à jour de l'événement");     
             props.setStatus(FETCH_STATUS.ERROR);
         }
     }
 
     const handleUpdate = async()=>{
         if(selectedEventID.current===0){
-            toast.warn("select an event to update");
+            toast.warn("Sélectionnez un événement à mettre à jour");
             return 0;
         }
         const data = getValues();
@@ -172,19 +172,19 @@ function Event_creation_form(props:any,ref:any){
             if(!result.success){
                 throw({status:reponse.status,message:result.message});
             }
-            toast.success(result.message);
+            toast.success("Événement supprimé avec succès");
             props.setStatus(FETCH_STATUS.SUCCESS)
             clearform();
             props.getUpcomingEvents();
         } catch(error:any){
-            toast.error(error.message);
+            toast.error("Erreur lors de la suppression de l'événement");
             console.error(error.message);  
             props.setStatus(FETCH_STATUS.ERROR);   
         }
     }
     const handleDelete = async ()=>{
         if(selectedEventID.current===0){
-            toast.warn("select an event to delete");
+            toast.warn("Sélectionnez un événement à supprimer");
             return 0;
         }
         

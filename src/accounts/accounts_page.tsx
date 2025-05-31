@@ -165,12 +165,12 @@ function Accounts_page(){
         <Sidebar />
         <div className='accounts_page_container'>
             <div className='accounts_page_container_header'>
-            <div className='accounts_page_container_title'>Accounts</div>
+            <div className='accounts_page_container_title'>Comptes</div>
             <div className='accounts_page_container_search'>
                 <Search className='accounts_page_search_icon' size={20} />
                 <input
                 type="text"
-                placeholder='Search'
+                placeholder='Rechercher'
                 className='accounts_page_container_search_input'
                 value={searchTerm}
                 onChange={(e) => { setSearchTerm(e.target.value) }}
@@ -181,8 +181,7 @@ function Accounts_page(){
                 <button 
                 className='accounts_page_container_add_accounts_button'
                 onClick={() => setIsModalOpen(true)}
-                > + add Account</button>
-                
+                > + Ajouter un compte</button>
             </div>
             </div>
             <div className='accounts_page_container_table_container'>
@@ -206,7 +205,7 @@ function Accounts_page(){
                         email
                         </th>
                         <th className='accounts_page_container_table_team_header'>
-                        team 
+                        equipe 
                         </th>
                         <th className='accounts_page_container_table_type_header'>
                         type 
@@ -222,7 +221,7 @@ function Accounts_page(){
                 <tbody>
                 {status === FETCH_STATUS.LOADING ? (
                     <tr>
-                    <td colSpan={8} className="accounts_page_table_loading">Loading data...</td>
+                    <td colSpan={8} className="accounts_page_table_loading">Chargement des données...</td>
                     </tr>
                 ) : filteredAccounts.length > 0 ? (
                     <>
@@ -235,7 +234,7 @@ function Accounts_page(){
                     
                 ) : (
                     <tr>
-                    <td colSpan={8} className="accounts_page_table_no_data">No Accounts data found</td>
+                    <td colSpan={8} className="accounts_page_table_no_data">Aucun compte trouvé</td>
                     </tr>
                 )}
                 </tbody>

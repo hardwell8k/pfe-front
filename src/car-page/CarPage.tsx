@@ -150,12 +150,12 @@ function CarPage() {
       <Sidebar />
       <div className='car_page_container'>
         <div className='car_page_container_header'>
-          <div className='car_page_container_title'>Cars</div>
+          <div className='car_page_container_title'>Véhicules</div>
           <div className='car_page_container_search'>
             <Search className='car_page_search_icon' size={20} />
             <input
               type="text"
-              placeholder='Search'
+              placeholder='Rechercher'
               className='car_page_container_search_input'
               value={searchTerm}
               onChange={(e) => { setSearchTerm(e.target.value) }}
@@ -166,7 +166,7 @@ function CarPage() {
               className='car_page_container_add_car_button'
               onClick={() => setIsModalOpen(true)}
             >
-              Add Car
+              Ajouter un véhicule
             </button>
           </div>
         </div>
@@ -201,7 +201,7 @@ function CarPage() {
             <tbody>
               {status === FETCH_STATUS.LOADING ? (
                 <tr>
-                  <td colSpan={6} className="car_page_table_loading">Loading data...</td>
+                  <td colSpan={6} className="car_page_table_loading">Chargement des données...</td>
                 </tr>
               ) : filteredCars.length > 0 ? (
                 <>
@@ -213,7 +213,7 @@ function CarPage() {
                 </>              
               ) : (
                 <tr>
-                  <td colSpan={6} className="car_page_table_no_data">No cars data found</td>
+                  <td colSpan={6} className="car_page_table_no_data">Aucun véhicule trouvé</td>
                 </tr>
               )}
             </tbody>

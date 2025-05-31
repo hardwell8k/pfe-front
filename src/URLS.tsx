@@ -1,4 +1,4 @@
-const ServerIpAddress = "http://10.0.0.203:5000";
+const ServerIpAddress = "http://localhost:5000";
 
 export const URLS = {
     ServerIpAddress: ServerIpAddress,
