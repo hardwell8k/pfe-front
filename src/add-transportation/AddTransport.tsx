@@ -98,21 +98,21 @@ export default function AddTransport() {
     try {
       // Create a copy of formData for submission
       const submitData = {
-        ...formData,
-        dateDebut: formData.dateDebut ? new Date(formData.dateDebut).getTime() : '',
-        // Format duration as "Xh YYmin" for submission
-        duration: `${formData.durationHours || '0'}h ${formData.durationMinutes || '00'}min`,
+        adress_depart: formData.startAddress,
+        adress_arrive: formData.arrivalAddress,
+        temps_depart: formData.dateDebut ? new Date(formData.dateDebut).getTime() : '',
+        prix: Number(formData.price),
+        description: formData.description,
+        evenement_id: 1, // TODO: Get this from props or context
+        car_id: formData.selfDone ? null : undefined // Only send if selfDone is false
       };
 
-      // Remove the separate duration fields as they're now combined
-      const { durationHours, durationMinutes, ...dataToSubmit } = submitData;
-
-      const response = await fetch(`${URLS.ServerIpAddress}/api/transportation`, {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/addTransport`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(dataToSubmit)
+        body: JSON.stringify(submitData)
       });
   
       if (!response.ok) {

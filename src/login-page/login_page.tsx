@@ -14,32 +14,49 @@ function Login_page(){
     const logIn = async (data:any)=>{
         try {
             setStatus(FETCH_STATUS.LOADING);
-            const reponse = await fetch(`${URLS.ServerIpAddress}/api/logIn`,{
-                method:"POST",
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({email:data.email,password:data.password}),
-                credentials: 'include',
+            console.log('Attempting to login with:', { email: data.email });
+            
+            const response = await fetch(`${URLS.ServerIpAddress}/api/logIn`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: data.email,
+                    password: data.password
+                }),
+                credentials: 'include'
             });
 
-            const result = await reponse.json();
+            console.log('Login response status:', response.status);
+            const result = await response.json();
+            console.log('Login response:', result);
             
             if(!result.success){
-                throw({status: reponse.status,message:result.message});
+                throw({status: response.status, message: result.message});
             }
             
             setStatus(FETCH_STATUS.SUCCESS);
 
-            Cookies.set('isLogedIn',result.success,{expires:1/3,sameSite:'lax'});
-            Cookies.set('role',(result.data).role,{expires:1/3,sameSite:'lax'});
-            Cookies.set("user", JSON.stringify(result.data), {expires: 1, sameSite: "lax",});
+            // Store user data in cookies
+            Cookies.set('isLogedIn', 'true', {expires: 1/3, sameSite: 'lax'});
+            Cookies.set('role', result.data.role, {expires: 1/3, sameSite: 'lax'});
+            Cookies.set('user', JSON.stringify(result.data), {expires: 1, sameSite: 'lax'});
+            
+            // Store token in memory or secure storage
+            localStorage.setItem('token', result.data.token);
+            
             console.log("connected successfully");
-            console.log(Cookies.get("isLogedIn"));
-            console.log(Cookies.get("role"));
-            console.log(Cookies.get("user"));
             navigate('/firstPage');
         } catch (error:any) {
-            toast.error("failed to log in",error.message);
-            setStatus(FETCH_STATUS.ERROR)
+            console.error("Login error:", error);
+            if (error.message === 'Failed to fetch') {
+                toast.error("Cannot connect to server. Please check if the server is running.");
+            } else {
+                toast.error(error.message || "Failed to log in");
+            }
+            setStatus(FETCH_STATUS.ERROR);
         }
     }
 
@@ -57,17 +74,36 @@ function Login_page(){
             <h1>Plan-It</h1>
             <img src={LeftImage} alt='login_img'/>
         </div>
-        <div className='login_page_form_containing_div' onSubmit={handleSubmit(logIn)}>
-            {status === FETCH_STATUS.LOADING?<Loading/>
-            :<form className='login_page_form'>
+        <div className='login_page_form_containing_div'>
+            {status === FETCH_STATUS.LOADING ? <Loading/>
+            : <form className='login_page_form' onSubmit={handleSubmit((data) => {
+                console.log('Form submitted with data:', data);
+                logIn(data);
+              })}>
                 <div className='login_page_form_input_div'>
                     <p>Email</p>
-                    <input type='text' placeholder='Enter your email' {...register('email',{required:'EMAIL IS REQUIRED',pattern:/^[^\s@]+@[^\s@]+\.[^\s@]+$/i})}/>
+                    <input 
+                        type='text' 
+                        placeholder='Enter your email' 
+                        {...register('email', {
+                            required: 'EMAIL IS REQUIRED',
+                            pattern: {
+                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/i,
+                                message: 'Invalid email format'
+                            }
+                        })}
+                    />
                     {errors.email && <p className='error-message'>{String(errors.email.message)}</p>}
                 </div>
                 <div className='login_page_form_input_div'>
                     <p>Password</p>
-                    <input type='password' placeholder='Enter your password' {...register('password',{required:'PASSWORD IS REQUIRED'})}/>
+                    <input 
+                        type='password' 
+                        placeholder='Enter your password' 
+                        {...register('password', {
+                            required: 'PASSWORD IS REQUIRED'
+                        })}
+                    />
                     {errors.password && <p className='error-message'>{String(errors.password.message)}</p>}
                 </div>
                 <button type='submit'>Log In</button>
