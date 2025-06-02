@@ -110,17 +110,17 @@ export default function AddStaff() {
     <div className="asf-dashboard-container">
       <Sidebar />
       <div className="asf-main-content">
-        <h1 className="asf-page-title">Add Staff Member</h1>
+        <h1 className="asf-page-title">Ajouter un membre du personnel</h1>
         <div className="asf-form-card">
           <form onSubmit={handleSubmit}>
             <div className="asf-form-grid">
               <div>
                 <div className="asf-form-group">
-                  <label className="asf-form-label">First Name</label>
+                  <label className="asf-form-label">Prénom</label>
                   <input
                     type="text"
                     name="firstName"
-                    placeholder="Enter first name"
+                    placeholder="Entrez le prénom"
                     className="asf-form-input"
                     value={formData.firstName}
                     onChange={handleInputChange}
@@ -128,11 +128,11 @@ export default function AddStaff() {
                   />
                 </div>
                 <div className="asf-form-group">
-                  <label className="asf-form-label">Last Name</label>
+                  <label className="asf-form-label">Nom</label>
                   <input
                     type="text"
                     name="lastName"
-                    placeholder="Enter last name"
+                    placeholder="Entrez le nom"
                     className="asf-form-input"
                     value={formData.lastName}
                     onChange={handleInputChange}
@@ -144,7 +144,7 @@ export default function AddStaff() {
                   <input
                     type="tel"
                     name="contact"
-                    placeholder="Enter phone number"
+                    placeholder="Entrez le numéro de téléphone"
                     className="asf-form-input"
                     value={formData.contact}
                     onChange={handleInputChange}
@@ -156,7 +156,7 @@ export default function AddStaff() {
                   <input
                     type="email"
                     name="email"
-                    placeholder="Enter email address"
+                    placeholder="Entrez l'adresse email"
                     className="asf-form-input"
                     value={formData.email}
                     onChange={handleInputChange}
@@ -166,7 +166,7 @@ export default function AddStaff() {
               </div>
               <div>
                 <div className="asf-form-group">
-                  <label className="asf-form-label">Department</label>
+                  <label className="asf-form-label">Département</label>
                   <div className="asf-select-wrapper">
                     <select
                       name="department"
@@ -175,17 +175,17 @@ export default function AddStaff() {
                       onChange={handleInputChange}
                       required
                     >
-                      <option value="" disabled>Select department</option>
-                      <option value="technical">Technical</option>
-                      <option value="operations">Operations</option>
-                      <option value="management">Management</option>
-                      <option value="logistics">Logistics</option>
+                      <option value="" disabled>Sélectionnez un département</option>
+                      <option value="technical">Technique</option>
+                      <option value="operations">Opérations</option>
+                      <option value="management">Gestion</option>
+                      <option value="logistics">Logistique</option>
                     </select>
 
                   </div>
                 </div>
                 <div className="asf-form-group">
-                  <label className="asf-form-label">Team</label>
+                  <label className="asf-form-label">Équipe</label>
                   <div className="asf-select-wrapper">
                     <select
                       name="team"
@@ -194,7 +194,7 @@ export default function AddStaff() {
                       onChange={handleInputChange}
                       required
                     >
-                      <option value="" disabled>Select team</option>
+                      <option value="" disabled>Sélectionnez une équipe</option>
                       {teams.map((team:any)=>(
                         <option value={Number(team.ID)}>{team.nom}</option>
                       ))}
@@ -203,7 +203,7 @@ export default function AddStaff() {
                   </div>
                 </div>
                 <div className="asf-form-group">
-                  <label className="asf-form-label">Role</label>
+                  <label className="asf-form-label">Rôle</label>
                   <div className="asf-select-wrapper">
                     <select
                       name="role"
@@ -212,18 +212,18 @@ export default function AddStaff() {
                       onChange={handleInputChange}
                       required
                     >
-                      <option value="" disabled>Select role</option>
-                      <option value="manager">Manager</option>
-                      <option value="supervisor">Supervisor</option>
-                      <option value="technician">Technician</option>
-                      <option value="operator">Operator</option>
+                      <option value="" disabled>Sélectionnez un rôle</option>
+                      <option value="manager">Gestionnaire</option>
+                      <option value="supervisor">Superviseur</option>
+                      <option value="technician">Technicien</option>
+                      <option value="operator">Opérateur</option>
                     </select>
 
                   </div>
                 </div>
 
                 <div className="asf-form-group">
-                  <label className="asf-form-label">Privilege</label>
+                  <label className="asf-form-label">Privilège</label>
                   <div className="asf-select-wrapper">
                     <select
                       name="privilege"
@@ -232,11 +232,11 @@ export default function AddStaff() {
                       onChange={handleInputChange}
                       required
                     >
-                      <option value="" disabled>Select privilege</option>
-                      <option value="user">User</option>
-                      <option value="super_user">Super User</option>
-                      <option value="admin">Admin</option>
-                      <option value="super_admin">Super Admin</option>
+                      <option value="" disabled>Sélectionnez un privilège</option>
+                      <option value="user">Utilisateur</option>
+                      <option value="super_user">Super Utilisateur</option>
+                      <option value="admin">Administrateur</option>
+                      <option value="super_admin">Super Administrateur</option>
 
                     </select>
 
@@ -246,7 +246,7 @@ export default function AddStaff() {
             </div>
             <div className="asf-buttons-container">
               <button type="submit" className="asf-submit-button">
-                Add Staff Member
+                Ajouter le membre du personnel
               </button>
             </div>
           </form>

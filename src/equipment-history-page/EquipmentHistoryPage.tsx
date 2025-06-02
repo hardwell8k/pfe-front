@@ -1,23 +1,23 @@
 // HistoryPage.tsx
 import { useState, useEffect } from 'react';
-import './HistoryPage.css';
+import './EquipmentHistoryPage.css';
 import { FETCH_STATUS } from '../fetchStatus';
 import Sidebar from '../sidebar/Sidebar';
 import { Search } from 'lucide-react';
-import HistoryEvent from './history-element/HistoryEvent'
+import EquipmentHistoryEvent from './equipment-history-element/EquipmentHistoryEvent'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { URLS } from '../URLS';
 
 
-interface HistoryItem {
-  ID: string;
-  num_tel: number;
-  client_nom: string;
-  event_nom: string;
-  date: string;
+interface EquipmentHistoryItem {
+  ID:number,
+  event_name: string;
+  equipment_name: string;
+  date_debut: string;
+  date_fin: string;
   type: string;
-  email: string;
+  use_number: number;
 }
 
 
@@ -25,20 +25,28 @@ interface SelectedItems {
   [key: string]: boolean;
 }
 
-function HistoryPage() {
+function EquipmentHistoryPage() {
   const [status, setStatus] = useState<string>(FETCH_STATUS.IDLE);
-  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [history, setHistory] = useState<EquipmentHistoryItem[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedItems, setSelectedItems] = useState<SelectedItems>({});
 
   useEffect(() => {
-    getHistory();
+    getEquipmentHistory();
   }, []);
 
-  const getHistory = async () => {
+  const getEquipmentHistory = async () => {
     try {
+      const current_time = new Date().toLocaleString("en-CA", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }).replace(",", "");
       setStatus(FETCH_STATUS.LOADING);
-      const response = await fetch(`${URLS.ServerIpAddress}/api/getEventsHistory`, {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/getHistoryEquipment/${current_time}`, {
         method: "GET",
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -61,10 +69,9 @@ function HistoryPage() {
   // For filtering the history data
   const filteredHistory = history.filter(item => {
     return (
-      item.client_nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.event_nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      String(item.num_tel)?.toLowerCase().includes(searchTerm.toLowerCase())
+      item.equipment_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.event_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.type?.toLowerCase().includes(searchTerm.toLowerCase()) 
     );
   });
 
@@ -120,21 +127,24 @@ function HistoryPage() {
                   />*/}
                 </th>
                 <th className='history_page_phone_header'>
-                  phone number 
+                  Nom d'equipement
+                </th>
+                <th className='history_page_email_header'>
+                  Nombre
                 </th>
                 <th className='history_page_name_header'>
-                  Name 
+                  Type
                 </th>
                 <th className='history_page_event_header'>
-                  event 
+                  Nom d'evenement 
                 </th>
                 <th className='history_page_date_header'>
-                  Date 
+                  Date debut
                 </th>
                 <th className='history_page_status_header'>
-                  Type 
+                  Date fin 
                 </th>
-                <th className='history_page_email_header'>email</th>
+                
                 <th className='history_page_actions_header'></th>
               </tr>
             </thead>
@@ -144,9 +154,10 @@ function HistoryPage() {
                   <td colSpan={8} className="history_page_loading">Loading data...</td>
                 </tr>
               ) : filteredHistory.length > 0 ? (
-                filteredHistory.map((item) => (
-                  <HistoryEvent key={item.ID} item={item} isSelected={selectedItems[item.ID]} onSelect={handleSelectItem}/>
-                ))
+                filteredHistory.map((item,index) => {
+                  item.ID=index;
+                  return <EquipmentHistoryEvent key={index} item={{...item,ID:index}} isSelected={selectedItems[item.ID]} onSelect={handleSelectItem}/>
+                })
               ) : (
                 <tr>
                   <td colSpan={8} className="history_page_no_data">No history data found</td>
@@ -171,4 +182,4 @@ function HistoryPage() {
 
 
 
-export default HistoryPage;
+export default EquipmentHistoryPage;

@@ -94,7 +94,7 @@ const UpdateCarModal: React.FC<UpdateCarModalProps> = ({ isOpen, onClose, getCar
     <div className="update_car_modal_overlay">
       <div className="update_car_modal">
         <div className="update_car_modal_header">
-          <h2>Vehicles</h2>
+          <h2>Modifier le véhicule</h2>
           <button 
             className="update_car_modal_close" 
             onClick={()=>{resetForm();onClose()}}
@@ -107,14 +107,14 @@ const UpdateCarModal: React.FC<UpdateCarModalProps> = ({ isOpen, onClose, getCar
         <form onSubmit={handleSubmit} className="update_car_modal_form">
           <div className="update_car_modal_form_row">
             <div className="update_car_modal_form_group">
-              <label htmlFor="nom">Name</label>
+              <label htmlFor="nom">Nom</label>
               <input
                 type="text"
                 id="nom"
                 name="nom"
                 value={formData.nom}
                 onChange={handleChange}
-                placeholder="John doe"
+                placeholder="Nom du véhicule"
                 required
                 disabled={status === FETCH_STATUS.LOADING}
               />
@@ -137,14 +137,14 @@ const UpdateCarModal: React.FC<UpdateCarModalProps> = ({ isOpen, onClose, getCar
           
           <div className="update_car_modal_form_row">
             <div className="update_car_modal_form_group">
-              <label htmlFor="nbr_place">Number of places</label>
+              <label htmlFor="nbr_place">Nombre de places</label>
               <input
                 type="number"
                 id="nbr_place"
                 name="nbr_place"
                 value={formData.nbr_place || ''}
                 onChange={handleChange}
-                placeholder="nombre de place"
+                placeholder="Nombre de places"
                 min="1"
                 required
                 disabled={status === FETCH_STATUS.LOADING}
@@ -152,7 +152,7 @@ const UpdateCarModal: React.FC<UpdateCarModalProps> = ({ isOpen, onClose, getCar
             </div>
             
             <div className="update_car_modal_form_group">
-              <label htmlFor="categorie">Category</label>
+              <label htmlFor="categorie">Catégorie</label>
               <div className="update_car_modal_select_wrapper">
                 <select
                   id="categorie"
@@ -162,10 +162,10 @@ const UpdateCarModal: React.FC<UpdateCarModalProps> = ({ isOpen, onClose, getCar
                   required
                   disabled={status === FETCH_STATUS.LOADING}
                 >
-                  <option value="Sedan">Sedan</option>
+                  <option value="Sedan">Berline</option>
                   <option value="SUV">SUV</option>
-                  <option value="Hatchback">Hatchback</option>
-                  <option value="Truck">Truck</option>
+                  <option value="Hatchback">Citadine</option>
+                  <option value="Truck">Camion</option>
                 </select>
               </div>
             </div>
@@ -178,7 +178,7 @@ const UpdateCarModal: React.FC<UpdateCarModalProps> = ({ isOpen, onClose, getCar
               onClick={()=>{resetForm();onClose()}}
               disabled={status === FETCH_STATUS.LOADING}
             >
-              Cancel
+              Annuler
             </button>
             <button 
               type="submit" 
@@ -186,7 +186,7 @@ const UpdateCarModal: React.FC<UpdateCarModalProps> = ({ isOpen, onClose, getCar
               className="update_car_modal_submit"
               disabled={status === FETCH_STATUS.LOADING}
             >
-              {status === FETCH_STATUS.LOADING ? 'updating...' : 'update'}
+              {status === FETCH_STATUS.LOADING ? 'Modification en cours...' : 'Modifier'}
             </button>
           </div>
         </form>

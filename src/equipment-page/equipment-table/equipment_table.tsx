@@ -213,13 +213,13 @@ function Equipment_table(props:any){
             <div className='equipement_table_header_div'>
 
                 <div className='equipment_table_header_subdiv'>
-                    <h3>Equipments</h3>
+                    <h3>Équipements</h3>
 
                     <div className='equipment_page_container_search'>
                         <Search className='equipment_page_search_icon' size={20} />
                         <input
                         type="text"
-                        placeholder='Search'
+                        placeholder='Rechercher'
                         className='equipment_page_container_search_input'
                         value={searchTerm}
                         onChange={(e) => { setSearchTerm(e.target.value) }}
@@ -227,14 +227,14 @@ function Equipment_table(props:any){
                     </div>
 
                     <div className='quiment_table_header_subdiv_buttons' style={{position: 'relative'}}>
-                        <button id='quiment_table_header_subdiv_delete_button' onClick={() =>{if(selectedIds.length > 0){setIsDeleteEquipmentModalOpen(true)}else{toast.error("Please select at least one equipment")}}}><img src={deleteIcon}/>delete</button>
-                        <button id='quiment_table_header_subdiv_filter_button' onClick={() => setIsFilterDropdownOpen((prev) => !prev)}><img src={filterIcon}/>Filter</button>
-                        <button id='quiment_table_header_subdiv_print_button'><img src={printImg}/>Print</button>
+                        <button id='quiment_table_header_subdiv_delete_button' onClick={() =>{if(selectedIds.length > 0){setIsDeleteEquipmentModalOpen(true)}else{toast.error("Veuillez sélectionner au moins un équipement")}}}><img src={deleteIcon}/>supprimer</button>
+                        <button id='quiment_table_header_subdiv_filter_button' onClick={() => setIsFilterDropdownOpen((prev) => !prev)}><img src={filterIcon}/>Filtrer</button>
+                        {/*<button id='quiment_table_header_subdiv_print_button'><img src={printImg}/>Imprimer</button>*/}
                         {isFilterDropdownOpen && (
                             <div ref={filterDropdownRef} className="equipment_table_filter_dropdown">
-                                <div className="dropdown_item">Category</div>
+                                <div className="dropdown_item">Catégorie</div>
                                 <div className="dropdown_item">Type</div>
-                                <div className="dropdown_item">Availability</div>
+                                <div className="dropdown_item">Disponibilité</div>
                             </div>
                         )}
                     </div>

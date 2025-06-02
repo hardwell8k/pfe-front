@@ -15,13 +15,13 @@ interface selectedItems {
   [key: string]: boolean;
 }
 
-interface CustomerElement {
+/*interface CustomerElement {
   ID: number;
   nom: string;
   email: string;
   phone_number: string;
   domain: string;
-}
+}*/
 
 function content(props:any){
 
@@ -37,8 +37,8 @@ function content(props:any){
         item.nom.toLowerCase().includes(props.searchTerm.toLowerCase())
     );
 
-    // Calculate pagination
-    const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
+    
+    //const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const currentClients = filteredClients.slice(startIndex, endIndex);

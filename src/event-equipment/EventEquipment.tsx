@@ -6,6 +6,7 @@ import { FETCH_STATUS } from '../fetchStatus';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import { URLS } from '../URLS';
 
 interface EquipmentElement {
   ID: number;
@@ -69,7 +70,7 @@ function EventEquipment() {
   const getEquipment = async () => {
     try {
       setStatus(FETCH_STATUS.LOADING);
-      const response = await fetch("http://localhost:5000/api/getAllEquipment", {
+      const response = await fetch(`http://${URLS.ServerIpAddress}/api/getAllEquipment`, {
         method: "GET",
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -130,14 +131,14 @@ function EventEquipment() {
       <div className='event-equipment-content'>
         <header className='event-equipment-header'>
           <div className='title-section'>
-            <h1 className='event-equipment-title'>Add Equipment to Event</h1>
+            <h1 className='event-equipment-title'>Ajouter des équipements à l'événement</h1>
           </div>
           <div className='event-equipment-actions'>
             <div className='search-container'>
               <Search className='search-icon' size={18} />
               <input
                 type="text"
-                placeholder='Search equipment...'
+                placeholder='Rechercher des équipements...'
                 className='search-input'
                 value={searchTerm}
                 onChange={(e) => { setSearchTerm(e.target.value) }}
@@ -149,7 +150,7 @@ function EventEquipment() {
                 onClick={handleAddToEvent}
               >
                 <Plus size={18} />
-                <span>Add to Event</span>
+                <span>Ajouter à l'événement</span>
               </button>
               <button 
                 className='add-new-equipment-button'
@@ -177,12 +178,12 @@ function EventEquipment() {
                     <label htmlFor="select-all" className='event-equipment-checkbox-label'></label>
                   </div>
                 </th>
-                <th>Name</th>
-                <th>Category</th>
+                <th>Nom</th>
+                <th>Catégorie</th>
                 <th>Type</th>
-                <th>Quantity</th>
-                <th>Details</th>
-                <th>Availability</th>
+                <th>Quantité</th>
+                <th>Détails</th>
+                <th>Disponibilité</th>
               </tr>
             </thead>
             <tbody>
@@ -190,7 +191,7 @@ function EventEquipment() {
                 <tr>
                   <td colSpan={7} className="loading-row">
                     <div className="loading-spinner"></div>
-                    <span>Loading equipment...</span>
+                    <span>Chargement des équipements...</span>
                   </td>
                 </tr>
               ) : filteredEquipment.length > 0 ? (
@@ -210,7 +211,9 @@ function EventEquipment() {
                     <td>{item.details || '-'}</td>
                     <td>
                       <span className={`status-badge ${item.disponibility?.toLowerCase()}`}>
-                        {item.disponibility}
+                        {item.disponibility === 'available' ? 'Disponible' : 
+                         item.disponibility === 'unavailable' ? 'Non disponible' : 
+                         item.disponibility === 'on-leave' ? 'En prêt' : item.disponibility}
                       </span>
                     </td>
                   </tr>
@@ -220,8 +223,8 @@ function EventEquipment() {
                   <td colSpan={7} className="empty-row">
                     <div className="empty-state">
                       <div className="empty-icon">🔧</div>
-                      <h3>No equipment found</h3>
-                      <p>Try adjusting your search</p>
+                      <h3>Aucun équipement trouvé</h3>
+                      <p>Essayez d'ajuster votre recherche</p>
                     </div>
                   </td>
                 </tr>
@@ -232,7 +235,7 @@ function EventEquipment() {
 
         <footer className='event-equipment-footer'>
           <div className='pagination-info'>
-            Showing {shownEquipment.length} of {filteredEquipment.length} equipment
+            Affichage de {shownEquipment.length} sur {filteredEquipment.length} équipements
           </div>
           <div className='pagination-controls'>
             <button 

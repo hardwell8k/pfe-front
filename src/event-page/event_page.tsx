@@ -29,7 +29,7 @@ function Event_page(){
             setStatus(FETCH_STATUS.SUCCESS);
         } catch (error:any) {
             console.error("error while getting upcoming events",error.message);
-            toast.error(error.message);
+            toast.error("Erreur lors de la récupération des événements à venir");
             setStatus(FETCH_STATUS.ERROR)
         }
     }

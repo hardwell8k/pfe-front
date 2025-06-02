@@ -46,7 +46,7 @@ function Current_events(props:any){
                     </div>
                 ))}
             </div>}
-            {(props.status===FETCH_STATUS.ERROR)&&<div className="events">error!</div>}
+            {(props.status===FETCH_STATUS.ERROR)&&<div className="events">Erreur!</div>}
         </div>
     );
 }

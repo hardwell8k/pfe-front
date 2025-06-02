@@ -215,14 +215,14 @@ function InStaffTeam() {
       <div className='in-staff-team-content'>
         <header className='in-staff-team-header'>
           <div className='title-section'>
-            <h1 className='in-staff-team-title'>Teams Management</h1>
+            <h1 className='in-staff-team-title'>Gestion des équipes</h1>
           </div>
           <div className='in-staff-team-actions'>
             <div className='search-container'>
               <Search className='search-icon' size={18} />
               <input
                 type="text"
-                placeholder='Search teams...'
+                placeholder='Rechercher des équipes...'
                 className='search-input'
                 value={searchTerm}
                 onChange={(e) => { setSearchTerm(e.target.value) }}
@@ -247,10 +247,10 @@ function InStaffTeam() {
                     <label htmlFor="select-all" className='team-checkbox-label'></label>
                   </div>
                 </th>
-                <th>Team Name</th>
-                <th>Members</th>
-                <th>Created Date</th>
-                <th>Status</th>
+                <th>Nom</th>
+                <th>Membres</th>
+                <th>Date de création</th>
+                <th>Statut</th>
               </tr>
             </thead>
             <tbody>
@@ -258,7 +258,7 @@ function InStaffTeam() {
                 <tr>
                   <td colSpan={5} className="loading-row">
                     <div className="loading-spinner"></div>
-                    <span>Loading teams...</span>
+                    <span>Chargement des équipes...</span>
                   </td>
                 </tr>
               ) : filteredTeams.length > 0 ? (
@@ -282,7 +282,7 @@ function InStaffTeam() {
                     <td>{new Date(item.created_at).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'})}</td>
                     <td>
                       <span className={`status-badge ${(item.status || 'inactive').toLowerCase()}`}>
-                        {item.status || 'Inactive'}
+                        {item.status || 'Inactif'}
                       </span>
                     </td>
                   </tr>
@@ -292,8 +292,8 @@ function InStaffTeam() {
                   <td colSpan={5} className="empty-row">
                     <div className="empty-state">
                       <div className="empty-icon">👥</div>
-                      <h3>No teams found</h3>
-                      <p>Try adjusting your search</p>
+                      <h3>Aucune équipe trouvée</h3>
+                      <p>Essayez d'ajuster votre recherche</p>
                     </div>
                   </td>
                 </tr>
@@ -304,12 +304,12 @@ function InStaffTeam() {
 
         <footer className='in-staff-team-footer'>
           <div className='pagination-info'>
-            Showing {shownTeams.length} of {filteredTeams.length} teams
+            Affichage de {shownTeams.length} sur {filteredTeams.length} équipes
           </div>
           <div className='footer-actions'>
             <button className='go-back-button' onClick={handleGoBack}>
               <ArrowLeft size={18} />
-              Go Back
+              Retour
             </button>
           </div>
           {renderPagination()}

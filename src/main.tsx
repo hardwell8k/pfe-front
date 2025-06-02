@@ -29,7 +29,7 @@ import AddPause from './add-pause/AddPause.tsx';
 import AddSoiree from './add-soiree/AddSoiree.tsx';
 import AdduserAccomodation from './add-user-accomodation-pricing/AdduserAccomodation.tsx';
 import AddTransport from './add-transportation/AddTransport.tsx';
-
+import TeamPage from './team-page/TeamPage.tsx';
 import FirstPage from './first-page/firstpage.tsx';
 import ProjectDashboard from './upcomingevent/upcomingevent.tsx';
 import InWorkshops from './in-workshops/InWorkshops';
@@ -47,6 +47,8 @@ import InAddEquipment from './in-add-equipment/InAddEquipment';
 import AddStaffEventTable from './add-staff-event-table/AddStaffEventTable';
 import AgencyStaffInEvent from './agency-staff-in-event/AgencyStaffInEvent';
 import InStaffTeam from './in-staff-team/InStaffTeam';
+import EquipmentHistoryPage from './equipment-history-page/EquipmentHistoryPage.tsx';
+import PrestatairePage from './prestataire-page/PrestatairePage.tsx';
 
 
 
@@ -181,7 +183,11 @@ const router = createBrowserRouter([
     element:<ProtectedRoute element={<AddTransport/>} />,
     errorElement:<div> 404 PAGE NOT FOUND</div>
   },
-
+  {
+    path:'/teamPage',
+    element:<ProtectedRoute element={<TeamPage/>} />,
+    errorElement:<div> 404 PAGE NOT FOUND</div>
+  },
   {
     path:'/firstPage',
     element:<ProtectedRoute element={<FirstPage/>} />,
@@ -266,7 +272,17 @@ const router = createBrowserRouter([
     path: '/in-staff-team',
     element: <ProtectedRoute element={<InStaffTeam />} />,
     errorElement: <div>404 PAGE NOT FOUND</div>
-  }
+  },
+  {
+    path: '/equipment-history',
+    element: <ProtectedRoute element={<EquipmentHistoryPage />} />,
+    errorElement: <div>404 PAGE NOT FOUND</div>
+  },
+  {
+    path: '/PrestatairePage',
+    element: <ProtectedRoute element={<PrestatairePage />} />,
+    errorElement: <div>404 PAGE NOT FOUND</div>
+  },
 
 ])
 

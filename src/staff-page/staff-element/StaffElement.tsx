@@ -61,31 +61,27 @@ function StaffElement(props:any){
             </div>
 
             <div className='accounts_containing_subdiv'>
-                <h3>{props.departement??"departement"}</h3>
+                <h3>{props.departement??"Département"}</h3>
             </div>
 
             <div className='accounts_containing_subdiv'>
-                <h3>{props.tel??"numero de telephone"}</h3>
+                <h3>{props.tel??"Numéro de téléphone"}</h3>
             </div>
 
             <div className='accounts_containing_subdiv'>
-                <h3>{props.email??"email"}</h3>
+                <h3>{props.email??"Email"}</h3>
             </div>
 
             <div className='accounts_containing_subdiv'>
                 <h3 id='accounts_type'>{props.team??"-"}</h3>
             </div>
-
-            {/*<div className='accounts_containing_subdiv'>
-                <h3 id='accounts_type'>{props.team??"-"}</h3>
-            </div>*/}
 
             <div className='accounts_containing_subdiv'>
                 <img src={moreHorizontalIcon} alt="" onClick={() => setIsOptionsVisible((prev)=>(!prev))}/>
             </div>
             {isOptionsVisible && <div className='StaffElement_options_div' ref={dropdownRef}>
-                <h3 onClick={() => {navigate('/UpdateStaff',{state:{ID:props.id,nom:props.name,prenom:props.surname,num_tel:props.tel,email:props.email,team:props.team}})}}>edit</h3>
-                <h3 onClick={()=>{deleteStaff()}}>delete</h3>
+                <h3 onClick={() => {navigate('/UpdateStaff',{state:{ID:props.id,nom:props.name,prenom:props.surname,num_tel:props.tel,email:props.email,team:props.team}})}}>Modifier</h3>
+                <h3 onClick={()=>{deleteStaff()}}>Supprimer</h3>
             </div>}
         </div>
     );

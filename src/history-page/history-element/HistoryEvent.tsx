@@ -25,12 +25,13 @@ const HistoryEvent: React.FC<HistoryEventProps> = ({ item,isSelected,onSelect})=
   return (
     <tr className={`history_event ${isSelected ? 'history_event--selected' : ''}`}>
       <td className="history_event_checkbox_cell">
-        <input 
+        {/*<input 
           type="checkbox" 
           checked={isSelected} 
           onChange={(e) => onSelect(item.ID, e.target.checked)}
           className="history_event_checkbox"
-        />
+
+        />*/}
       </td>
       <td className="history_event_phone_cell">{item.num_tel}</td>
       <td className="history_event_name_cell">

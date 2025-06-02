@@ -84,7 +84,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, getA
     <div className="add_account_modal_overlay">
       <div className="add_account_modal">
         <div className="add_account_modal_header">
-          <h2>Account</h2>
+          <h2>Compte</h2>
           <button 
             className="add_account_modal_close" 
             onClick={()=>{resetForm();onClose()}}
@@ -97,7 +97,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, getA
         <form onSubmit={handleSubmit} className="add_account_modal_form">
           <div className="add_account_modal_form_row">
             <div className="add_account_modal_form_group">
-              <label htmlFor="nom">Name</label>
+              <label htmlFor="nom">Nom</label>
               <input
                 type="text"
                 id="nom"
@@ -121,8 +121,8 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, getA
                   required
                   disabled={status === FETCH_STATUS.LOADING}
                 >
-                  <option value="permanent">permanent</option>
-                  <option value="temporaire">temporaire</option>
+                  <option value="permanent">Permanent</option>
+                  <option value="temporaire">Temporaire</option>
                 </select>
               </div>
             </div>
@@ -174,7 +174,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, getA
                 />
               </div>
             {formData.type === "temporaire" && <div className="add_account_modal_form_group">
-              <label className="finishTime">Finish Time</label>
+              <label className="finishTime">Date de fin</label>
               <input
               type="dateTime-local"
               name="deactivation_date"
@@ -188,7 +188,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, getA
 
           <div className="add_account_modal_form_row">
             <div className="add_account_modal_form_group">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">Mot de passe</label>
               <input
                 type="password"
                 id="password"
@@ -227,7 +227,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, getA
               onClick={()=>{resetForm();onClose()}}
               disabled={status === FETCH_STATUS.LOADING}
             >
-              Cancel
+              Annuler
             </button>
             <button 
               type="submit" 
@@ -235,7 +235,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ isOpen, onClose, getA
               id='submit_account'
               disabled={status === FETCH_STATUS.LOADING}
             >
-              {status === FETCH_STATUS.LOADING ? 'Adding...' : 'Add'}
+              {status === FETCH_STATUS.LOADING ? 'Ajout en cours...' : 'Ajouter'}
             </button>
           </div>
         </form>

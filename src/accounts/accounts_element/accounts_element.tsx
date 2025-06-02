@@ -82,9 +82,9 @@ const Accounts_element: React.FC<accountElementProps> = ({item,isSelected,onSele
                     </button>
                     {dropdownOpen && (
                         <div className="accounts_element_dropdown_menu">
-                        <button className="dropdown_item" onClick={()=>{setUpdate(item);setIsUpdateModalOpen(true)}}>Edit</button>
-                        <button className="dropdown_item">Activate</button>
-                        <button className="dropdown_item">Deactivate</button>
+                        <button className="dropdown_item" onClick={()=>{setUpdate(item);setIsUpdateModalOpen(true)}}>Modifier</button>
+                        <button className="dropdown_item">Activer</button>
+                        <button className="dropdown_item">Désactiver</button>
                         </div>
                     )}
                 </div>
