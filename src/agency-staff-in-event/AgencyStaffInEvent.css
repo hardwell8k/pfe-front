@@ -515,6 +515,20 @@ td span.on-leave {
   height: 16px;
 }
 
+.remove-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  color: #dc2626;
+}
+
+.remove-button:hover {
+  background-color: #fee2e2;
+}
+
 @media (max-width: 768px) {
   .agency-staff-in-event-content {
     padding: 1rem;

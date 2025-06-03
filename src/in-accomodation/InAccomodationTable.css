@@ -28,8 +28,9 @@
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 0;
-  margin-left: 1rem;
   color: #222;
+  white-space: nowrap;
+  margin-right: 20px;
 }
 
 .accommodation-search {
@@ -58,7 +59,6 @@
   cursor: pointer;
   transition: background 0.2s;
   white-space: nowrap;
-  margin-right: 9rem;
 }
 
 .accommodation-create-btn:hover {
@@ -96,11 +96,6 @@
   transition: box-shadow 0.2s;
 }
 
-.accommodation-row.sub-row {
-  background: #f7fafd;
-  box-shadow: none;
-}
-
 .accommodation-row td {
   padding: 18px 10px;
   font-size: 1rem;
@@ -108,36 +103,65 @@
   vertical-align: middle;
 }
 
-.accommodation-type-pill {
-  background: #eaf7ef;
-  color: #6fcf97;
-  font-weight: 600;
-  border-radius: 20px;
-  padding: 7px 24px;
+.accommodation-row.sub-row {
+  background: #f8fafc;
+}
+
+.accommodation-details {
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin: 0 10px;
+}
+
+.accommodation-details h4 {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
   font-size: 1rem;
+}
+
+.accommodation-details p {
+  margin: 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+.accommodation-type-pill {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
   display: inline-block;
-  text-transform: capitalize;
+}
+
+.accommodation-type-pill.single {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.accommodation-type-pill.double {
+  background: #e8f5e9;
+  color: #2e7d32;
 }
 
 .accommodation-type-pill.suite {
-  background: #eaf2fa;
-  color: #2563eb;
+  background: #fff3e0;
+  color: #f57c00;
 }
 
-.accommodation-more-menu {
-  font-size: 1.5rem;
-  color: #bfc3c9;
-  cursor: pointer;
-  padding: 0 10px;
-}
-
-.expand-btn {
-  font-size: 1.5rem;
-  color: #2563eb;
-  background: none;
+.accommodation-delete-btn {
+  background-color: #dc3545;
+  color: white;
   border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
   cursor: pointer;
-  outline: none;
+  transition: background-color 0.2s;
+}
+
+.accommodation-delete-btn:hover {
+  background-color: #c82333;
 }
 
 .accommodation-button-row {
@@ -161,4 +185,11 @@
 
 .accommodation-back-btn:hover {
   background: #e0e6ef;
+}
+
+.loading-message {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 1.1rem;
 } 

@@ -27,7 +27,11 @@ export default function Eventdetails() {
   ];
 
   const handleCardClick = (path: string) => {
-    navigate(path,{state:{evenement_id : evenement_id.current }});
+    if (path === '/event-staff') {
+      navigate(path, { state: { eventId: evenement_id.current } });
+    } else {
+      navigate(path, { state: { evenement_id: evenement_id.current } });
+    }
   };
 
   return (

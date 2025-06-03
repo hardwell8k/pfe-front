@@ -214,4 +214,145 @@
   border: solid #2256e7;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+
+.instructor-info {
+  position: relative;
+  display: inline-block;
+}
+
+.instructor-button {
+  background: none;
+  border: none;
+  color: #2256e7;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  text-decoration: underline;
+  font-family: inherit;
+}
+
+.instructor-button:hover {
+  color: #1741b6;
+}
+
+/* Modal Overlay */
+.instructor-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.instructor-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.instructor-modal-content {
+  padding: 24px;
+}
+
+.instructor-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.instructor-modal-close:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.instructor-modal-content h3 {
+  margin: 0 0 20px 0;
+  color: #2c3e50;
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.instructor-modal-content p {
+  margin: 12px 0;
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+.instructor-modal-content strong {
+  color: #2c3e50;
+  margin-right: 8px;
+  font-weight: 600;
+}
+
+.workshops-delete-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.workshops-delete-btn:hover {
+  background-color: #c82333;
+}
+
+.workshops-delete-selected {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.workshops-delete-selected:hover {
+  background-color: #c82333;
 } 

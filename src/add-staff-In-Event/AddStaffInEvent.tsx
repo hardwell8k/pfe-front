@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './AddStaffInEvent.css';
+import { toast } from 'react-toastify';
+import { URLS } from '../URLS';
 
 interface Staff {
   ID: number;
@@ -16,14 +18,23 @@ interface Event {
   nom: string;
 }
 
+interface Agency {
+  ID: number;
+  nom: string;
+  address: string;
+  description: string;
+  entreprise_id: number;
+}
+
 interface FormData {
-  fullName: string;
+  prenom: string;
+  nom: string;
+  num_tel: string;
   email: string;
-  agency: string;
+  agence_id: string;
   role: string;
   startDate: string;
   endDate: string;
-  salary: string;
   count?: string;
 }
 
@@ -36,45 +47,37 @@ interface ApiResponse {
 function AddStaffInEvent() {
   const navigate = useNavigate();
   const location = useLocation();
+  const eventIdRef = useRef<number | null>(null);
   const [staff, setStaff] = useState<Staff[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
+  const [agencies, setAgencies] = useState<Agency[]>([]);
   const [isMultiple, setIsMultiple] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState<number[]>([]);
   const [formData, setFormData] = useState<FormData>({
-    fullName: '',
+    prenom: '',
+    nom: '',
+    num_tel: '',
     email: '',
-    agency: '',
+    agence_id: '',
     role: '',
     startDate: '',
     endDate: '',
-    salary: '',
     count: ''
   });
 
   useEffect(() => {
     getStaff();
     getEvents();
+    getAgencies();
     
-    // Check if we have data from navigation state
-    console.log('Location state:', location.state);
-    
-    if (location.state?.staffData) {
-      console.log('Setting form data from navigation state:', location.state.staffData);
-      const { fullName, email, agency, role, employees } = location.state.staffData;
-      setFormData(prev => ({
-        ...prev,
-        fullName,
-        email,
-        agency,
-        role
-      }));
-      if (employees) {
-        setIsMultiple(true);
-        setFormData(prev => ({
-          ...prev,
-          count: employees.toString()
-        }));
-      }
+    // Get event ID from location state
+    if (location.state?.eventId) {
+      eventIdRef.current = location.state.eventId;
+      console.log('Event ID set:', eventIdRef.current);
+    } else {
+      console.error('No event ID found in location state');
+      toast.error('Event ID is missing');
+      navigate('/event-staff');
     }
   }, [location.state]);
 
@@ -100,7 +103,29 @@ function AddStaffInEvent() {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const getAgencies = async () => {
+    try {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/getAllAgencies`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to fetch agencies');
+      }
+
+      setAgencies(result.data);
+    } catch (error) {
+      console.error('Error fetching agencies:', error);
+      toast.error('Failed to load agencies');
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -110,36 +135,56 @@ function AddStaffInEvent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted');
+    console.log('Form data:', formData);
+    console.log('Event ID:', eventIdRef.current);
+    
     try {
-      if (isMultiple) {
-        // Handle multiple staff submission
-        const response = await axios.post<ApiResponse>('${URLS.ServerIpAddress}/api/staff-in-event/multiple', {
-          staffIds: selectedStaff,
-          role: formData.role,
-          startDate: formData.startDate,
-          endDate: formData.endDate,
-          salary: formData.salary
-        });
-        if (response.data.success) {
-          navigate('/event-staff');
-        }
-      } else {
-        // Handle single staff submission
-        const response = await axios.post<ApiResponse>('${URLS.ServerIpAddress}/api/staff-in-event', {
-          fullName: formData.fullName,
-          email: formData.email,
-          agency: formData.agency,
-          role: formData.role,
-          startDate: formData.startDate,
-          endDate: formData.endDate,
-          salary: formData.salary
-        });
-        if (response.data.success) {
-          navigate('/event-staff');
-        }
+      if (!eventIdRef.current) {
+        toast.error('Event ID is missing');
+        return;
       }
-    } catch (error) {
+
+      // Handle staff submission
+      const requestBody = {
+        prenom: formData.prenom,
+        nom: formData.nom,
+        num_tel: parseInt(formData.num_tel),
+        email: formData.email,
+        agence_id: parseInt(formData.agence_id),
+        role: formData.role,
+        start_date: formData.startDate,
+        end_date: formData.endDate,
+        departement: null,
+        team_id: null,
+        available: false,
+        evenement_id: eventIdRef.current
+      };
+
+      console.log('Submitting staff data:', requestBody);
+
+      const response = await fetch(`${URLS.ServerIpAddress}/api/addStaffWithAgence`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      console.log('Response status:', response.status);
+      const result = await response.json();
+      console.log('Response data:', result);
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to add staff');
+      }
+
+      toast.success('Staff added successfully');
+      navigate('/agency-staff-in-event', { state: { eventId: eventIdRef.current } });
+    } catch (error: any) {
       console.error('Error submitting form:', error);
+      toast.error(error.message || 'Failed to add staff');
     }
   };
 
@@ -163,11 +208,33 @@ function AddStaffInEvent() {
               {!isMultiple && (
                 <>
                   <div className="asie-form-group">
-                    <label className="asie-form-label">Full Name</label>
+                    <label className="asie-form-label">First Name</label>
                     <input
                       type="text"
-                      name="fullName"
-                      value={formData.fullName}
+                      name="prenom"
+                      value={formData.prenom}
+                      onChange={handleInputChange}
+                      className="asie-form-input"
+                      required
+                    />
+                  </div>
+                  <div className="asie-form-group">
+                    <label className="asie-form-label">Last Name</label>
+                    <input
+                      type="text"
+                      name="nom"
+                      value={formData.nom}
+                      onChange={handleInputChange}
+                      className="asie-form-input"
+                      required
+                    />
+                  </div>
+                  <div className="asie-form-group">
+                    <label className="asie-form-label">Phone Number</label>
+                    <input
+                      type="tel"
+                      name="num_tel"
+                      value={formData.num_tel}
                       onChange={handleInputChange}
                       className="asie-form-input"
                       required
@@ -186,14 +253,20 @@ function AddStaffInEvent() {
                   </div>
                   <div className="asie-form-group">
                     <label className="asie-form-label">Agency</label>
-                    <input
-                      type="text"
-                      name="agency"
-                      value={formData.agency}
+                    <select
+                      name="agence_id"
+                      value={formData.agence_id}
                       onChange={handleInputChange}
                       className="asie-form-input"
                       required
-                    />
+                    >
+                      <option value="">Select an agency</option>
+                      {agencies.map(agency => (
+                        <option key={agency.ID} value={agency.ID}>
+                          {agency.nom}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </>
               )}
@@ -225,17 +298,6 @@ function AddStaffInEvent() {
                   type="date"
                   name="endDate"
                   value={formData.endDate}
-                  onChange={handleInputChange}
-                  className="asie-form-input"
-                  required
-                />
-              </div>
-              <div className="asie-form-group">
-                <label className="asie-form-label">Salary</label>
-                <input
-                  type="number"
-                  name="salary"
-                  value={formData.salary}
                   onChange={handleInputChange}
                   className="asie-form-input"
                   required

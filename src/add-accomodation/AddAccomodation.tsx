@@ -1,7 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../sidebar/Sidebar';
 import './AddAccomodation.css';
 import { URLS } from '../URLS';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+interface AccommodationFormData {
+  nom: string;
+  address: string;
+  type: 'single' | 'double' | 'suite';
+  description: string;
+  prix: number;
+  date_debut: string;
+  date_fin: string;
+  number: number;
+  evenement_id: number;
+}
 
 // Add date formatting utility functions
 const formatDate = (dateString: string) => {
@@ -17,39 +32,153 @@ const parseDate = (dateString: string) => {
 };
 
 export default function AddAccomodation() {
-  const [formData, setFormData] = useState({
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState<AccommodationFormData>({
     nom: '',
     address: '',
-    type: '',
-    dateDebut: '',
-    dateFin: '',
-    nombreInvites: '',
+    type: 'single',
+    description: '',
+    prix: 0,
+    date_debut: '',
+    date_fin: '',
+    number: 1,
+    evenement_id: 0
   });
+
+  useEffect(() => {
+    const stateEventId = location.state?.evenement_id;
+    if (!stateEventId) {
+      toast.error('No event ID found. Please return to event details.');
+      setTimeout(() => navigate('/add-details'), 2000);
+      return;
+    }
+
+    const numericId = Number(stateEventId);
+    if (isNaN(numericId)) {
+      toast.error('Invalid event ID format');
+      return;
+    }
+
+    setFormData(prev => ({ ...prev, evenement_id: numericId }));
+  }, [location.state, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    
+    // Handle numeric inputs
+    if (name === 'prix' || name === 'number') {
+      const numValue = parseFloat(value);
+      if (isNaN(numValue)) return;
+      
+      // Additional validation for number field
+      if (name === 'number' && numValue <= 0) return;
+      
+      // Additional validation for prix field
+      if (name === 'prix' && numValue < 0) return;
+      
+      setFormData(prev => ({ ...prev, [name]: numValue }));
+      return;
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const validateForm = (): boolean => {
+    if (!formData.nom.trim()) {
+      toast.error('Name is required');
+      return false;
+    }
+    if (!formData.address.trim()) {
+      toast.error('Address is required');
+      return false;
+    }
+    if (!formData.type) {
+      toast.error('Type is required');
+      return false;
+    }
+    if (formData.prix < 0) {
+      toast.error('Price must be greater than or equal to 0');
+      return false;
+    }
+    if (formData.number <= 0) {
+      toast.error('Number must be greater than 0');
+      return false;
+    }
+    if (!formData.date_debut) {
+      toast.error('Start date is required');
+      return false;
+    }
+    if (!formData.date_fin) {
+      toast.error('End date is required');
+      return false;
+    }
+    if (new Date(formData.date_fin) <= new Date(formData.date_debut)) {
+      toast.error('End date must be after start date');
+      return false;
+    }
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) return;
+
     try {
       const submitData = {
         ...formData,
-        dateDebut: formData.dateDebut ? new Date(formData.dateDebut).toISOString() : '',
-        dateFin: formData.dateFin ? new Date(formData.dateFin).toISOString() : '',
+        date_debut: new Date(formData.date_debut).toISOString(),
+        date_fin: new Date(formData.date_fin).toISOString(),
       };
-      const response = await fetch(`${URLS.ServerIpAddress}/api/accommodation`, {
+
+      console.log('Submitting accommodation data:', submitData);
+
+      const response = await fetch(`${URLS.ServerIpAddress}/api/addAccomodation`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
         body: JSON.stringify(submitData)
       });
-      if (!response.ok) throw new Error('Failed to add accommodation');
-      await response.json();
-      setFormData({ nom: '', address: '', type: '', dateDebut: '', dateFin: '', nombreInvites: '' });
-      alert('Accommodation added successfully!');
+
+      console.log('Response status:', response.status);
+      const responseText = await response.text();
+      console.log('Raw response:', responseText);
+
+      let result;
+      try {
+        result = JSON.parse(responseText);
+        console.log('Parsed response:', result);
+      } catch (e) {
+        console.error('Error parsing response:', e);
+        throw new Error('Invalid response format from server');
+      }
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to add accommodation');
+      }
+
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to add accommodation');
+      }
+
+      toast.success('Accommodation added successfully!');
+      setFormData({
+        nom: '',
+        address: '',
+        type: 'single',
+        description: '',
+        prix: 0,
+        date_debut: '',
+        date_fin: '',
+        number: 1,
+        evenement_id: formData.evenement_id
+      });
     } catch (error: any) {
-      alert('Failed to add accommodation: ' + error.message);
+      console.error('Error in handleSubmit:', error);
+      toast.error('Failed to add accommodation: ' + error.message);
     }
   };
 
@@ -90,27 +219,56 @@ export default function AddAccomodation() {
               <div>
                 <div className="aac-form-group">
                   <label className="aac-form-label">Type</label>
-                  <input
-                    type="text"
+                  <select
                     name="type"
-                    placeholder="Enter type (hotel, apartment, etc.)"
                     className="aac-form-input"
                     value={formData.type}
                     onChange={handleInputChange}
                     required
-                  />
+                  >
+                    <option value="single">Single</option>
+                    <option value="double">Double</option>
+                    <option value="suite">Suite</option>
+                  </select>
                 </div>
                 <div className="aac-form-group">
-                  <label className="aac-form-label">Number of Guests</label>
+                  <label className="aac-form-label">Price</label>
                   <input
                     type="number"
-                    name="nombreInvites"
-                    placeholder="Enter number of guests"
+                    name="prix"
+                    placeholder="Enter price"
                     className="aac-form-input"
-                    value={formData.nombreInvites}
+                    value={formData.prix}
+                    onChange={handleInputChange}
+                    required
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="aac-form-group">
+                  <label className="aac-form-label">Number of Rooms</label>
+                  <input
+                    type="number"
+                    name="number"
+                    placeholder="Enter number of rooms"
+                    className="aac-form-input"
+                    value={formData.number}
                     onChange={handleInputChange}
                     required
                     min="1"
+                  />
+                </div>
+                <div className="aac-form-group">
+                  <label className="aac-form-label">Description</label>
+                  <textarea
+                    name="description"
+                    placeholder="Enter accommodation description"
+                    className="aac-form-input"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    rows={3}
                   />
                 </div>
               </div>
@@ -118,23 +276,21 @@ export default function AddAccomodation() {
                 <div className="aac-form-group">
                   <label className="aac-form-label">Start Date</label>
                   <input
-                    type="date"
-                    name="dateDebut"
+                    type="datetime-local"
+                    name="date_debut"
                     className="aac-form-input"
-                    value={formData.dateDebut}
+                    value={formData.date_debut}
                     onChange={handleInputChange}
                     required
                   />
                 </div>
-              </div>
-              <div>
                 <div className="aac-form-group">
                   <label className="aac-form-label">End Date</label>
                   <input
-                    type="date"
-                    name="dateFin"
+                    type="datetime-local"
+                    name="date_fin"
                     className="aac-form-input"
-                    value={formData.dateFin}
+                    value={formData.date_fin}
                     onChange={handleInputChange}
                     required
                   />
@@ -148,7 +304,7 @@ export default function AddAccomodation() {
               <button
                 type="button"
                 className="aac-add-btn"
-                onClick={() => window.location.href = '/in-accomodation'}
+                onClick={() => navigate('/in-accomodation', { state: { evenement_id: formData.evenement_id } })}
               >
                 Check Accommodation
               </button>
@@ -156,6 +312,14 @@ export default function AddAccomodation() {
           </form>
         </div>
       </div>
+      <ToastContainer 
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+      />
     </div>
   );
 }

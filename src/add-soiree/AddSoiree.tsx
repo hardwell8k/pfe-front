@@ -1,61 +1,112 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Sidebar from '../sidebar/Sidebar';
 import './AddSoiree.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import { useLocation, useNavigate } from 'react-router-dom';
 import { URLS } from '../URLS';
 
-
 export default function AddSoiree() {
   const location = useLocation();
-  const evenement_id = useRef<number | null>(null);
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     nom: '',
     address: '',
     prix: 0,
-    code_bar: '',
+    nombreMax: 0,
     startDate: '',
+    startTime: '',
+    description: ''
   });
 
+  // Get event ID from location state or localStorage
+  const evenement_id = location.state?.evenement_id || localStorage.getItem('current_event_id');
+  console.log('Raw evenement_id:', evenement_id);
+
+  // Convert to number and validate
+  const numericEventId = evenement_id ? Number(evenement_id) : null;
+  console.log('Converted numericEventId:', numericEventId);
+
   useEffect(() => {
-    if (location.state && location.state.evenement_id) {
-      evenement_id.current = location.state.evenement_id;
+    if (!numericEventId || isNaN(numericEventId)) {
+      console.error('Invalid event ID');
+      toast.error('Invalid event ID. Please return to event details.');
+      setTimeout(() => navigate('/add-details'), 2000);
     }
-  }, [location.state]);
+  }, [numericEventId, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    
+    // Special handling for nombreMax to ensure it's a valid integer >= 1
+    if (name === 'nombreMax') {
+      const numValue = parseInt(value);
+      if (isNaN(numValue) || numValue < 1 || !Number.isInteger(numValue)) {
+        return; // Don't update if invalid
+      }
+    }
+    
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      if (!numericEventId || isNaN(numericEventId)) {
+        throw new Error('Invalid event ID');
+      }
+
+      // Validate nombreMax before submission
+      const nombreMax = parseInt(formData.nombreMax.toString());
+      if (isNaN(nombreMax) || nombreMax < 1 || !Number.isInteger(nombreMax)) {
+        throw new Error('Maximum guests must be a positive integer');
+      }
+
+      // Combine date and time into a string
+      const dateTime = formData.startDate && formData.startTime 
+        ? `${formData.startDate}T${formData.startTime}`
+        : '';
+
       const submitData = {
-        ...formData,
-        date: formData.startDate ? new Date(formData.startDate).toISOString() : '',
-        evenement_id: evenement_id.current,
+        nom: formData.nom,
+        address: formData.address,
+        date: dateTime,
         prix: Number(formData.prix),
+        max_guests: nombreMax,
+        description: formData.description,
+        evenement_id: numericEventId
       };
+
+      console.log('Submitting soiree data:', submitData);
+
       const response = await fetch(`${URLS.ServerIpAddress}/api/addSoiree`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify(submitData),
         credentials: "include",
       });
 
-      if(!response.ok){
-        throw new Error('Failed to add soiree');
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to add soiree: ${errorText}`);
       }
-      await response.json();
-      setFormData({ nom: '', address: '', prix: 0, code_bar: '', startDate: '' });
+
+      const result = await response.json();
+      console.log('Add soiree response:', result);
+
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to add soiree');
+      }
+
       toast.success('Soiree added successfully!');
+      setFormData({ nom: '', address: '', prix: 0, nombreMax: 0, startDate: '', startTime: '', description: '' });
+      navigate('/in-soiree', { state: { evenement_id: numericEventId } });
     } catch (error: any) {
-      toast.error('Failed to add soiree: ' + error.message);
+      console.error('Error adding soiree:', error);
+      toast.error(error.message || 'Failed to add soiree');
     }
   };
 
@@ -98,25 +149,27 @@ export default function AddSoiree() {
                 <div className="as-form-group">
                   <label className="as-form-label">Prix</label>
                   <input
-                    type="text"
+                    type="number"
                     name="prix"
                     placeholder="Enter price"
                     className="as-form-input"
                     value={formData.prix}
                     onChange={handleInputChange}
                     required
+                    min="0"
                   />
                 </div>
                 <div className="as-form-group">
                   <label className="as-form-label">Nombre max d'invites</label>
                   <input
-                    type="text"
-                    name="code_bar"
+                    type="number"
+                    name="nombreMax"
                     placeholder="Enter max guests"
                     className="as-form-input"
-                    value={formData.code_bar}
+                    value={formData.nombreMax}
                     onChange={handleInputChange}
                     required
+                    min="1"
                   />
                 </div>
               </div>
@@ -132,6 +185,29 @@ export default function AddSoiree() {
                     required
                   />
                 </div>
+                <div className="as-form-group">
+                  <label className="as-form-label">Time debut</label>
+                  <input
+                    type="time"
+                    name="startTime"
+                    className="as-form-input"
+                    value={formData.startTime}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="as-form-group">
+                  <label className="as-form-label">Description</label>
+                  <input
+                    type="text"
+                    name="description"
+                    placeholder="Enter description"
+                    className="as-form-input"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
               </div>
             </div>
             
@@ -139,7 +215,11 @@ export default function AddSoiree() {
               <button type="submit" className="as-submit-button">
                 Add Soiree
               </button>
-              <button type="button" className="as-submit-button" onClick={() => navigate('/in-soiree')}>
+              <button 
+                type="button" 
+                className="as-submit-button" 
+                onClick={() => navigate('/in-soiree', { state: { evenement_id: numericEventId } })}
+              >
                 Check Soiree
               </button>
             </div>

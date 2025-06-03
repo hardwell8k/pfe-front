@@ -1,208 +1,111 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Plus, Trash2, ChevronLeft, ChevronRight, MoreHorizontal, Edit, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from '../sidebar/Sidebar';
 import './AgencyStaffInEvent.css';
 import { FETCH_STATUS } from '../fetchStatus';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { URLS } from '../URLS';
 
 interface StaffElement {
   ID: number;
-  nom: string | null;
-  prenom: string | null;
+  nom: string;
+  prenom: string;
   email: string;
+  departement: string;
+  num_tel: number;
   role: string;
-  phone?: string;
-  agency?: string;
-  employees?: number;
+  available: boolean;
+  agence_id: number;
+  agence_nom: string;
+  date_debut: string;
+  date_fin: string;
+  has_agency: number;
 }
 
 interface SelectedItems {
   [key: number]: boolean;
 }
 
+interface LocationState {
+  eventId?: number;
+}
+
 function AgencyStaffInEvent() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const locationState = location.state as LocationState;
   const [status, setStatus] = useState<string>(FETCH_STATUS.SUCCESS);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [staffList, setStaffList] = useState<StaffElement[]>([
-    {
-      ID: 1,
-      nom: "Smith",
-      prenom: "John",
-      email: "john.smith@agency1.com",
-      role: "Manager",
-      phone: "+216 98765432",
-      agency: "Agency A",
-      employees: 25
-    },
-    {
-      ID: 2,
-      nom: "Johnson",
-      prenom: "Sarah",
-      email: "sarah.j@agency2.com",
-      role: "Coordinator",
-      phone: "+216 98765433",
-      agency: "Agency B",
-      employees: undefined
-    },
-    {
-      ID: 3,
-      nom: "Williams",
-      prenom: "Michael",
-      email: "m.williams@agency3.com",
-      role: "Supervisor",
-      phone: "+216 98765434",
-      agency: "Agency C",
-      employees: 15
-    },
-    {
-      ID: 4,
-      nom: "Brown",
-      prenom: "Emma",
-      email: "emma.b@agency1.com",
-      role: "Assistant",
-      phone: "+216 98765435",
-      agency: "Agency A",
-      employees: undefined
-    },
-    {
-      ID: 5,
-      nom: "Davis",
-      prenom: "James",
-      email: "j.davis@agency2.com",
-      role: "Manager",
-      phone: "+216 98765436",
-      agency: "Agency B",
-      employees: 30
-    },
-    {
-      ID: 6,
-      nom: "Miller",
-      prenom: "Lisa",
-      email: "l.miller@agency3.com",
-      role: "Coordinator",
-      phone: "+216 98765437",
-      agency: "Agency C",
-      employees: undefined
-    },
-    {
-      ID: 7,
-      nom: "Wilson",
-      prenom: "David",
-      email: "d.wilson@agency1.com",
-      role: "Supervisor",
-      phone: "+216 98765438",
-      agency: "Agency A",
-      employees: 20
-    },
-    {
-      ID: 8,
-      nom: null,
-      prenom: null,
-      email: "agency4@example.com",
-      role: "Manager",
-      phone: "+216 98765439",
-      agency: "Agency D",
-      employees: 40
-    },
-    {
-      ID: 9,
-      nom: "Taylor",
-      prenom: "Sophie",
-      email: "s.taylor@agency5.com",
-      role: "Coordinator",
-      phone: "+216 98765440",
-      agency: "Agency E",
-      employees: undefined
-    },
-    {
-      ID: 10,
-      nom: null,
-      prenom: null,
-      email: "agency6@example.com",
-      role: "Supervisor",
-      phone: "+216 98765441",
-      agency: "Agency F",
-      employees: 35
-    },
-    {
-      ID: 11,
-      nom: "Anderson",
-      prenom: "Robert",
-      email: "r.anderson@agency7.com",
-      role: "Assistant",
-      phone: "+216 98765442",
-      agency: "Agency G",
-      employees: undefined
-    },
-    {
-      ID: 12,
-      nom: null,
-      prenom: null,
-      email: "agency8@example.com",
-      role: "Manager",
-      phone: "+216 98765443",
-      agency: "Agency H",
-      employees: 45
-    },
-    {
-      ID: 13,
-      nom: "Thomas",
-      prenom: "Emily",
-      email: "e.thomas@agency9.com",
-      role: "Coordinator",
-      phone: "+216 98765444",
-      agency: "Agency I",
-      employees: undefined
-    },
-    {
-      ID: 14,
-      nom: null,
-      prenom: null,
-      email: "agency10@example.com",
-      role: "Supervisor",
-      phone: "+216 98765445",
-      agency: "Agency J",
-      employees: 50
-    },
-    {
-      ID: 15,
-      nom: "Jackson",
-      prenom: "Daniel",
-      email: "d.jackson@agency11.com",
-      role: "Assistant",
-      phone: "+216 98765446",
-      agency: "Agency K",
-      employees: undefined
-    },
-    {
-      ID: 16,
-      nom: null,
-      prenom: null,
-      email: "agency12@example.com",
-      role: "Manager",
-      phone: "+216 98765447",
-      agency: "Agency L",
-      employees: 55
-    },
-    {
-      ID: 17,
-      nom: "White",
-      prenom: "Olivia",
-      email: "o.white@agency13.com",
-      role: "Coordinator",
-      phone: "+216 98765448",
-      agency: "Agency M",
-      employees: undefined
-    }
-  ]);
+  const [staffList, setStaffList] = useState<StaffElement[]>([]);
   const [selectedItems, setSelectedItems] = useState<SelectedItems>({});
   const [currentPage, setCurrentPage] = useState(1);
   const itemPerPage = 10;
   const [dropdownOpen, setDropdownOpen] = useState<number | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    console.log('Location state:', location.state);
+    console.log('Event ID:', locationState?.eventId);
+    if (locationState?.eventId) {
+      fetchStaff();
+    } else {
+      toast.error('Event ID is missing');
+      navigate('/event-staff');
+    }
+  }, [location.state]);
+
+  const fetchStaff = async () => {
+    try {
+      setStatus(FETCH_STATUS.LOADING);
+      
+      if (!locationState?.eventId) {
+        throw new Error('Event ID is missing');
+      }
+
+      const eventId = parseInt(locationState.eventId.toString(), 10);
+      if (isNaN(eventId) || eventId < 1) {
+        throw new Error('Invalid Event ID');
+      }
+
+      const response = await fetch(`${URLS.ServerIpAddress}/api/getStaffWithAgencyByEvent`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          evenement_id: eventId
+        })
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          toast.error('Authentication required');
+          navigate('/login');
+          return;
+        }
+        throw new Error(result.message || 'Failed to fetch staff');
+      }
+
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to fetch staff');
+      }
+
+      setStaffList(result.data);
+      setStatus(FETCH_STATUS.SUCCESS);
+    } catch (error: any) {
+      console.error('Error fetching staff:', error);
+      setStatus(FETCH_STATUS.ERROR);
+      toast.error(error.message || 'Failed to load staff');
+      if (error.message === 'Event ID is missing') {
+        navigate('/event-staff');
+      }
+    }
+  };
 
   const IndexOfLastItem = itemPerPage * currentPage;
   const IndexOfFirstItem = IndexOfLastItem - itemPerPage;
@@ -212,13 +115,12 @@ function AgencyStaffInEvent() {
     if (!searchTermLower) return true;
 
     return (
-      (item.nom?.toLowerCase().includes(searchTermLower) ?? false) ||
-      (item.prenom?.toLowerCase().includes(searchTermLower) ?? false) ||
+      item.nom.toLowerCase().includes(searchTermLower) ||
+      item.prenom.toLowerCase().includes(searchTermLower) ||
       item.email.toLowerCase().includes(searchTermLower) ||
       item.role.toLowerCase().includes(searchTermLower) ||
-      (item.agency?.toLowerCase().includes(searchTermLower) ?? false) ||
-      (item.phone?.toLowerCase().includes(searchTermLower) ?? false) ||
-      (item.employees?.toString().includes(searchTermLower) ?? false)
+      item.agence_nom.toLowerCase().includes(searchTermLower) ||
+      item.departement.toLowerCase().includes(searchTermLower)
     );
   });
 
@@ -267,10 +169,12 @@ function AgencyStaffInEvent() {
             id: staffToEdit.ID,
             fullName: `${staffToEdit.prenom} ${staffToEdit.nom}`,
             email: staffToEdit.email,
-            agency: staffToEdit.agency,
+            agency: staffToEdit.agence_nom,
             role: staffToEdit.role,
-            employees: staffToEdit.employees
-          }
+            startDate: staffToEdit.date_debut,
+            endDate: staffToEdit.date_fin
+          },
+          eventId: locationState?.eventId
         }
       });
     }
@@ -279,25 +183,6 @@ function AgencyStaffInEvent() {
   const handleDelete = (index: number) => {
     handleDeleteSingle(index);
     setDropdownOpen(null);
-  };
-
-  const handleAddToEvent = async () => {
-    let selectedStaffIds: number[] = [];
-    Object.keys(selectedItems).forEach((key) => {
-      if (selectedItems[parseInt(key)]) {
-        selectedStaffIds.push(parseInt(key));
-      }
-    });
-    if (selectedStaffIds.length > 0) {
-      try {
-        // Here you would make an API call to add the selected staff to the event
-        toast.success("Agency staff added to event successfully");
-      } catch (error: any) {
-        toast.error('Error adding agency staff to event');
-      }
-    } else {
-      toast.warning("No agency staff selected");
-    }
   };
 
   const handleDeleteSelected = async () => {
@@ -321,10 +206,38 @@ function AgencyStaffInEvent() {
 
   const handleDeleteSingle = async (id: number) => {
     try {
-      // Add delete functionality here
-      toast.success("Agency staff removed from event");
+      const response = await fetch(`${URLS.ServerIpAddress}/api/staff/deleteStaffAndAssignments`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          staff_id: id
+        })
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          toast.error('Authentication required');
+          navigate('/login');
+          return;
+        }
+        throw new Error(result.message || 'Failed to delete staff');
+      }
+
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to delete staff');
+      }
+
+      toast.success('Staff member and their assignments deleted successfully');
+      // Refresh the staff list
+      await fetchStaff();
     } catch (error: any) {
-      toast.error('Error removing agency staff from event');
+      console.error('Error deleting staff:', error);
+      toast.error(error.message || 'Failed to delete staff');
     }
   };
 
@@ -346,6 +259,10 @@ function AgencyStaffInEvent() {
       );
     }
     return pages;
+  };
+
+  const formatPhoneNumber = (num: number) => {
+    return `+216 ${num}`;
   };
 
   return (
@@ -370,7 +287,7 @@ function AgencyStaffInEvent() {
 
             <button 
               className='add-staff-button'
-              onClick={() => navigate('/AddStaffInEvent')}
+              onClick={() => navigate('/AddStaffInEvent', { state: { eventId: locationState?.eventId } })}
               title="Add Agency Staff"
             >
               <Plus size={20} />
@@ -399,25 +316,23 @@ function AgencyStaffInEvent() {
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Agency</th>
+                <th>Department</th>
                 <th>Role</th>
-                <th>Employees</th>
-                <th className='actions-header'>
-                  <button className='delete-button' onClick={handleDeleteSelected} title="Remove selected">
-                    <Trash2 size={18} />
-                  </button>
-                </th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th className='actions-header'>Actions</th>
               </tr>
             </thead>
             <tbody>
               {status === FETCH_STATUS.LOADING ? (
                 <tr>
-                  <td colSpan={9} className="loading-row">
+                  <td colSpan={11} className="loading-row">
                     <div className="loading-spinner"></div>
                     <span>Loading agency staff...</span>
                   </td>
                 </tr>
               ) : filteredStaff.length > 0 ? (
-                shownStaff.map((item, index) => (
+                shownStaff.map((item) => (
                   <tr 
                     key={item.ID} 
                     className={`staff-row ${selectedItems[item.ID] ? 'selected' : ''}`}
@@ -432,28 +347,30 @@ function AgencyStaffInEvent() {
                       />
                       <label htmlFor={`staff-${item.ID}`} className="checkbox-label"></label>
                     </td>
-                    <td>{item.employees ? '-' : item.prenom}</td>
-                    <td>{item.employees ? '-' : item.nom}</td>
+                    <td>{item.prenom}</td>
+                    <td>{item.nom}</td>
                     <td>{item.email}</td>
-                    <td>{item.phone}</td>
-                    <td>{item.agency}</td>
+                    <td>{formatPhoneNumber(item.num_tel)}</td>
+                    <td>{item.agence_nom}</td>
+                    <td>{item.departement}</td>
                     <td>{item.role}</td>
-                    <td>{item.employees || '-'}</td>
+                    <td>{new Date(item.date_debut).toLocaleDateString()}</td>
+                    <td>{new Date(item.date_fin).toLocaleDateString()}</td>
                     <td>
                       <button
                         type="button"
-                        className="edit-button"
-                        onClick={() => handleEdit(item.ID)}
-                        title="Edit staff"
+                        className="remove-button"
+                        onClick={() => handleDelete(item.ID)}
+                        title="Remove staff"
                       >
-                        <Edit size={18} />
+                        <Trash2 size={18} />
                       </button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={9} className="empty-row">
+                  <td colSpan={11} className="empty-row">
                     <div className="empty-state">
                       <div className="empty-icon">👥</div>
                       <h3>No agency staff found</h3>

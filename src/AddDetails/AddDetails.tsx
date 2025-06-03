@@ -1,6 +1,9 @@
 import React from 'react';
 import './AddDetails.css';
 import Sidebar from '../sidebar/Sidebar';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Icons import - you'll need to create or import these SVG files
 import staffIcon from '../assets/person_black.svg';
@@ -11,7 +14,6 @@ import soireeIcon from '../assets/nightlife.svg';
 import transportationIcon from '../assets/trip_black.svg';
 import accommodationIcon from '../assets/hotel_black.svg';
 import breakIcon from '../assets/pause_circle_black.svg';
-import { useNavigate } from 'react-router-dom';
 
 interface CardProps {
   title: string;
@@ -21,8 +23,28 @@ interface CardProps {
 }
 
 const Card: React.FC<CardProps> = ({ title, icon, color, textColor }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const evenement_id = location.state?.evenement_id;
+
+  const handleClick = () => {
+    if (!evenement_id) {
+      toast.error('No event ID provided');
+      return;
+    }
+
+    switch (title.toLowerCase()) {
+      case 'break':
+        navigate('/addPause', { state: { evenement_id } });
+        break;
+      // Add other cases as needed
+      default:
+        console.log('Navigation not implemented for:', title);
+    }
+  };
+
   return (
-    <div className="card" style={{ backgroundColor: color }}>
+    <div className="card" style={{ backgroundColor: color }} onClick={handleClick}>
       <img src={icon} alt={title} className="card-icon" />
       <h3 style={{ color: textColor }}>{title}</h3>
       <p style={{ color: textColor }}>
