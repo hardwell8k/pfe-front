@@ -1,21 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Plus, ChevronLeft, ChevronRight, ArrowLeft, CheckCircle, Users, ChevronDown, ChevronRight as ChevronRightIcon } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Search, Plus, ChevronLeft, ChevronRight, ArrowLeft, CheckCircle, Users, ChevronDown, ChevronRight as ChevronRightIcon, Trash2 } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from '../sidebar/Sidebar';
 import './EventStaff.css';
 import { FETCH_STATUS } from '../fetchStatus';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
+import { URLS } from '../URLS';
 
 interface StaffElement {
   ID: number;
   nom: string;
   prenom: string;
+  num_tel: number;
   email: string;
+  departement: string;
   role: string;
-  disponibility?: string;
-  phone?: string;
+  team_id: number | null;
+  entreprise_id: number;
+  available: number;
+  agence_id: number;
 }
 
 interface SelectedItems {
@@ -24,6 +28,8 @@ interface SelectedItems {
 
 function EventStaff() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const eventId = location.state?.eventId;
   const [status, setStatus] = useState<string>(FETCH_STATUS.IDLE);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [staffList, setStaffList] = useState<StaffElement[]>([]);
@@ -33,6 +39,7 @@ function EventStaff() {
   const [dropdownOpen, setDropdownOpen] = useState<number | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const [isTeamsExpanded, setIsTeamsExpanded] = useState<boolean>(false);
+  const [showAssignedStaff, setShowAssignedStaff] = useState<boolean>(false);
 
   const IndexOfLastItem = itemPerPage * currentPage;
   const IndexOfFirstItem = IndexOfLastItem - itemPerPage;
@@ -40,9 +47,10 @@ function EventStaff() {
   const filteredStaff = staffList.filter((item) => {
     return (
       item.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.prenom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.role.toLowerCase().includes(searchTerm.toLowerCase())
+      item.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.departement?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
 
@@ -85,68 +93,215 @@ function EventStaff() {
   const fetchStaff = async () => {
     try {
       setStatus(FETCH_STATUS.LOADING);
-      const response = await fetch("http://localhost:5000/api/getAllStaff", {
+      console.log('Fetching staff...');
+      
+      const endpoint = showAssignedStaff 
+        ? `${URLS.ServerIpAddress}/api/getStaffByEvent/${eventId}`
+        : `${URLS.ServerIpAddress}/api/getAvailableStaff`;
+
+      const response = await fetch(endpoint, {
         method: "GET",
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
       });
 
-      const result = await response.json();
-      if (!result.success) {
-        throw ({ status: response.status, message: result.message });
+      const responseText = await response.text();
+      console.log('Raw response:', responseText);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch staff: ${responseText}`);
       }
 
-      const statuses = ['Available', 'Unavailable', 'On-Leave'];
-      const enhancedData = result.data.map((staff: StaffElement) => ({
+      let result;
+      try {
+        result = JSON.parse(responseText);
+        console.log('Parsed response:', result);
+      } catch (e) {
+        console.error('Error parsing response:', e);
+        throw new Error('Invalid response format from server');
+      }
+
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to fetch staff');
+      }
+
+      // Ensure available is treated as a number
+      const processedData = result.data.map((staff: any) => ({
         ...staff,
-        disponibility: statuses[Math.floor(Math.random() * 3)],
-        phone: `+216 ${Math.floor(Math.random() * 10000000) + 90000000}`
+        available: Number(staff.available)
       }));
 
-      setStaffList(enhancedData);
+      console.log('Processed staff data:', processedData);
+      setStaffList(processedData);
       setStatus(FETCH_STATUS.SUCCESS);
     } catch (error: any) {
-      console.error("Error while getting staff", error.message);
+      console.error("Error while getting staff:", error);
       setStatus(FETCH_STATUS.ERROR);
-      toast.error('Error loading staff');
+      toast.error(error.message || 'Error loading staff');
     }
   };
 
+  useEffect(() => {
+    if (eventId) {
+      fetchStaff();
+    }
+  }, [showAssignedStaff]);
+
   const handleAddToEvent = async () => {
-    let selectedStaffIds: number[] = [];
-    Object.keys(selectedItems).forEach((key) => {
-      if (selectedItems[parseInt(key)]) {
-        selectedStaffIds.push(parseInt(key));
+    const selectedStaffIds = Object.entries(selectedItems)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([id]) => parseInt(id));
+
+    if (selectedStaffIds.length === 0) {
+      toast.warning("Please select at least one staff member");
+      return;
+    }
+
+    if (!eventId) {
+      toast.error("Event ID not found. Please return to the event details page and try again.");
+      return;
+    }
+
+    try {
+      setStatus(FETCH_STATUS.LOADING);
+      
+      console.log('Adding staff to event:', {
+        selectedStaffIds,
+        eventId,
+        token: localStorage.getItem('token')
+      });
+      
+      // Add each selected staff member to the event
+      const addPromises = selectedStaffIds.map(staffId => {
+        const requestBody = {
+          staff_id: staffId,
+          evenement_id: eventId
+        };
+        console.log('Making API request for staff:', staffId, 'with body:', requestBody);
+        
+        return fetch(`${URLS.ServerIpAddress}/api/addStaffToEvent`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify(requestBody)
+        }).then(async response => {
+          const responseText = await response.text();
+          console.log('Response for staff:', staffId, ':', {
+            status: response.status,
+            statusText: response.statusText,
+            body: responseText
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Failed to add staff ${staffId}: ${responseText}`);
+          }
+          return response;
+        });
+      });
+
+      // Wait for all requests to complete
+      const responses = await Promise.all(addPromises);
+      
+      // Check if any request failed
+      const failedRequests = responses.filter(response => !response.ok);
+      if (failedRequests.length > 0) {
+        throw new Error(`Failed to add ${failedRequests.length} staff members to the event`);
       }
-    });
-    if (selectedStaffIds.length > 0) {
-      try {
-        // Here you would make an API call to add the selected staff to the event
-        toast.success("Staff added to event successfully");
-      } catch (error: any) {
-        toast.error('Error adding staff to event');
-      }
-    } else {
-      toast.warning("No staff selected");
+
+      // Clear selections after successful addition
+      setSelectedItems({});
+      toast.success(`Successfully added ${selectedStaffIds.length} staff member(s) to the event`);
+      
+      // Refresh the staff list
+      await fetchStaff();
+      
+    } catch (error: any) {
+      console.error('Error adding staff to event:', error);
+      toast.error(error.message || 'Failed to add staff to event');
+    } finally {
+      setStatus(FETCH_STATUS.SUCCESS);
     }
   };
 
   const handleDelete = async () => {
-    let selectedStaffIds: number[] = [];
-    Object.keys(selectedItems).forEach((key) => {
-      if (selectedItems[parseInt(key)]) {
-        selectedStaffIds.push(parseInt(key));
+    const selectedStaffIds = Object.entries(selectedItems)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([id]) => parseInt(id));
+
+    if (selectedStaffIds.length === 0) {
+      toast.warning("Please select at least one staff member");
+      return;
+    }
+
+    if (!eventId) {
+      toast.error("Event ID not found. Please return to the event details page and try again.");
+      return;
+    }
+
+    try {
+      setStatus(FETCH_STATUS.LOADING);
+      
+      console.log('Setting staff as available:', {
+        selectedStaffIds,
+        eventId,
+        token: localStorage.getItem('token')
+      });
+      
+      // Set each selected staff member as available
+      const setAvailablePromises = selectedStaffIds.map(staffId => {
+        const requestBody = {
+          staff_id: staffId,
+          evenement_id: eventId
+        };
+        console.log('Making API request to set staff available:', staffId, 'with body:', requestBody);
+        
+        return fetch(`${URLS.ServerIpAddress}/api/setStaffAvailable`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify(requestBody)
+        }).then(async response => {
+          const responseText = await response.text();
+          console.log('Response for staff:', staffId, ':', {
+            status: response.status,
+            statusText: response.statusText,
+            body: responseText
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Failed to set staff ${staffId} as available: ${responseText}`);
+          }
+          return response;
+        });
+      });
+
+      // Wait for all requests to complete
+      const responses = await Promise.all(setAvailablePromises);
+      
+      // Check if any request failed
+      const failedRequests = responses.filter(response => !response.ok);
+      if (failedRequests.length > 0) {
+        throw new Error(`Failed to set ${failedRequests.length} staff members as available`);
       }
-    });
-    if (selectedStaffIds.length > 0) {
-      try {
-        // Add delete functionality here
-        toast.success("Selected staff removed from event");
-      } catch (error: any) {
-        toast.error('Error removing staff from event');
-      }
-    } else {
-      toast.warning("No staff selected");
+
+      // Clear selections after successful update
+      setSelectedItems({});
+      toast.success(`Successfully removed ${selectedStaffIds.length} staff member(s) from the event`);
+      
+      // Refresh the staff list
+      await fetchStaff();
+      
+    } catch (error: any) {
+      console.error('Error setting staff as available:', error);
+      toast.error(error.message || 'Failed to remove staff from event');
+    } finally {
+      setStatus(FETCH_STATUS.SUCCESS);
     }
   };
 
@@ -176,11 +331,11 @@ function EventStaff() {
   };
 
   const handleCheckStaff = () => {
-    navigate('/add-staff-event-table');
+    setShowAssignedStaff(!showAssignedStaff);
   };
 
   const handleCheckAgencyStaff = () => {
-    navigate('/agency-staff-in-event');
+    navigate('/agency-staff-in-event', { state: { eventId: eventId } });
   };
 
   const toggleTeams = () => {
@@ -190,6 +345,25 @@ function EventStaff() {
   const handleTeamsClick = () => {
     navigate('/in-staff-team');
     setIsTeamsExpanded(false);
+  };
+
+  const getAvailabilityStatus = (available: number) => {
+    switch (available) {
+      case 1:
+        return { text: 'Available', class: 'available' };
+      case 0:
+        return { text: 'Unavailable', class: 'unavailable' };
+      default:
+        return { text: 'Unknown', class: 'unknown' };
+    }
+  };
+
+  const formatPhoneNumber = (num: number) => {
+    return `+216 ${num}`;
+  };
+
+  const formatName = (nom: string, prenom: string | null) => {
+    return prenom ? `${prenom} ${nom}` : nom;
   };
 
   return (
@@ -229,23 +403,34 @@ function EventStaff() {
             </div>
 
             <button 
-              className='add-to-event-button'
-              onClick={handleAddToEvent}
+              className={`add-to-event-button ${showAssignedStaff ? 'remove-button' : ''}`}
+              onClick={showAssignedStaff ? handleDelete : handleAddToEvent}
             >
-              <Plus size={18} />
-              <span>Add to Event</span>
-            </button>
-            <button 
-              className='add-staff-button'
-              onClick={() => navigate('/AddStaffInEvent')}
-              title="Add Staff"
-            >
-              <Plus size={20} />
+              {showAssignedStaff ? (
+                <>
+                  <Trash2 size={18} />
+                  <span>Remove from Event</span>
+                </>
+              ) : (
+                <>
+                  <Plus size={18} />
+                  <span>Add to Event</span>
+                </>
+              )}
             </button>
           </div>
         </header>
 
         <div className='table-container'>
+          <div className='table-header-actions'>
+            <button 
+              className={`toggle-staff-button ${showAssignedStaff ? 'active' : ''}`}
+              onClick={handleCheckStaff}
+            >
+              <CheckCircle size={18} />
+              <span>{showAssignedStaff ? 'Show Available Staff' : 'Show Assigned Staff'}</span>
+            </button>
+          </div>
           <table className='staff-table'>
             <thead>
               <tr>
@@ -265,8 +450,8 @@ function EventStaff() {
                 <th>Last Name</th>
                 <th>Email</th>
                 <th>Phone</th>
+                <th>Department</th>
                 <th>Role</th>
-                <th>Availability</th>
               </tr>
             </thead>
             <tbody>
@@ -296,13 +481,9 @@ function EventStaff() {
                     <td>{item.prenom}</td>
                     <td>{item.nom}</td>
                     <td>{item.email}</td>
-                    <td>{item.phone}</td>
+                    <td>{formatPhoneNumber(item.num_tel)}</td>
+                    <td>{item.departement}</td>
                     <td>{item.role}</td>
-                    <td>
-                      <span className={`status-badge ${item.disponibility?.toLowerCase().replace("-", "-")}`}>
-                        {item.disponibility === 'On-Leave' ? 'On Leave' : item.disponibility}
-                      </span>
-                    </td>
                   </tr>
                 ))
               ) : (
@@ -310,8 +491,16 @@ function EventStaff() {
                   <td colSpan={7} className="empty-row">
                     <div className="empty-state">
                       <div className="empty-icon">👥</div>
-                      <h3>No staff found</h3>
-                      <p>Try adjusting your search</p>
+                      <h3>No Available Staff</h3>
+                      <p>There are currently no staff members marked as available.</p>
+                      <div className="empty-state-actions">
+                        <button 
+                          className="refresh-button"
+                          onClick={fetchStaff}
+                        >
+                          Refresh List
+                        </button>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -328,10 +517,6 @@ function EventStaff() {
             <button className='go-back-button' onClick={handleGoBack}>
               <ArrowLeft size={18} />
               Go Back
-            </button>
-            <button className='check-staff-button' onClick={handleCheckStaff}>
-              <CheckCircle size={18} />
-              Check Staff
             </button>
             <button className='check-agency-staff-button' onClick={handleCheckAgencyStaff}>
               <Users size={18} />

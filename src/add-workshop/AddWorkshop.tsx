@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import './AddWorkshop.css';
 import Sidebar from '../sidebar/Sidebar';
 import InstructorModal from './add-instructor/InstructorModal';
-
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { URLS } from '../URLS';
@@ -31,7 +30,6 @@ export default function AddWorkshop() {
     prix: '',
     nbr_max_invite: '',
     instructeur_id: null,
-    address: String(evenement_id.current),
     temp_debut: '',
     temp_fin: '',
   });
@@ -56,40 +54,54 @@ export default function AddWorkshop() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const submitData = {...formData,
-                          prix:Number(formData.prix),
-                          nbr_max_invite:Number(formData.nbr_max_invite),
-                          instructeur_id: Number(formData.instructeur_id)
-                        }
+      // Format datetime values to remove timezone information
+      const formatDateTime = (dateTimeStr: string) => {
+        if (!dateTimeStr) return null;
+        const date = new Date(dateTimeStr);
+        return date.toISOString().slice(0, 19).replace('T', ' ');
+      };
+
+      const submitData = {
+        ...formData,
+        prix: Number(formData.prix),
+        nbr_max_invite: Number(formData.nbr_max_invite),
+        instructeur_id: formData.instructeur_id ? Number(formData.instructeur_id) : null,
+        evenement_id: evenement_id.current,
+        temp_debut: formatDateTime(formData.temp_debut),
+        temp_fin: formatDateTime(formData.temp_fin)
+      };
+
       const response = await fetch(`${URLS.ServerIpAddress}/api/addWorkshop`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ ...submitData, evenement_id: evenement_id.current })
+        body: JSON.stringify(submitData)
       });
 
-      if(!response.ok) {
-        throw new Error('Failed to add instructor');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add workshop');
       }
 
       const result = await response.json();
       console.log('Workshop created successfully:', result);
       toast.success('Workshop created successfully!');
+      
+      // Reset form
       setFormData({
         nom: '',
         categorie: '',
         prix: '',
         nbr_max_invite: '',
         instructeur_id: null,
-        address: String(evenement_id.current),
         temp_debut: '',
         temp_fin: '',
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      toast.error('Failed to create workshop');
+      toast.error(error.message || 'Failed to create workshop');
     }
   };
 
@@ -110,13 +122,13 @@ export default function AddWorkshop() {
       const result = await response.json();
 
       if (!result.success) {
-        throw({ status: response.status, message: result.message });
+        throw new Error(result.message || 'Failed to get instructors');
       }
 
       setInstructors(result.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      toast.error('Failed to fetch instructors');
+      toast.error(error.message || 'Failed to fetch instructors');
     }
   };
 
@@ -154,11 +166,11 @@ export default function AddWorkshop() {
                 </div>
 
                 <div className="add-workshop-form-group">
-                  <label className="add-workshop-form-label">Type</label>
+                  <label className="add-workshop-form-label">Category</label>
                   <input
                     type="text"
                     name="categorie"
-                    placeholder="Enter workshop type"
+                    placeholder="Enter workshop category"
                     className="add-workshop-form-input large-input"
                     value={formData.categorie}
                     onChange={handleInputChange}
@@ -167,11 +179,11 @@ export default function AddWorkshop() {
                 </div>
 
                 <div className="add-workshop-form-group">
-                  <label className="add-workshop-form-label">Fee</label>
+                  <label className="add-workshop-form-label">Price</label>
                   <input
                     type="number"
                     name="prix"
-                    placeholder="Enter workshop fee"
+                    placeholder="Enter workshop price"
                     className="add-workshop-form-input large-input"
                     value={formData.prix}
                     onChange={handleInputChange}
@@ -181,11 +193,11 @@ export default function AddWorkshop() {
                 </div>
 
                 <div className="add-workshop-form-group">
-                  <label className="add-workshop-form-label">Max Users</label>
+                  <label className="add-workshop-form-label">Max Participants</label>
                   <input
                     type="number"
                     name="nbr_max_invite"
-                    placeholder="Enter maximum users"
+                    placeholder="Enter maximum participants"
                     className="add-workshop-form-input large-input"
                     value={formData.nbr_max_invite}
                     onChange={handleInputChange}
@@ -205,27 +217,15 @@ export default function AddWorkshop() {
                     className="add-workshop-form-input large-input"
                     value={formData.instructeur_id ?? ""}
                     onChange={handleInstructorDropdownChange}
-                    required
                   >
-                    {formData.instructeur_id === null && <option key={-1} value="" disabled hidden>Select an instructor</option>}
-                    {instructors.map((valeur, index) => (
-                      <option key={index} value={valeur.ID}>{valeur.nom}</option>
+                    <option value="" disabled hidden>Select an instructor</option>
+                    {instructors.map((instructor) => (
+                      <option key={instructor.ID} value={instructor.ID}>
+                        {instructor.nom}
+                      </option>
                     ))}
-                    <option key={instructors.length} value="addNewType">+ Add a new instructor</option>
+                    <option value="addNewType">+ Add a new instructor</option>
                   </select>
-                </div>
-
-                <div className="add-workshop-form-group">
-                  <label className="add-workshop-form-label">Address</label>
-                  <input
-                    type="text"
-                    name="address"
-                    placeholder="Enter workshop address"
-                    className="add-workshop-form-input large-input"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    required
-                  />
                 </div>
 
                 <div className="add-workshop-form-group">
@@ -241,7 +241,7 @@ export default function AddWorkshop() {
                 </div>
 
                 <div className="add-workshop-form-group">
-                  <label className="add-workshop-form-label">Finish Time</label>
+                  <label className="add-workshop-form-label">End Time</label>
                   <input
                     type="datetime-local"
                     name="temp_fin"
@@ -263,14 +263,14 @@ export default function AddWorkshop() {
                 <button 
                   type="button" 
                   className="add-workshop-secondary-button" 
-                  onClick={() => navigate('/eventDetails')}
+                  onClick={() => navigate('/add-details', { state: { evenement_id: evenement_id.current } })}
                 >
                   Go Back
                 </button>
                 <button 
                   type="button" 
                   className="add-workshop-secondary-button" 
-                  onClick={() => navigate('/in-workshops')}
+                  onClick={() => navigate('/in-workshops', { state: { evenement_id: evenement_id.current } })}
                 >
                   Check Workshops
                 </button>
@@ -287,13 +287,13 @@ export default function AddWorkshop() {
       />
 
       <ToastContainer 
-            position="top-center"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            pauseOnHover
-        />
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+      />
     </div>
   );
 }

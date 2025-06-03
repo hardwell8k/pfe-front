@@ -24,6 +24,7 @@ interface LocationState {
     role: string;
     employees?: number;
   };
+  eventId?: string;
 }
 
 function EditStaffInEvent() {
@@ -72,14 +73,14 @@ function EditStaffInEvent() {
     try {
       // Here you would make an API call to update the staff
       toast.success("Staff updated successfully");
-      navigate('/agency-staff-in-event');
+      navigate('/agency-staff-in-event', { state: { eventId: location.state?.eventId } });
     } catch (error: any) {
       toast.error('Error updating staff');
     }
   };
 
   const handleGoBack = () => {
-    navigate('/agency-staff-in-event');
+    navigate('/agency-staff-in-event', { state: { eventId: location.state?.eventId } });
   };
 
   return (

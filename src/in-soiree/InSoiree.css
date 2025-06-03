@@ -200,4 +200,29 @@
   background-color: #4299e1;
   border-radius: 10px;
   transition: width 0.3s ease;
+}
+
+.insoiree-delete-btn,
+.insoiree-delete-selected {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.insoiree-delete-btn:hover,
+.insoiree-delete-selected:hover {
+  background-color: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.insoiree-delete-btn:active,
+.insoiree-delete-selected:active {
+  background-color: #991b1b;
+  transform: translateY(0);
 } 
