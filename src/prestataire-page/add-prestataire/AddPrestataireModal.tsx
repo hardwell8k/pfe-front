@@ -14,8 +14,8 @@ interface AddPrestataireModalProps {
 const AddPrestataireModal: React.FC<AddPrestataireModalProps> = ({ isOpen, onClose, getPrestataires }) => {
   const [formData, setFormData] = useState({
     nom: '',
-    adresse: '',
-    telephone: '',
+    address: '',
+    num_tel: '',
     email: ''
   });
   const [status, setStatus] = useState<string>(FETCH_STATUS.IDLE);
@@ -32,11 +32,12 @@ const AddPrestataireModal: React.FC<AddPrestataireModalProps> = ({ isOpen, onClo
     e.preventDefault();
     
     try {
+      const submitData ={...formData,num_tel:Number(formData.num_tel)}
       setStatus(FETCH_STATUS.LOADING);      
       const response = await fetch(`${URLS.ServerIpAddress}/api/addPrestataire`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submitData),
         credentials: 'include',
       });
       
@@ -60,8 +61,8 @@ const AddPrestataireModal: React.FC<AddPrestataireModalProps> = ({ isOpen, onClo
   const resetForm = () => {
     setFormData({
       nom: '',
-      adresse: '',
-      telephone: '',
+      address: '',
+      num_tel: '',
       email: ''
     });
   };
@@ -99,12 +100,12 @@ const AddPrestataireModal: React.FC<AddPrestataireModalProps> = ({ isOpen, onClo
             </div>
 
             <div className="add_prestataire_modal_form_group">
-              <label htmlFor="adresse">Adresse</label>
+              <label htmlFor="address">Adresse</label>
               <input
                 type="text"
                 id="adresse"
-                name="adresse"
-                value={formData.adresse}
+                name="address"
+                value={formData.address}
                 onChange={handleChange}
                 placeholder="Adresse complète"
                 required
@@ -119,8 +120,8 @@ const AddPrestataireModal: React.FC<AddPrestataireModalProps> = ({ isOpen, onClo
               <input
                 type="tel"
                 id="telephone"
-                name="telephone"
-                value={formData.telephone}
+                name="num_tel"
+                value={formData.num_tel}
                 onChange={handleChange}
                 placeholder="+212 6XX-XXXXXX"
                 required

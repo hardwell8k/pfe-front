@@ -14,6 +14,7 @@ import logoutImg from '../assets/logout_black.svg'
 import dropdown from '../assets/arrow_drop_down_black.svg'
 import accountsImg from '../assets/accounts_black.svg'
 import carImg from '../assets/swap_driving_black.svg'
+import agenceImg from '../assets/real_estate_agent_black.svg'
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
@@ -72,25 +73,23 @@ function Sidebar(){
                     </ul>
                 </li>
                 <li>
+                    <Element imgUrl={agenceImg} link="/PrestatairePage" name="fournisseur"/>
+                </li>
+                <li>
                     <Element imgUrl={teamImg} link="/teamPage" name="Teams"/>
                 </li>
                 <li>
-                    <span>
-                        <Element imgUrl={staffImg} link="/staff" name="Staff"/>
-                        <img className="dropdownarrow" onClick={()=>{updateInvisible("staff")}} src={dropdown} alt="problem" />
-                    </span>
-                    <ul className={`sub_menu ${menuIsVisible.staff? 'visible':''}`}>
-                        <li><a href="/AddStaff">add staff</a></li>
-                    </ul>
+                    <Element imgUrl={staffImg} link="/staff" name="Staff"/>
                 </li>
 
                 <li>
                     <span>
-                        <Element imgUrl={historyImg} link="/history" name="History"/>
+                        <Element imgUrl={historyImg} link="" name="History"/>
                         <img className="dropdownarrow" onClick={()=>{updateInvisible("history")}} src={dropdown} alt="problem" />
                     </span>
                     <ul className={`sub_menu ${menuIsVisible.history? 'visible':''}`}>
                         <li><a href="/equipment-history">Equipment History</a></li>
+                        <li><a href="/history">Event History</a></li>
                     </ul>
                 </li>
                 <li>

@@ -49,7 +49,7 @@ import AgencyStaffInEvent from './agency-staff-in-event/AgencyStaffInEvent';
 import InStaffTeam from './in-staff-team/InStaffTeam';
 import EquipmentHistoryPage from './equipment-history-page/EquipmentHistoryPage.tsx';
 import PrestatairePage from './prestataire-page/PrestatairePage.tsx';
-
+import HistoryDetailPage from './history-detail-page/HistoryDetailPage.tsx';
 
 
 const isLogedIn = ()=>{
@@ -281,6 +281,11 @@ const router = createBrowserRouter([
   {
     path: '/PrestatairePage',
     element: <ProtectedRoute element={<PrestatairePage />} />,
+    errorElement: <div>404 PAGE NOT FOUND</div>
+  },
+  {
+    path: '/history-detail',
+    element: <ProtectedRoute element={<HistoryDetailPage />} />,
     errorElement: <div>404 PAGE NOT FOUND</div>
   },
 

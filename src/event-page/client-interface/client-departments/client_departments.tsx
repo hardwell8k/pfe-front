@@ -10,10 +10,9 @@ function ClientDepartments(props:any){
         try {
             //alert("trying to get client department");
             //alert(JSON.stringify({user_id:props.clientID}));
-            const reponse = await fetch(`${URLS.ServerIpAddress}/api/getClientDepartments`,{
+            const reponse = await fetch(`${URLS.ServerIpAddress}/api/getClientDepartments/${props.clientID}`,{
                 method:'GET',
                 headers:{"Content-Type":"application/json"},
-                body:JSON.stringify({client_id:props.clientID}),
                 credentials: 'include',
             });
 
@@ -34,7 +33,7 @@ function ClientDepartments(props:any){
     return(
         <div className="client_departments_div">
             {departments.map((item:any)=>(
-                <ClientDepartment nom={item.nom} department={item.department} num_tel={item.num_tel} email={item.email}/>
+                <ClientDepartment key={item.ID} nom={item.nom} department={item.department} num_tel={item.num_tel} email={item.email}/>
             ))}
         </div>
     )

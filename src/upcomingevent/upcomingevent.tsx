@@ -117,77 +117,65 @@ export default function ProjectDashboard() {
   };
 
   return (
-    <div className="dashboard-layout">
-      {/* Sidebar */}
+    <div className="upcoming-events-layout">
       <Sidebar />
-      {/* Main Content */}
-      <div className="dashboard-main">
-        {/* Dashboard Content */}
-        <div className="container">
-          {/* Search Bar */}
-          <div className="top-bar">
-            <div className="search-wrapper">
-              <input type="text" placeholder="Search..." className="search-input" />
-              <div className="search-icon">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-              </div>
+      <div className="upcoming-events-main">
+        <div className="upcoming-events-container">
+          <div className="upcoming-events-top-bar">
+            <div className="upcoming-events-search-wrapper">
+              <input type="text" placeholder="Search..." className="upcoming-events-search-input" />
             </div>
-            <div className="user-info">
-              <div className="user-initial">AM</div>
-              <span className="user-name">Aiden Max</span>
-              <svg className="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="upcoming-events-user-info">
+              <div className="upcoming-events-user-initial">AM</div>
+              <span className="upcoming-events-user-name">Aiden Max</span>
+              <svg className="upcoming-events-dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
               </svg>
             </div>
           </div>
-          {/* Project List */}
-          <div className="project-section-container">
-            <h2 className="section-title centered-title">Your upcoming projects</h2>
-            <div className="project-list">
+          <div className="upcoming-events-section-container">
+            <h2 className="upcoming-events-section-title upcoming-events-centered-title">Your upcoming projects</h2>
+            <div className="upcoming-events-list">
               {projects.slice((currentPage-1)*projectsPerPage, currentPage*projectsPerPage).map((project: Project) => (
-                <div key={project.id} className="project-card">
-                  <div className="card-header">
-                    <div className="project-header">
-                      <div className={`project-logo ${project.logoColor} ${project.logoBorder || ''} ${project.logoTextColor || ''}`}>
+                <div key={project.id} className="upcoming-events-card">
+                  <div className="upcoming-events-card-header">
+                    <div className="upcoming-events-project-header">
+                      <div className={`upcoming-events-project-logo ${project.logoColor} ${project.logoBorder || ''} ${project.logoTextColor || ''}`}>
                         {project.logo}
                       </div>
-                      <div className="project-details">
-                        <div className="project-title">
+                      <div className="upcoming-events-project-details">
+                        <div className="upcoming-events-project-title">
                           <h3>{project.name}</h3>
-                          <span className="due">in {project.daysLeft} days</span>
-                          <MoreVertical size={16} className="text-gray-400" /> 
+                          <span className="upcoming-events-due">in {project.daysLeft} days</span>
+                          <MoreVertical size={16} className="upcoming-events-more-icon" /> 
                         </div>
-                        <p className="description">{project.description}</p>
-                        <div className="card-separator"></div>
-                        <div className="stats">
+                        <p className="upcoming-events-description">{project.description}</p>
+                        <div className="upcoming-events-card-separator"></div>
+                        <div className="upcoming-events-stats">
                           <div>
-                            <p className="stat-value">{project.participants}</p>
-                            <p className="stat-label">participants</p>
+                            <p className="upcoming-events-stat-value">{project.participants}</p>
+                            <p className="upcoming-events-stat-label">participants</p>
                           </div>
                           <div>
-                            <p className="stat-value">{project.workshops}</p>
-                            <p className="stat-label">workshops</p>
+                            <p className="upcoming-events-stat-value">{project.workshops}</p>
+                            <p className="upcoming-events-stat-label">workshops</p>
                           </div>
                           <div>
-                            <p className="stat-value">{project.presentations}</p>
-                            <p className="stat-label">presentations</p>
+                            <p className="upcoming-events-stat-value">{project.presentations}</p>
+                            <p className="upcoming-events-stat-label">presentations</p>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div className="card-actions-row">
-
+                    <div className="upcoming-events-card-actions-row">
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-            {/* Pagination */}
-            <div className="pagination-wrapper">
-              <span className="pagination-info">Showing 3 of 5 products</span>
-              <div className="pagination-buttons">
+            <div className="upcoming-events-pagination-wrapper">
+              <span className="upcoming-events-pagination-info">Showing 3 of 5 products</span>
+              <div className="upcoming-events-pagination-buttons">
                 <button
                   disabled={currentPage === 1}
                   onClick={() => handlePageChange(currentPage - 1)}
@@ -197,7 +185,7 @@ export default function ProjectDashboard() {
                 {[...Array(totalPages)].map((_, index) => (
                   <button
                     key={index}
-                    className={currentPage === index + 1 ? 'active-page' : ''}
+                    className={currentPage === index + 1 ? 'upcoming-events-active-page' : ''}
                     onClick={() => handlePageChange(index + 1)}
                   >
                     {index + 1}

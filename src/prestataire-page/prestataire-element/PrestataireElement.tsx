@@ -6,8 +6,8 @@ interface Prestataire {
   ID: number;
   nom: string;
   email: string;
-  telephone: string;
-  adresse: string;
+  num_tel: string;
+  address: string;
   type: string;
   status: string;
 }
@@ -65,7 +65,8 @@ const PrestataireElement: React.FC<PrestataireElementProps> = ({ item, isSelecte
       </td>
       <td className="prestataire_element_nom">{item.nom}</td>
       <td className="prestataire_element_email">{item.email}</td>
-      <td className="prestataire_element_telephone">{item.telephone}</td>
+      <td className="prestataire_element_telephone">{item.num_tel}</td>
+      <td className="prestataire_element_type">{item.address}</td>
       <td className="prestataire_element_type">{item.type}</td>
       <td className="prestataire_element_status">
         <span className={`status-badge ${getStatusClass()}`}>

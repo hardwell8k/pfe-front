@@ -9,8 +9,8 @@ interface Prestataire {
   ID: number;
   nom: string;
   email: string;
-  telephone: string;
-  adresse: string;
+  num_tel: string;
+  address: string;
   type: string;
   status: string;
 }
@@ -26,8 +26,8 @@ const UpdatePrestataireModal: React.FC<UpdatePrestataireModalProps> = ({ isOpen,
   const [formData, setFormData] = useState({
     nom: item.nom ?? "",
     email: item.email ?? "",
-    telephone: item.telephone ?? "",
-    adresse: item.adresse ?? "",
+    num_tel: item.num_tel ?? "",
+    address: item.address ?? "",
     type: item.type ?? "Transport",
     status: item.status ?? "Actif"
   });
@@ -37,8 +37,8 @@ const UpdatePrestataireModal: React.FC<UpdatePrestataireModalProps> = ({ isOpen,
       setFormData({
         nom: item.nom ?? "",
         email: item.email ?? "",
-        telephone: item.telephone ?? "",
-        adresse: item.adresse ?? "",
+        num_tel: item.num_tel ?? "",
+        address: item.address ?? "",
         type: item.type ?? "Transport",
         status: item.status ?? "Actif"
       });
@@ -89,8 +89,8 @@ const UpdatePrestataireModal: React.FC<UpdatePrestataireModalProps> = ({ isOpen,
     setFormData({
       nom: '',
       email: '',
-      telephone: '',
-      adresse: '',
+      num_tel: '',
+      address: '',
       type: 'Transport',
       status: 'Actif'
     });
@@ -149,8 +149,8 @@ const UpdatePrestataireModal: React.FC<UpdatePrestataireModalProps> = ({ isOpen,
               <input
                 type="tel"
                 id="telephone"
-                name="telephone"
-                value={formData.telephone}
+                name="num_tel"
+                value={formData.num_tel}
                 onChange={handleChange}
                 placeholder="+212 6XX-XXXXXX"
                 required
@@ -179,12 +179,12 @@ const UpdatePrestataireModal: React.FC<UpdatePrestataireModalProps> = ({ isOpen,
           </div>
 
           <div className="update_prestataire_modal_form_group">
-            <label htmlFor="adresse">Adresse</label>
+            <label htmlFor="address">Adresse</label>
             <input
               type="text"
               id="adresse"
-              name="adresse"
-              value={formData.adresse}
+              name="address"
+              value={formData.address}
               onChange={handleChange}
               placeholder="Adresse complète"
               required

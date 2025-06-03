@@ -2,7 +2,7 @@
 import React from 'react';
 import './HistoryEvent.css';
 import morePoints from '../../assets/more_horiz_black.svg'
-
+import { useNavigate } from 'react-router-dom';
 // Define the shape of a history item
 interface HistoryItem {
   ID: string;
@@ -22,8 +22,9 @@ interface HistoryEventProps {
 }
 
 const HistoryEvent: React.FC<HistoryEventProps> = ({ item,isSelected,onSelect})=>{
+  const navigate = useNavigate();
   return (
-    <tr className={`history_event ${isSelected ? 'history_event--selected' : ''}`}>
+    <tr className={`history_event ${isSelected ? 'history_event--selected' : ''}`} onClick={() => {navigate(`/history-detail`,{state:{eventId:item.ID,eventInfo:item}})}}>
       <td className="history_event_checkbox_cell">
         {/*<input 
           type="checkbox" 

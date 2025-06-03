@@ -72,10 +72,11 @@
 .prestataire_element_actions {
   width: 60px;
   text-align: right;
+  position: relative;
 }
 
 .prestataire_element_dropdown {
-  position: relative;
+  position: static;
   display: inline-block;
 }
 
@@ -92,16 +93,21 @@
   color: #374151;
 }
 
+.prestataire_element_dropdown_button:focus {
+  border:none;
+  outline: none;
+}
+
 .prestataire_element_dropdown_menu {
-  position: absolute;
-  right: 0;
-  top: 100%;
+  position: fixed;
+  transform: translateX(-100%);
   background-color: white;
   border: 1px solid #e5e7eb;
   border-radius: 0.375rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  z-index: 10;
+  z-index: 1000;
   min-width: 120px;
+  margin-top: 4px;
 }
 
 .prestataire_element_dropdown_menu button {

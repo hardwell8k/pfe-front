@@ -45,7 +45,7 @@ function ClientInterface(props:any){
                         </div>
 
                         {props.storedClientId===item.ID&&<div className='client_interface_subdiv_department'>
-                            <ClientDepartments clientID={item.ID}/>
+                            <ClientDepartments key={item.ID} clientID={item.ID}/>
                         </div>}
                     </div>
                         

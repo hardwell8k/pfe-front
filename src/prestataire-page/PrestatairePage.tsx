@@ -3,17 +3,18 @@ import './PrestatairePage.css';
 import { Search, Plus, Trash2 } from 'lucide-react';
 import { FETCH_STATUS } from '../fetchStatus';
 import { URLS } from '../URLS';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import PrestataireElement from './prestataire-element/PrestataireElement';
 import AddPrestataireModal from './add-prestataire/AddPrestataireModal';
 import UpdatePrestataireModal from './update-prestataire/UpdatePrestataireModal';
+import Sidebar from '../sidebar/Sidebar';
 
 interface Prestataire {
   ID: number;
   nom: string;
   email: string;
-  telephone: string;
-  adresse: string;
+  num_tel: string;
+  address: string;
   type: string;
   status: string;
 }
@@ -30,7 +31,7 @@ const PrestatairePage: React.FC = () => {
   const getPrestataires = async () => {
     try {
       setStatus(FETCH_STATUS.LOADING);
-      const response = await fetch(`${URLS.ServerIpAddress}/api/getPrestataires`, {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/getAllPrestataires`, {
         method: 'GET',
         headers: {'Content-Type': 'application/json'},
         credentials: 'include',
@@ -61,8 +62,8 @@ const PrestatairePage: React.FC = () => {
   const filteredPrestataires = prestataires.filter(prestataire =>
     prestataire.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
     prestataire.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    prestataire.telephone.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    prestataire.adresse.toLowerCase().includes(searchTerm.toLowerCase())
+    prestataire.num_tel.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    prestataire.address.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleSelect = (id: number, isSelected: boolean) => {
@@ -98,7 +99,7 @@ const PrestatairePage: React.FC = () => {
 
     try {
       setStatus(FETCH_STATUS.LOADING);
-      const response = await fetch(`${URLS.ServerIpAddress}/api/deletePrestataires`, {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/deletePrestataire`, {
         method: 'DELETE',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ ids: selectedPrestataires }),
@@ -120,7 +121,8 @@ const PrestatairePage: React.FC = () => {
     }
   };
 
-  return (
+  return (<>
+    <Sidebar/>
     <div className="prestataire_page">
       <div className="prestataire_page_header">
         <h1>Prestataires de service</h1>
@@ -216,7 +218,15 @@ const PrestatairePage: React.FC = () => {
         />
       )}
     </div>
-  );
+    <ToastContainer 
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+      />
+  </>);
 };
 
 export default PrestatairePage; 

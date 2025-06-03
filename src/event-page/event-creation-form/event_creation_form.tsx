@@ -76,8 +76,9 @@ function Event_creation_form(props:any,ref:any){
                 throw{status:reponse.status,message:result.message};
             }
 
-            toast.success("Événement créé avec succès");
             props.setStatus(FETCH_STATUS.SUCCESS);
+            console.log("Événement créé avec succès")
+            toast.success("Événement créé avec succès");
             clearform();
             props.getUpcomingEvents();
         }catch(error:any){
@@ -433,18 +434,18 @@ function Event_creation_form(props:any,ref:any){
                 <button id="add_details" type="button" onClick={()=>{if(props.selectedUpcomingEvent?.ID){navigate('/eventDetails', {state: { evenement_id: props.selectedUpcomingEvent.ID },});} else {toast.error("No event selected")}}}>+ add details</button>
                 <button id="create_new_event" type="submit">+ create a new event</button>
             </div>
-
+            
         </form>
         {newTypeIsVisible&&<Add_new_type getEventTypes={evenementTypesTraitement} isvisible={handleNewTypeIsVisible}/>}
         {ClientInterfaceIsVisible&&<ClientInterface clients={clients} setClients={setClients} handleClient_id={handleClient_id} storedClientId={watch("client_id")} setClientName={setClientName} status={Client_interfaceStatus} isOpen={setClientInterfaceIsVisible}/>}
         <ToastContainer 
-            position="top-center"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            pauseOnHover
-        />
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                pauseOnHover
+            />
     </>);
 }
 
