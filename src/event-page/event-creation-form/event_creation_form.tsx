@@ -4,6 +4,7 @@ import { forwardRef,useImperativeHandle } from "react";
 
 import Add_new_type from "../add-new-type/add_new_type";
 import ClientInterface from "../client-interface/client_interface";
+import EventSummaryModal from "../event-summary-modal/EventSummaryModal";
 
 import "./event_creation_form.css"
 
@@ -32,6 +33,8 @@ interface EventFormData extends FieldValues {
 
 function Event_creation_form(props:any,ref:any){
     const navigate = useNavigate();
+    const [showSummaryModal, setShowSummaryModal] = useState(false);
+    const [createdEventData, setCreatedEventData] = useState<any>(null);
 
     const getClients = async ()=>{
         try {
@@ -57,11 +60,9 @@ function Event_creation_form(props:any,ref:any){
         }
     }
 
-    
-
     const onSubmit = async (data : EventFormData)=>{
         try{
-            props.setStatus(FETCH_STATUS.LOADING);
+            //props.setStatus(FETCH_STATUS.LOADING);
              
             console.log("trying to create");
             const reponse = await fetch(`${URLS.ServerIpAddress}/api/addEvent`,{
@@ -76,11 +77,13 @@ function Event_creation_form(props:any,ref:any){
                 throw{status:reponse.status,message:result.message};
             }
 
-            props.setStatus(FETCH_STATUS.SUCCESS);
+            //props.setStatus(FETCH_STATUS.SUCCESS);
             console.log("Événement créé avec succès")
             toast.success("Événement créé avec succès");
-            clearform();
             props.getUpcomingEvents();
+            setCreatedEventData(result.data);
+            setShowSummaryModal(true);
+            //clearform();
         }catch(error:any){
             console.error(error.message);    
             toast.error("Erreur lors de la création de l'événement"); 
@@ -265,7 +268,7 @@ function Event_creation_form(props:any,ref:any){
             selectedEventID.current = (props.selectedUpcomingEvent).ID;
         }else{
             selectedEventID.current = 0;
-            clearform();
+            //clearform();
         }
     },[props.selectedUpcomingEventIndex])
     
@@ -430,22 +433,34 @@ function Event_creation_form(props:any,ref:any){
 
             </div>
             <div className="buttons_below">
-                <button id="go_back" type="button" onClick={()=>{clearform()}}><img src={arrowImg} alt=""/>Go Back</button>
-                <button id="add_details" type="button" onClick={()=>{if(props.selectedUpcomingEvent?.ID){navigate('/eventDetails', {state: { evenement_id: props.selectedUpcomingEvent.ID },});} else {toast.error("No event selected")}}}>+ add details</button>
+                <button id="go_back" type="button" onClick={()=>{clearform();navigate('/firstPage')}}><img src={arrowImg} alt=""/>Go Back</button>
+                {/*<button id="add_details" type="button" onClick={()=>{if(props.selectedUpcomingEvent?.ID){navigate('/eventDetails', {state: { evenement_id: props.selectedUpcomingEvent.ID },});} else {toast.error("No event selected")}}}>+ add details</button>*/}
                 <button id="create_new_event" type="submit">+ create a new event</button>
             </div>
             
         </form>
         {newTypeIsVisible&&<Add_new_type getEventTypes={evenementTypesTraitement} isvisible={handleNewTypeIsVisible}/>}
         {ClientInterfaceIsVisible&&<ClientInterface clients={clients} setClients={setClients} handleClient_id={handleClient_id} storedClientId={watch("client_id")} setClientName={setClientName} status={Client_interfaceStatus} isOpen={setClientInterfaceIsVisible}/>}
-        <ToastContainer 
-                position="top-center"
-                autoClose={3000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                pauseOnHover
+        {showSummaryModal && createdEventData && (
+            <EventSummaryModal
+                isOpen={showSummaryModal}
+                onClose={() => {
+                    setShowSummaryModal(false);
+                    setCreatedEventData(null);
+                    props.getUpcomingEvents();
+                    clearform();
+                }}
+                eventData={createdEventData}
             />
+        )}
+        <ToastContainer 
+            position="top-center"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            pauseOnHover
+        />
     </>);
 }
 

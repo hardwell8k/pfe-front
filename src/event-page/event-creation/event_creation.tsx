@@ -10,7 +10,6 @@ import Loading from "../../loading/loading";
 
 
 function Event_creation(props:any){
-
     const [date,setDate]= useState<string|Date>("Choisir une date");
     const [address , setAddress] = useState("Sélectionner un lieu") ;
     const [Event_name,setEvent_name] = useState("Nom de votre événement");
@@ -43,7 +42,6 @@ function Event_creation(props:any){
         }
     }
     
-
     const handlesetDescription = (descriptionParam :string)=>{
         if(!descriptionParam){
             setDescription("Écrivez une petite description pour l'événement");
@@ -52,13 +50,13 @@ function Event_creation(props:any){
         }
     }
 
-    const handleUpdateClick = async()=>{
-        //alert('handleUpdateClick');
+    const handleUpdateClick = async(e: React.MouseEvent)=>{
+        e.preventDefault();
         await Event_creation_form_ref.current?.updateEventCall();
     }
 
-    const handleDeleteClick = async()=>{
-        //alert('handleDeleteClick');
+    const handleDeleteClick = async(e: React.MouseEvent)=>{
+        e.preventDefault();
         await Event_creation_form_ref.current?.deleteEventCall();
     }
 
@@ -71,7 +69,6 @@ function Event_creation(props:any){
     return(<>
     <div className="event_creation">
         <div className="event_details">
-
             <div className="date_address">
                 <p id="date">{String(date)}</p>
                 <p id="address">{address}</p>
@@ -81,16 +78,25 @@ function Event_creation(props:any){
 
             <div className="description_edit_delete">
                 <p id="description">{description}</p>
-                <img id="edit" src={editImg} alt="" onClick={()=>{handleUpdateClick()}}/>
+                <img id="edit" src={editImg} alt="" onClick={handleUpdateClick}/>
                 <img id="delete" src={deleteImg} alt="" onClick={handleDeleteClick}/>
             </div>
-
         </div>
 
-        <Event_creation_form setStatus={setStatus} ref={Event_creation_form_ref} setEvent_name ={handlesetEvent_name} setAddress={handlesetAddress} setDate={handlesetDate} setDescription={handlesetDescription} selectedUpcomingEvent={props.selectedUpcomingEvent} selectedUpcomingEventIndex={props.selectedUpcomingEventIndex} setselectedUpcomingEventIndex={props.setselectedUpcomingEventIndex} getUpcomingEvents={props.getUpcomingEvents} setUpComingEvents={props.setUpComingEvents} />
+        <Event_creation_form 
+            setStatus={setStatus} 
+            ref={Event_creation_form_ref} 
+            setEvent_name={handlesetEvent_name} 
+            setAddress={handlesetAddress} 
+            setDate={handlesetDate} 
+            setDescription={handlesetDescription} 
+            selectedUpcomingEvent={props.selectedUpcomingEvent} 
+            selectedUpcomingEventIndex={props.selectedUpcomingEventIndex} 
+            setselectedUpcomingEventIndex={props.setselectedUpcomingEventIndex} 
+            getUpcomingEvents={props.getUpcomingEvents} 
+            setUpComingEvents={props.setUpComingEvents}
+        />
     </div>
-    
-    
     </>);
 }
 

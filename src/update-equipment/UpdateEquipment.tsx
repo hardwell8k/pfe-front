@@ -3,9 +3,11 @@ import './UpdateEquipment.css';
 import Sidebar from '../sidebar/Sidebar';
 import SubCategoryModal from './add-sub_category/SubCategoryModal';
 import CategoryModal from './add-category/CategoryModal';
+import PrestataireModal from '../add-equipment/add-prestataire/PrestataireModal';
 import { toast, ToastContainer } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { URLS } from '../URLS';
+import { Prestataire } from '../types/Prestataire';
 
 interface Category {
   id: number;
@@ -35,12 +37,11 @@ interface equipmentprops{
   date_retour: string; 
   prix: string; 
   code_bar: string; 
-  fournisseur: string; 
+  agence_id: string; 
   sub_category_id: string; 
   date_achat: string; 
   details: string;
   quantite: number
-  
 }
 
 const parseDate = (dateString: string) => {
@@ -64,7 +65,7 @@ export default function UpdateEquipment() {
     date_retour: state?.item.date_retour,
     prix: state?.item.prix,
     code_bar: state?.item.code_bar,
-    fournisseur: state?.item.fournisseur,
+    agence_id: state?.item.agence_id,
     sub_category_id: state?.item.sub_category_id,
     date_achat: state?.item.date_achat,
     details: state?.item.details,
@@ -74,12 +75,23 @@ export default function UpdateEquipment() {
   const [categoriesAndSubCategories, setCategoriesAndSubCategories] = useState<CategoriesAndSubCategories[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+  const [filteredSubCategories, setFilteredSubCategories] = useState<SubCategory[]>([]);
   const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isPrestataireModalOpen, setIsPrestataireModalOpen] = useState(false);
+  const [selectedPrestataire, setSelectedPrestataire] = useState<Prestataire | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // If category changes, update subcategories
+    if (name === 'category_id') {
+      const filtered = subCategories.filter(sub => sub.category_id === Number(value));
+      setFilteredSubCategories(filtered);
+      // Reset sub_category_id when category changes
+      setFormData(prev => ({ ...prev, sub_category_id: '' }));
+    }
   };
 
   const handleCategoryDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -104,12 +116,14 @@ export default function UpdateEquipment() {
         quantite: Number(formData.quantite),
         prix: Number(formData.prix),
         IDs: formData.equipmentIds,
-        date_location: formData.date_location ? new Date(formData.date_location).getTime() : '',
-        date_retour: formData.date_retour ? new Date(formData.date_retour).getTime() : '',
-        date_achat: formData.date_achat ? new Date(formData.date_achat).getTime() : ''
+        agence_id: formData.agence_id ? Number(formData.agence_id) : undefined,
+        date_location: formData.date_location ? new Date(formData.date_location).getTime() : undefined,
+        date_retour: formData.date_retour ? new Date(formData.date_retour).getTime() : undefined,
+        date_achat: formData.date_achat ? new Date(formData.date_achat).getTime() : undefined
       }).filter(([_, value]) => value !== '' && value !== null && value !== undefined));
-      console.log("formData",JSON.stringify(formData));
-      console.log("submitData",JSON.stringify(submitData));
+
+      console.log("formData", JSON.stringify(formData));
+      console.log("submitData", JSON.stringify(submitData));
       const response = await fetch(`${URLS.ServerIpAddress}/api/updateEquipment`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -128,7 +142,7 @@ export default function UpdateEquipment() {
         date_retour: '', 
         prix: '', 
         code_bar: '', 
-        fournisseur: '', 
+        agence_id: '', 
         sub_category_id: '', 
         date_achat: '', 
         details: '',
@@ -192,6 +206,36 @@ export default function UpdateEquipment() {
     getCategoriesAndSubCategories();
   };
 
+  const handlePrestataireSelect = (prestataire: Prestataire) => {
+    setSelectedPrestataire(prestataire);
+    setFormData(prev => ({ ...prev, agence_id: prestataire.ID.toString() }));
+  };
+
+  const getPrestataireById = async (id: string) => {
+    try {
+      const response = await fetch(`${URLS.ServerIpAddress}/api/getAllPrestataires`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch prestataires');
+      }
+
+      const result = await response.json();
+      const prestataire = result.data.find((p: Prestataire) => p.ID.toString() === id);
+      if (prestataire) {
+        setSelectedPrestataire(prestataire);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Failed to fetch prestataire details');
+    }
+  };
+
   useEffect(() => {
     getCategoriesAndSubCategories();
   }, []);
@@ -201,32 +245,46 @@ export default function UpdateEquipment() {
   }, [categoriesAndSubCategories]);
 
   useEffect(() => {
-    if(location.state&&location.state.item&&location.state.ids){
-      console.log("location.state",location.state.item);
+    if (location.state && location.state.item) {
+      const type = location.state.item.type === 'loue' ? 'rented' : 'purchased';
+      
       setFormData({
         equipmentIds: location.state.ids,
         nom: location.state.item.nom,
         RFID: location.state.item.RFID,
         category_id: location.state.item.category_id,
-        type: location.state.item.type,
+        type: type,
         date_location: location.state.item.date_location,
         date_retour: location.state.item.date_retour,
         prix: location.state.item.prix,
         code_bar: location.state.item.code_bar,
-        fournisseur: location.state.item.fournisseur,
+        agence_id: location.state.item.agence_id,
         sub_category_id: location.state.item.sub_category_id,
         date_achat: location.state.item.date_achat,
         details: location.state.item.details,
         quantite: location.state.item.quantite
       });
+
+      // If there's an agence_id, fetch the prestataire details
+      if (location.state.item.agence_id) {
+        getPrestataireById(location.state.item.agence_id);
+      }
     }
   }, [location.state]);
+
+  // Add effect to set filtered subcategories when categories are loaded
+  useEffect(() => {
+    if (formData.category_id && subCategories.length > 0) {
+      const filtered = subCategories.filter(sub => sub.category_id === Number(formData.category_id));
+      setFilteredSubCategories(filtered);
+    }
+  }, [subCategories, formData.category_id]);
 
   return (
     <div className="dashboard-container">
       <Sidebar />
       <div className="main-content">
-        <h1 className="page-title">Update Equipment</h1>
+        {/*<h1 className="page-title">Update Equipment</h1>*/}
         
         <div className="form-card">
           <h2 className="form-title">Update Equipment</h2>
@@ -368,15 +426,25 @@ export default function UpdateEquipment() {
                 </div>
                 
                 <div className="form-group">
-                  <label className="form-label">Fournisseur</label>
-                  <input
-                    type="text"
-                    name="fournisseur"
-                    placeholder="Enter supplier"
-                    className="form-input"
-                    value={formData.fournisseur}
-                    onChange={handleInputChange}
-                  />
+                  <label className="form-label">agence</label>
+                  <div className="input-with-button">
+                    <input
+                      type="text"
+                      name="agence_id"
+                      placeholder="Select agence"
+                      className="form-input"
+                      value={selectedPrestataire ? selectedPrestataire.nom : ''}
+                      readOnly
+                      onClick={() => setIsPrestataireModalOpen(true)}
+                    />
+                    <button
+                      type="button"
+                      className="select-prestataire-button"
+                      onClick={() => setIsPrestataireModalOpen(true)}
+                    >
+                      Select
+                    </button>
+                  </div>
                 </div>
                 
                 <div className="form-group">
@@ -389,7 +457,7 @@ export default function UpdateEquipment() {
                       onChange={handleCategoryDropdownChange}
                     >
                       <option value="" disabled>Select sub-category</option>
-                      {subCategories.map((subCategory: SubCategory) => (
+                      {filteredSubCategories.map((subCategory: SubCategory) => (
                         <option key={subCategory.id} value={subCategory.id}>{subCategory.nom}</option>
                       ))}
                       <option value="addNewSubCategory">+Add New subcategorie</option>
@@ -473,6 +541,12 @@ export default function UpdateEquipment() {
         isOpen={isCategoryModalOpen}
         onClose={() => setIsCategoryModalOpen(false)}
         onCategoryAdded={handleCategoryAdded}
+      />
+
+      <PrestataireModal
+        isOpen={isPrestataireModalOpen}
+        onClose={() => setIsPrestataireModalOpen(false)}
+        onSelect={handlePrestataireSelect}
       />
       
       <ToastContainer 

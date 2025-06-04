@@ -20,10 +20,9 @@ interface Prestataire {
     ID: number;
     nom: string;
     email: string;
-    telephone: string;
-    adresse: string;
+    num_tel: string;
+    address: string;
     type: string;
-    status: string;
 }
 
 interface SelectedItems {
@@ -114,8 +113,8 @@ function Prestataires_page() {
             (item.nom && item.nom.toLowerCase().includes(term)) ||
             (item.email && item.email.toLowerCase().includes(term)) ||
             (item.type && item.type.toLowerCase().includes(term)) ||
-            (item.telephone && item.telephone.toLowerCase().includes(term)) ||
-            (item.adresse && item.adresse.toLowerCase().includes(term))
+            (item.num_tel && item.num_tel.toLowerCase().includes(term)) ||
+            (item.address && item.address.toLowerCase().includes(term))
         );
     }));
 
@@ -239,20 +238,11 @@ function Prestataires_page() {
                                 />
                             </th>
                             <th data-label="Nom" className='prestataires_page_container_table_name_header'>Nom</th>
-                            <th data-label="Type de service" className='prestataires_page_container_table_service_header'>Type de service</th>
+                            <th data-label="Type" className='prestataires_page_container_table_type_header'>Type</th>
                             <th data-label="Email" className='prestataires_page_container_table_email_header'>Email</th>
                             <th data-label="Téléphone" className='prestataires_page_container_table_phone_header'>Téléphone</th>
                             <th data-label="Adresse" className='prestataires_page_container_table_address_header'>Adresse</th>
-                            <th data-label="Status" className='prestataires_page_container_table_status_header'>Status</th>
-                            <th className='prestataires_page_container_table_actions_header'>
-                                <img
-                                    src={deleteGreyImg}
-                                    alt="Supprimer la sélection"
-                                    onClick={handleDelete}
-                                    className={Object.values(selectedItems).some(v => v) ? 'action-icon active' : 'action-icon'}
-                                    title="Supprimer les prestataires sélectionnés"
-                                />
-                            </th>
+                            <th data-label="Actions" className='prestataires_page_container_table_actions_header'>Actions</th>
                         </tr>
                     </thead>
                     <tbody>

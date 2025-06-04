@@ -4,6 +4,7 @@ import './StaffElement.css';
 
 import {useEffect, useRef, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function StaffElement(props:any){
     const navigate = useNavigate();
@@ -27,7 +28,7 @@ function StaffElement(props:any){
         
         }catch (error:any) {
           console.error("error while getting upcoming events",error.message);
-          alert(error.message);
+          toast.error(error.message);
         }
       }
 

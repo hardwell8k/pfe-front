@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import './StaffUpdate.css';
 import Sidebar from '../sidebar/Sidebar';
 import { URLS } from '../URLS';
-
+import { toast } from 'react-toastify';
 export default function StaffUpdate() {
   const location = useLocation();
   const receivedData = useRef<any>(location.state);
@@ -57,10 +57,10 @@ export default function StaffUpdate() {
         role: ''
       });
 
-      alert('Staff member updated successfully!');
+      toast.success('Staff member updated successfully!');
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to update staff member');
+      toast.error('Failed to update staff member');
     }
   };
 

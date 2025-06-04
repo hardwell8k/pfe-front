@@ -5,17 +5,18 @@ import { useState } from 'react';
 import Loading from '../../../loading/loading';
 import './add_new_client_interface.css'
 import { URLS } from '../../../URLS';
+import { ToastContainer, toast } from 'react-toastify';
 
 function Add_new_client_interface(props:any){
 
     const Onsubmit =async (data:any)=>{
         try {
             setStatus(FETCH_STATUS.LOADING);
-            alert('adding client');
+            const submitData = {...data,num_tel:Number(data.num_tel)}
             const reponse = await fetch(`${URLS.ServerIpAddress}/api/addClient`,{
                 method:"POST",
                 headers:{"Content-type":"application/json"},
-                body: JSON.stringify(data),
+                body: JSON.stringify(submitData),
                 credentials: 'include',
             })
 
@@ -23,12 +24,11 @@ function Add_new_client_interface(props:any){
             if(!result.success){
                 throw({status:reponse.status,message:result.message});
             }
-            alert('client added');
+            toast.success('client added');
             props.setClients([...props.clients,{nom:data.nom,domain:data.domain}]);
             setStatus(FETCH_STATUS.SUCCESS);
         } catch (error:any) {
-            alert('failed to add client ');
-            alert(error.message);
+            toast.error('failed to add client');
             console.error("failed to add a client",error.message);
             setStatus(FETCH_STATUS.ERROR);
         }

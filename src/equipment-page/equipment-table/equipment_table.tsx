@@ -1,5 +1,6 @@
-import { Search } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Equipment_element from './equipment-element/equipment_element';
 import dropdown from '../../assets/arrow_drop_down_black.svg';
 import deleteIcon from '../../assets/delete_black.svg' ;
@@ -29,10 +30,8 @@ interface Equipment{
     date_retour: string; 
     prix: string; 
     code_bar: string; 
-    fournisseur: string; 
+    agence_id: string; 
     date_achat: string; 
-    
-
 }
 interface compressedEquipment extends Equipment{
     quantite:number;
@@ -55,7 +54,7 @@ interface SubCategory{
 }
 
 function Equipment_table(props:any){
-    
+    const navigate = useNavigate();
 
     const getAllEquipment = async()=>{
         try {
@@ -184,8 +183,45 @@ function Equipment_table(props:any){
     useEffect(()=>{handleCompressedEquipment()},[equipments]);
 
     const [isDeleteEquipmentModalOpen, setIsDeleteEquipmentModalOpen] = useState(false);
+    const [filters, setFilters] = useState({
+        category: '',
+        type: '',
+        availability: ''
+    });
     const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+    const [isCategoryFilterOpen, setIsCategoryFilterOpen] = useState(false);
+    const [isTypeFilterOpen, setIsTypeFilterOpen] = useState(false);
+    const [isAvailabilityFilterOpen, setIsAvailabilityFilterOpen] = useState(false);
     const filterDropdownRef = useRef<HTMLDivElement | null>(null);
+
+    // Get unique categories and types for filter options
+    const categories = Array.from(new Set(equipments.map(eq => eq.category_name)));
+    const types = Array.from(new Set(equipments.map(eq => eq.type)));
+
+    // Apply filters to equipment
+    const applyFilters = (equipment: any) => {
+        if (filters.category && equipment.category_name !== filters.category) return false;
+        if (filters.type && equipment.type !== filters.type) return false;
+        if (filters.availability === 'available' && equipment.disponibilite <= 0) return false;
+        if (filters.availability === 'unavailable' && equipment.disponibilite > 0) return false;
+        return true;
+    };
+
+    // Update filtered equipment when filters change
+    useEffect(() => {
+        const filtered = compressedEquipments.filter(applyFilters);
+        setCompressedEquipments(filtered);
+    }, [filters]);
+
+    // Reset filters
+    const resetFilters = () => {
+        setFilters({
+            category: '',
+            type: '',
+            availability: ''
+        });
+        getAllEquipment();
+    };
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -227,14 +263,143 @@ function Equipment_table(props:any){
                     </div>
 
                     <div className='quiment_table_header_subdiv_buttons' style={{position: 'relative'}}>
+                        <button 
+                            id='quiment_table_header_subdiv_add_button' 
+                            onClick={() => navigate('/AddEquipment')}
+                            style={{ marginRight: '8px' }}
+                        >
+                            <Plus size={16} style={{ marginRight: '4px' }} />
+                            Ajouter
+                        </button>
                         <button id='quiment_table_header_subdiv_delete_button' onClick={() =>{if(selectedIds.length > 0){setIsDeleteEquipmentModalOpen(true)}else{toast.error("Veuillez sélectionner au moins un équipement")}}}><img src={deleteIcon}/>supprimer</button>
-                        <button id='quiment_table_header_subdiv_filter_button' onClick={() => setIsFilterDropdownOpen((prev) => !prev)}><img src={filterIcon}/>Filtrer</button>
-                        {/*<button id='quiment_table_header_subdiv_print_button'><img src={printImg}/>Imprimer</button>*/}
+                        <button id='quiment_table_header_subdiv_filter_button' onClick={() => setIsFilterDropdownOpen((prev) => !prev)}>
+                            <img src={filterIcon}/>
+                            Filtrer
+                            {(filters.category || filters.type || filters.availability) && (
+                                <span className="filter-indicator"></span>
+                            )}
+                        </button>
                         {isFilterDropdownOpen && (
                             <div ref={filterDropdownRef} className="equipment_table_filter_dropdown">
-                                <div className="dropdown_item">Catégorie</div>
-                                <div className="dropdown_item">Type</div>
-                                <div className="dropdown_item">Disponibilité</div>
+                                <div 
+                                    className="dropdown_item filter-section" 
+                                    onClick={() => setIsCategoryFilterOpen(!isCategoryFilterOpen)}
+                                >
+                                    Catégorie
+                                    {filters.category && <span className="selected-filter">{filters.category}</span>}
+                                </div>
+                                {isCategoryFilterOpen && (
+                                    <div className="filter-options">
+                                        <div 
+                                            className={`filter-option ${filters.category === '' ? 'selected' : ''}`}
+                                            onClick={() => {
+                                                setFilters(prev => ({...prev, category: ''}));
+                                                setIsCategoryFilterOpen(false);
+                                            }}
+                                        >
+                                            Tous
+                                        </div>
+                                        {categories.map((category, index) => (
+                                            <div 
+                                                key={index}
+                                                className={`filter-option ${filters.category === category ? 'selected' : ''}`}
+                                                onClick={() => {
+                                                    setFilters(prev => ({...prev, category}));
+                                                    setIsCategoryFilterOpen(false);
+                                                }}
+                                            >
+                                                {category}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                <div 
+                                    className="dropdown_item filter-section"
+                                    onClick={() => setIsTypeFilterOpen(!isTypeFilterOpen)}
+                                >
+                                    Type
+                                    {filters.type && <span className="selected-filter">{filters.type}</span>}
+                                </div>
+                                {isTypeFilterOpen && (
+                                    <div className="filter-options">
+                                        <div 
+                                            className={`filter-option ${filters.type === '' ? 'selected' : ''}`}
+                                            onClick={() => {
+                                                setFilters(prev => ({...prev, type: ''}));
+                                                setIsTypeFilterOpen(false);
+                                            }}
+                                        >
+                                            Tous
+                                        </div>
+                                        {types.map((type, index) => (
+                                            <div 
+                                                key={index}
+                                                className={`filter-option ${filters.type === type ? 'selected' : ''}`}
+                                                onClick={() => {
+                                                    setFilters(prev => ({...prev, type}));
+                                                    setIsTypeFilterOpen(false);
+                                                }}
+                                            >
+                                                {type}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                <div 
+                                    className="dropdown_item filter-section"
+                                    onClick={() => setIsAvailabilityFilterOpen(!isAvailabilityFilterOpen)}
+                                >
+                                    Disponibilité
+                                    {filters.availability && (
+                                        <span className="selected-filter">
+                                            {filters.availability === 'available' ? 'Disponible' : 'Non disponible'}
+                                        </span>
+                                    )}
+                                </div>
+                                {isAvailabilityFilterOpen && (
+                                    <div className="filter-options">
+                                        <div 
+                                            className={`filter-option ${filters.availability === '' ? 'selected' : ''}`}
+                                            onClick={() => {
+                                                setFilters(prev => ({...prev, availability: ''}));
+                                                setIsAvailabilityFilterOpen(false);
+                                            }}
+                                        >
+                                            Tous
+                                        </div>
+                                        <div 
+                                            className={`filter-option ${filters.availability === 'available' ? 'selected' : ''}`}
+                                            onClick={() => {
+                                                setFilters(prev => ({...prev, availability: 'available'}));
+                                                setIsAvailabilityFilterOpen(false);
+                                            }}
+                                        >
+                                            Disponible
+                                        </div>
+                                        <div 
+                                            className={`filter-option ${filters.availability === 'unavailable' ? 'selected' : ''}`}
+                                            onClick={() => {
+                                                setFilters(prev => ({...prev, availability: 'unavailable'}));
+                                                setIsAvailabilityFilterOpen(false);
+                                            }}
+                                        >
+                                            Non disponible
+                                        </div>
+                                    </div>
+                                )}
+
+                                {(filters.category || filters.type || filters.availability) && (
+                                    <div className="filter-actions">
+                                        <button 
+                                            className="reset-filters"
+                                            onClick={resetFilters}
+                                        >
+                                            Réinitialiser les filtres
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -279,6 +444,11 @@ function Equipment_table(props:any){
 
                     <div className='equipment_table_header_names_subdiv_subdiv'>
                        <h3>Disponibilite</h3>
+                       <img src={dropdown} alt="" /> 
+                    </div>
+
+                    <div className='equipment_table_header_names_subdiv_subdiv'>
+                       <h3>Agence</h3>
                        <img src={dropdown} alt="" /> 
                     </div>
 
@@ -335,7 +505,7 @@ function Equipment_table(props:any){
                                     date_retour={item.date_retour} 
                                     prix={item.prix} 
                                     code_bar={item.code_bar} 
-                                    fournisseur={item.fournisseur} 
+                                    agence_id={item.agence_id} 
                                     date_achat={item.date_achat} 
                                     onselect={handleSelectItem} 
                                     isSelected={selectedItems[item.ID]} 
@@ -369,7 +539,7 @@ function Equipment_table(props:any){
                                                     date_retour={compresseditem.date_retour} 
                                                     prix={compresseditem.prix} 
                                                     code_bar={compresseditem.code_bar} 
-                                                    fournisseur={compresseditem.fournisseur} 
+                                                    agence_id={compresseditem.agence_id} 
                                                     date_achat={compresseditem.date_achat} 
                                                     onselect={handleSelectItem} 
                                                     isSelected={selectedItems[compresseditem.ID]} 

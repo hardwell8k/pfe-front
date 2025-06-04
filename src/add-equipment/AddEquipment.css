@@ -282,3 +282,34 @@
     padding: 0 0.5rem;
     pointer-events: none;
   }
+
+.input-with-button {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.input-with-button .form-input {
+  flex: 1;
+  cursor: pointer;
+}
+
+.select-prestataire-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.select-prestataire-button:hover {
+  background-color: #2563eb;
+}
+
+.select-prestataire-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}

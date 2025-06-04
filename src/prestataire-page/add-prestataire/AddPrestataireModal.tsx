@@ -16,7 +16,8 @@ const AddPrestataireModal: React.FC<AddPrestataireModalProps> = ({ isOpen, onClo
     nom: '',
     address: '',
     num_tel: '',
-    email: ''
+    email: '',
+    type: 'Transport'
   });
   const [status, setStatus] = useState<string>(FETCH_STATUS.IDLE);
 
@@ -63,7 +64,8 @@ const AddPrestataireModal: React.FC<AddPrestataireModalProps> = ({ isOpen, onClo
       nom: '',
       address: '',
       num_tel: '',
-      email: ''
+      email: '',
+      type: 'Transport'
     });
   };
 
@@ -141,6 +143,24 @@ const AddPrestataireModal: React.FC<AddPrestataireModalProps> = ({ isOpen, onClo
                 required
                 disabled={status === FETCH_STATUS.LOADING}
               />
+            </div>
+
+            <div className="add_prestataire_modal_form_group">
+              <label htmlFor="type">Type</label>
+              <div className="add_prestataire_modal_select_wrapper">
+                <select
+                  id="type"
+                  name="type"
+                  value={formData.type}
+                  onChange={handleChange}
+                  required
+                  disabled={status === FETCH_STATUS.LOADING}
+                >
+                  <option value="Transport">Transport</option>
+                  <option value="Personnel">Personnel</option>
+                  <option value="Équipement">Équipement</option>
+                </select>
+              </div>
             </div>
           </div>
           

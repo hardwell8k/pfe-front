@@ -15,6 +15,14 @@ interface selectedItems {
   [key: string]: boolean;
 }
 
+interface Client {
+    ID: number;
+    nom: string;
+    email: string;
+    num_tel: string;
+    domain: string;
+}
+
 /*interface CustomerElement {
   ID: number;
   nom: string;
@@ -30,6 +38,7 @@ function content(props:any){
     const dropdownRef = useRef<HTMLDivElement | null>(null);
     const [selectedItems, setSelectedItems] = useState<selectedItems>({});
     const [isUpdateModalOpen,setIsUpdateModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -76,36 +85,43 @@ function content(props:any){
 
     const deleteClients = async (ids:number[])=>{
         try {
-            console.log("reached delete clients");
-            console.log(ids);
-            const reponse = await fetch(`${URLS.ServerIpAddress}/api/deleteClient`,{
+            if (!ids.length) {
+                toast.warning("No clients selected for deletion");
+                return;
+            }
+
+            const response = await fetch(`${URLS.ServerIpAddress}/api/deleteClient`,{
                 method:'DELETE',
                 headers:{"Content-Type":"application/json"},
                 body:JSON.stringify({IDs:ids}),
                 credentials:'include'
             });
 
-            const result = await reponse.json();
+            const result = await response.json();
 
             if(!result.success){
-                throw({status:reponse.status,message:result.message});
+                throw({status:response.status,message:result.message});
             }
             
-            const updatedClients = props.clients.filter((client: any) => !ids.includes(client.ID));
+            // Update local state
+            const updatedClients = props.clients.filter((client: Client) => !ids.includes(client.ID));
             props.setClients(updatedClients);
             
-            
+            // Clear selection
             setSelectedItems({});
             
+            // Show success message
             toast.success("Clients deleted successfully");
+            
+            // Refresh data from server
+            props.getClients();
         } catch (error:any) {
-            console.error("failed to delete clients",error.message);
-            toast.error("failed to delete clients");
+            console.error("Failed to delete clients:", error);
+            toast.error(error.message || "An error occurred while deleting clients");
         }
     }
 
     const handleDelete = async () => {
-        console.log("reached handle delete");
         let selectedClientsIds: number[] = [];
         Object.keys(selectedItems).forEach((key) => {
           if (selectedItems[key]) {
@@ -113,14 +129,24 @@ function content(props:any){
           }
         });
         if(selectedClientsIds.length > 0){
-            await deleteClients(selectedClientsIds);
+            setIsDeleteModalOpen(true);
         } else {
             toast.warning("No clients selected");
         }
-    
-      }
+    }
 
-      const handleUpdate = () => {
+    const confirmDelete = async () => {
+        let selectedClientsIds: number[] = [];
+        Object.keys(selectedItems).forEach((key) => {
+          if (selectedItems[key]) {
+            selectedClientsIds.push(parseInt(key));
+          }
+        });
+        await deleteClients(selectedClientsIds);
+        setIsDeleteModalOpen(false);
+    }
+
+    const handleUpdate = () => {
         const selectedClientsIds = Object.keys(selectedItems).filter((key) => selectedItems[key]);
         console.log(selectedClientsIds);
         if (selectedClientsIds.length === 1) {
@@ -131,7 +157,7 @@ function content(props:any){
         } else {
           toast.warning("Please select only one client to update");
         }
-      };
+    };
 
     return(
         
@@ -265,6 +291,19 @@ function content(props:any){
                 itemid={selectedClient} 
                 items={props.clients}
             />
+
+            {isDeleteModalOpen && (
+                <div className="delete-modal-overlay">
+                    <div className="delete-modal">
+                        <h3>Delete Clients</h3>
+                        <p>Are you sure you want to delete the selected clients? This action cannot be undone.</p>
+                        <div className="delete-modal-buttons">
+                            <button className="delete-modal-cancel" onClick={() => setIsDeleteModalOpen(false)}>Cancel</button>
+                            <button className="delete-modal-confirm" onClick={confirmDelete}>Delete</button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <ToastContainer 
                 position="top-center"

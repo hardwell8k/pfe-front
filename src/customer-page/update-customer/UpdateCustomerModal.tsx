@@ -76,7 +76,7 @@ const UpdateCustomerModal: React.FC<UpdateCustomerModalProps> = ({ isOpen, onClo
     } catch (error: any) {
       console.error("Error updating customer:", error.message);
       setStatus(FETCH_STATUS.ERROR);
-      alert(`Error updating customer: ${error.message || 'Unknown error'}`);
+      //alert(`Error updating customer: ${error.message || 'Unknown error'}`);
     }
   };
 

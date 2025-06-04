@@ -12,7 +12,6 @@ interface Prestataire {
   num_tel: string;
   address: string;
   type: string;
-  status: string;
 }
 
 interface UpdatePrestataireModalProps {
@@ -28,8 +27,7 @@ const UpdatePrestataireModal: React.FC<UpdatePrestataireModalProps> = ({ isOpen,
     email: item.email ?? "",
     num_tel: item.num_tel ?? "",
     address: item.address ?? "",
-    type: item.type ?? "Transport",
-    status: item.status ?? "Actif"
+    type: item.type ?? "Transport"
   });
 
   useEffect(() => {
@@ -39,8 +37,7 @@ const UpdatePrestataireModal: React.FC<UpdatePrestataireModalProps> = ({ isOpen,
         email: item.email ?? "",
         num_tel: item.num_tel ?? "",
         address: item.address ?? "",
-        type: item.type ?? "Transport",
-        status: item.status ?? "Actif"
+        type: item.type ?? "Transport"
       });
     }
   }, [item]);
@@ -91,8 +88,7 @@ const UpdatePrestataireModal: React.FC<UpdatePrestataireModalProps> = ({ isOpen,
       email: '',
       num_tel: '',
       address: '',
-      type: 'Transport',
-      status: 'Actif'
+      type: 'Transport'
     });
   };
 
@@ -170,9 +166,8 @@ const UpdatePrestataireModal: React.FC<UpdatePrestataireModalProps> = ({ isOpen,
                   disabled={status === FETCH_STATUS.LOADING}
                 >
                   <option value="Transport">Transport</option>
-                  <option value="Catering">Restauration</option>
-                  <option value="Equipment">Équipement</option>
-                  <option value="Other">Autre</option>
+                  <option value="Personnel">Personnel</option>
+                  <option value="Équipement">Équipement</option>
                 </select>
               </div>
             </div>
@@ -190,23 +185,6 @@ const UpdatePrestataireModal: React.FC<UpdatePrestataireModalProps> = ({ isOpen,
               required
               disabled={status === FETCH_STATUS.LOADING}
             />
-          </div>
-
-          <div className="update_prestataire_modal_form_group">
-            <label htmlFor="status">Statut</label>
-            <div className="update_prestataire_modal_select_wrapper">
-              <select
-                id="status"
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                required
-                disabled={status === FETCH_STATUS.LOADING}
-              >
-                <option value="Actif">Actif</option>
-                <option value="Inactif">Inactif</option>
-              </select>
-            </div>
           </div>
           
           <div className="update_prestataire_modal_actions">

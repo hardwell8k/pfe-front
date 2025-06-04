@@ -16,7 +16,6 @@ interface Prestataire {
   num_tel: string;
   address: string;
   type: string;
-  status: string;
 }
 
 const PrestatairePage: React.FC = () => {
@@ -60,10 +59,10 @@ const PrestatairePage: React.FC = () => {
   };
 
   const filteredPrestataires = prestataires.filter(prestataire =>
-    prestataire.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    prestataire.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    prestataire.num_tel.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    prestataire.address.toLowerCase().includes(searchTerm.toLowerCase())
+    (prestataire.nom?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (prestataire.email?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (String(prestataire.num_tel)?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (prestataire.address?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   );
 
   const handleSelect = (id: number, isSelected: boolean) => {
@@ -102,7 +101,7 @@ const PrestatairePage: React.FC = () => {
       const response = await fetch(`${URLS.ServerIpAddress}/api/deletePrestataire`, {
         method: 'DELETE',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ ids: selectedPrestataires }),
+        body: JSON.stringify({ IDs: selectedPrestataires }),
         credentials: 'include',
       });
       
@@ -180,7 +179,6 @@ const PrestatairePage: React.FC = () => {
                 <th>Téléphone</th>
                 <th>Adresse</th>
                 <th>Type</th>
-                <th>Statut</th>
                 <th>Actions</th>
               </tr>
             </thead>

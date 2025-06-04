@@ -9,7 +9,6 @@ interface Prestataire {
   num_tel: string;
   address: string;
   type: string;
-  status: string;
 }
 
 interface PrestataireElementProps {
@@ -41,19 +40,6 @@ const PrestataireElement: React.FC<PrestataireElementProps> = ({ item, isSelecte
     setDropdownOpen(false);
   };
 
-  const getStatusClass = () => {
-    if (!item.status) return 'status-unknown';
-    
-    switch (item.status.toLowerCase()) {
-      case 'actif':
-        return 'status-active';
-      case 'inactif':
-        return 'status-inactive';
-      default:
-        return 'status-unknown';
-    }
-  };
-
   return (
     <tr className="prestataire_element">
       <td className="prestataire_element_checkbox">
@@ -68,11 +54,6 @@ const PrestataireElement: React.FC<PrestataireElementProps> = ({ item, isSelecte
       <td className="prestataire_element_telephone">{item.num_tel}</td>
       <td className="prestataire_element_type">{item.address}</td>
       <td className="prestataire_element_type">{item.type}</td>
-      <td className="prestataire_element_status">
-        <span className={`status-badge ${getStatusClass()}`}>
-          {item.status}
-        </span>
-      </td>
       <td className="prestataire_element_actions">
         <div className="prestataire_element_dropdown" ref={dropdownRef}>
           <button

@@ -4,9 +4,11 @@ import Sidebar from '../sidebar/Sidebar';
 import './AddEquipment.css';
 import SubCategoryModal from './add-sub_category/SubCategoryModal';
 import CategoryModal from './add-category/CategoryModal';
+import PrestataireModal from './add-prestataire/PrestataireModal';
 import { toast, ToastContainer} from 'react-toastify';
 import { useLocation } from 'react-router-dom';
 import { URLS } from '../URLS';
+import { Prestataire } from '../types/Prestataire';
 
 
 /*const formatDate = (dateString: string) => {
@@ -40,8 +42,6 @@ interface CategoriesAndSubCategories {
   category_name: string;
 }
 
-
-
 export default function AddEquipment() {
   
   const location = useLocation();
@@ -56,7 +56,7 @@ export default function AddEquipment() {
     date_retour: '',
     prix: '',
     code_bar: '',
-    fournisseur: '',
+    agence_id: '',
     date_achat: '',
     details: '',
     subcategorie: '',
@@ -69,6 +69,14 @@ export default function AddEquipment() {
   const handleInputChange = (e:any) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // If category changes, update subcategories
+    if (name === 'category') {
+      const filtered = subCategories.filter(sub => sub.category_id === Number(value));
+      setFilteredSubCategories(filtered);
+      // Reset subcategorie when category changes
+      setFormData(prev => ({ ...prev, subcategorie: '' }));
+    }
   };
 
   /*const handleDateInputClick = (fieldName:any) => {
@@ -102,18 +110,22 @@ export default function AddEquipment() {
     e.preventDefault();
     
     try {
-      
       const submitData = Object.fromEntries(Object.entries({
         ...formData,
         prix: Number(formData.prix),
         quantite: Number(formData.quantite),
         category: Number(formData.category),
         sub_category: Number(formData.subcategorie),
-        date_location: formData.date_location ? parseDate(formData.date_location) : '',
-        date_retour: formData.date_retour ? parseDate(formData.date_retour) : '',
-        date_achat: formData.date_achat ? parseDate(formData.date_achat) : ''
+        agence_id: formData.agence_id ? Number(formData.agence_id) : undefined,
+        date_location: formData.date_location ? parseDate(formData.date_location) : undefined,
+        date_retour: formData.date_retour ? parseDate(formData.date_retour) : undefined,
+        date_achat: formData.date_achat ? parseDate(formData.date_achat) : undefined,
+        RFID: formData.RFID || undefined,
+        code_bar: formData.code_bar || undefined,
+        details: formData.details || undefined
       }).filter(([_, value]) => value !== '' && value !== null && value !== undefined));
-      console.log("submitData : ",JSON.stringify(submitData, null, 2));
+
+      console.log("submitData : ", JSON.stringify(submitData, null, 2));
       const response = await fetch(`${URLS.ServerIpAddress}/api/addEquipment`, {
         method: 'POST',
         headers: {
@@ -140,7 +152,7 @@ export default function AddEquipment() {
         date_retour: '',
         prix: '',
         code_bar: '',
-        fournisseur: '',
+        agence_id: '',
         subcategorie: '',
         date_achat: '',
         details: '',
@@ -156,6 +168,9 @@ export default function AddEquipment() {
 
   const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isPrestataireModalOpen, setIsPrestataireModalOpen] = useState(false);
+  const [selectedPrestataire, setSelectedPrestataire] = useState<Prestataire | null>(null);
+
   const handleSubCategoryAdded = () => {
     getCategoriesAndSubCategories();
   };
@@ -169,6 +184,7 @@ export default function AddEquipment() {
   const [categoriesAndSubCategories, setCategoriesAndSubCategories] = useState<CategoriesAndSubCategories[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+  const [filteredSubCategories, setFilteredSubCategories] = useState<SubCategory[]>([]);
 
   const getCategoriesAndSubCategories = async () => {
     try {
@@ -221,7 +237,7 @@ export default function AddEquipment() {
   }, [categoriesAndSubCategories]);
 
   useEffect(() => {
-    if(location.state&&location.state.item){
+    if(location.state && location.state.item) {
       setFormData({
         nom: location.state.item.nom,
         RFID: location.state.item.RFID,
@@ -231,7 +247,7 @@ export default function AddEquipment() {
         date_retour: location.state.item.date_retour,
         prix: location.state.item.prix,
         code_bar: location.state.item.code_bar,
-        fournisseur: location.state.item.fournisseur,
+        agence_id: location.state.item.agence_id,
         subcategorie: location.state.item.sub_category_id,
         date_achat: location.state.item.date_achat,
         details: location.state.item.details,
@@ -240,6 +256,11 @@ export default function AddEquipment() {
     }
     console.log(location.state);
   }, [location.state]);
+
+  const handlePrestataireSelect = (prestataire: Prestataire) => {
+    setSelectedPrestataire(prestataire);
+    setFormData(prev => ({ ...prev, agence_id: prestataire.ID.toString() }));
+  };
 
   return (
     <div className="dashboard-container">
@@ -405,29 +426,38 @@ export default function AddEquipment() {
                 </div>
                 
                 <div className="form-group">
-                  <label className="form-label">fournisseur</label>
-                  <input
-                    type="text"
-                    name="fournisseur"
-                    placeholder="Select type"
-                    className="form-input"
-                    value={formData.fournisseur}
-                    onChange={handleInputChange}
-                  />
+                  <label className="form-label">agence</label>
+                  <div className="input-with-button">
+                    <input
+                      type="text"
+                      name="agence_id"
+                      placeholder="Select agence"
+                      className="form-input"
+                      value={selectedPrestataire ? selectedPrestataire.nom : ''}
+                      readOnly
+                      onClick={() => setIsPrestataireModalOpen(true)}
+                    />
+                    <button
+                      type="button"
+                      className="select-prestataire-button"
+                      onClick={() => setIsPrestataireModalOpen(true)}
+                    >
+                      Select
+                    </button>
+                  </div>
                 </div>
                 
                 <div className="form-group">
                   <label className="form-label">sub_category</label>
                   <div className="select-wrapper">
-
-                  <select
+                    <select
                       name="subcategorie"
                       className="form-select"
                       value={formData.subcategorie}
                       onChange={handleCategoryDropdownChange}
                     >
-                      <option value="" disabled>Select category</option>
-                      {subCategories.map((subCategory:SubCategory) => (
+                      <option value="" disabled>Select sub-category</option>
+                      {filteredSubCategories.map((subCategory:SubCategory) => (
                         <option key={subCategory.id} value={subCategory.id}>{subCategory.nom}</option>
                       ))}
                       <option value="addNewSubCategory">+Add New subcategorie</option>
@@ -495,6 +525,13 @@ export default function AddEquipment() {
         onClose={() => setIsCategoryModalOpen(false)}
         onCategoryAdded={handleCategoryAdded}
       />
+
+      <PrestataireModal
+        isOpen={isPrestataireModalOpen}
+        onClose={() => setIsPrestataireModalOpen(false)}
+        onSelect={handlePrestataireSelect}
+      />
+
       <ToastContainer 
         position="top-center"
         autoClose={3000}

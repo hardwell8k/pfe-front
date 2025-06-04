@@ -17,7 +17,7 @@ interface EquipmentElementProps {
     date_retour: string;
     prix: string;
     code_bar: string;
-    fournisseur: string;
+    agence_id: string;
     date_achat: string;
     ids: number[];
     onselect: (id: number, isSelected: boolean) => void;
@@ -106,6 +106,10 @@ function Equipment_element(props: EquipmentElementProps){
                 </h3>
             </div>
 
+            <div className='equipement_containing_subdiv'>
+                <h3>{props.agence_id ?? "-"}</h3>
+            </div>
+
             <div className={`equipement_containing_dropdownarrow_subdiv`} ref={dropdownRef}>
                 {!props.isSubCategory && <button 
                     className="equipement_element_more_actions" 
@@ -141,7 +145,6 @@ function Equipment_element(props: EquipmentElementProps){
                                             date_retour: props.date_retour,
                                             prix: props.prix,
                                             code_bar: props.code_bar,
-                                            fournisseur: props.fournisseur,
                                             date_achat: props.date_achat
                                         }
                                     }

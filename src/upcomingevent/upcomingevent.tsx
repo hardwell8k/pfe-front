@@ -1,10 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MoreVertical } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../sidebar/Sidebar';
 import './upcomingevent.css';
+import { URLS } from '../URLS';
+import { FETCH_STATUS } from '../fetchStatus';
+import { toast } from 'react-toastify';
 
 export default function ProjectDashboard() {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const [status, setStatus] = useState(FETCH_STATUS.IDLE);
 
   type TeamMember = { color: string };
   type Project = {
@@ -18,103 +24,97 @@ export default function ProjectDashboard() {
     participants: number;
     workshops: number;
     presentations: number;
-    daysLeft: number;
+    daysleft: number;
     teamMembers: TeamMember[];
   };
 
-  const projects: Project[] = [
-    {
-      id: 1,
-      name: 'Web Summit',
-      logo: 'WS',
-      logoColor: 'logo-facebook',
-      description: 'Web Summit is one of the largest global technology conferences, bringing together startup founders, investors, and industry leaders from various sectors. The event features keynote speeches from top executives, panel discussions on business trends, and startup pitching competitions.',
-      participants: 1000,
-      workshops: 10,
-      presentations: 2,
-      daysLeft: 7,
-      teamMembers: [
-        { color: 'avatar-yellow' },
-        { color: 'avatar-blue' },
-        { color: 'avatar-green' }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Google I/O',
-      logo: 'G',
-      logoColor: 'logo-google',
-      description: 'Google I/O is an annual developer conference where Google announces new technologies, software updates, and AI advancements. It includes keynotes, hands-on workshops, and networking opportunities for developers.',
-      participants: 2000,
-      workshops: 15,
-      presentations: 3,
-      daysLeft: 9,
-      teamMembers: [
-        { color: 'avatar-red' },
-        { color: 'avatar-blue' },
-        { color: 'avatar-yellow' },
-        { color: 'avatar-green' }
-      ]
-    },
-    {
-      id: 3,
-      name: 'Adobe Max',
-      logo: 'AM',
-      logoColor: 'logo-adobe',
-      description: 'Adobe MAX is an annual creativity conference where designers, illustrators, and content creators gather to explore the latest tools and trends in digital design. Hosted by Adobe, the event features in-depth workshops and live demonstrations.',
-      participants: 800,
-      workshops: 0,
-      presentations: 1,
-      daysLeft: 10,
-      teamMembers: [
-        { color: 'avatar-blue' },
-        { color: 'avatar-pink' },
-        { color: 'avatar-yellow' },
-        { color: 'avatar-green' }
-      ]
-    },
-    {
-      id: 4,
-      name: 'TechCrunch Disrupt',
-      logo: 'TC',
-      logoColor: 'logo-twitter',
-      description: 'TechCrunch Disrupt is a premier startup conference that brings together innovative entrepreneurs, investors, and tech enthusiasts. The event features the famous Startup Battlefield competition and networking sessions.',
-      participants: 1500,
-      workshops: 12,
-      presentations: 5,
-      daysLeft: 12,
-      teamMembers: [
-        { color: 'avatar-blue' },
-        { color: 'avatar-purple' },
-        { color: 'avatar-orange' }
-      ]
-    },
-    {
-      id: 5,
-      name: 'SXSW Interactive',
-      logo: 'SX',
-      logoColor: 'logo-spotify',
-      description: 'South by Southwest Interactive is a major tech and innovation festival that showcases digital creativity and emerging technology. The event combines interactive sessions with music and film festivals.',
-      participants: 3000,
-      workshops: 25,
-      presentations: 8,
-      daysLeft: 15,
-      teamMembers: [
-        { color: 'avatar-green' },
-        { color: 'avatar-red' },
-        { color: 'avatar-blue' },
-        { color: 'avatar-yellow' }
-      ]
-    }
-  ];
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const totalProjects = 5;
-  const projectsPerPage = 3;
+  const totalProjects = projects.length;
+  const projectsPerPage = 5;
   const totalPages = Math.ceil(totalProjects / projectsPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+
+  const getUPcomingEventsPageData = async () => {
+    try {
+      setStatus(FETCH_STATUS.LOADING);
+      const response = await fetch(`${URLS.ServerIpAddress}/api/getUPcomingEventsPageData`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+
+      const result = await response.json();
+      if (!result.success) {
+        throw { status: response.status, message: result.message };
+      }
+
+      // Transform the API data to match the Project type
+      const transformedProjects = result.data.map((event: any) => ({
+        id: event.ID || Math.random(),
+        name: event.name,
+        logo: event.name.substring(0, 2).toUpperCase(),
+        logoColor: 'logo-facebook',
+        description: event.description || 'No description available',
+        participants: event.participants || 0,
+        workshops: event.workshops || 0,
+        presentations: 0,
+        daysleft: parseInt(event.daysleft) || 0,
+        teamMembers: [
+          { color: 'avatar-yellow' },
+          { color: 'avatar-blue' },
+          { color: 'avatar-green' }
+        ]
+      }));
+
+      setProjects(transformedProjects);
+      setStatus(FETCH_STATUS.SUCCESS);
+    } catch (error: any) {
+      console.error("Error while getting upcoming events:", error.message);
+      toast.error("Error loading upcoming events");
+      setStatus(FETCH_STATUS.ERROR);
+    }
+  };
+
+  useEffect(() => {
+    getUPcomingEventsPageData();
+  }, []);
+
+  // Filter projects based on search query
+  const filteredProjects = projects.filter(project => 
+    project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    project.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Calculate pagination for filtered projects
+  const currentProjects = filteredProjects.slice(
+    (currentPage - 1) * projectsPerPage,
+    currentPage * projectsPerPage
+  );
+
+  const handleEventClick = (eventId: number) => {
+    navigate('/eventDetails', {
+      state: { evenement_id: eventId }
+    });
+  };
+
+  if (status === FETCH_STATUS.LOADING) {
+    return (
+      <div className="upcoming-events-layout">
+        <Sidebar />
+        <div className="upcoming-events-main">
+          <div className="upcoming-events-loading">
+            <div className="loading-spinner"></div>
+            <p>Loading events...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="upcoming-events-layout">
@@ -123,21 +123,29 @@ export default function ProjectDashboard() {
         <div className="upcoming-events-container">
           <div className="upcoming-events-top-bar">
             <div className="upcoming-events-search-wrapper">
-              <input type="text" placeholder="Search..." className="upcoming-events-search-input" />
+              <input 
+                type="text" 
+                placeholder="Search events..." 
+                className="upcoming-events-search-input"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
+              />
             </div>
-            <div className="upcoming-events-user-info">
-              <div className="upcoming-events-user-initial">AM</div>
-              <span className="upcoming-events-user-name">Aiden Max</span>
-              <svg className="upcoming-events-dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
+            <div className="upcoming-events-user-info">              
             </div>
           </div>
           <div className="upcoming-events-section-container">
             <h2 className="upcoming-events-section-title upcoming-events-centered-title">Your upcoming projects</h2>
             <div className="upcoming-events-list">
-              {projects.slice((currentPage-1)*projectsPerPage, currentPage*projectsPerPage).map((project: Project) => (
-                <div key={project.id} className="upcoming-events-card">
+              {currentProjects.map((project: Project) => (
+                <div 
+                  key={project.id} 
+                  className="upcoming-events-card"
+                  onClick={() => handleEventClick(project.id)}
+                >
                   <div className="upcoming-events-card-header">
                     <div className="upcoming-events-project-header">
                       <div className={`upcoming-events-project-logo ${project.logoColor} ${project.logoBorder || ''} ${project.logoTextColor || ''}`}>
@@ -146,7 +154,7 @@ export default function ProjectDashboard() {
                       <div className="upcoming-events-project-details">
                         <div className="upcoming-events-project-title">
                           <h3>{project.name}</h3>
-                          <span className="upcoming-events-due">in {project.daysLeft} days</span>
+                          <span className="upcoming-events-due">in {project.daysleft} days</span>
                           <MoreVertical size={16} className="upcoming-events-more-icon" /> 
                         </div>
                         <p className="upcoming-events-description">{project.description}</p>
@@ -167,14 +175,14 @@ export default function ProjectDashboard() {
                         </div>
                       </div>
                     </div>
-                    <div className="upcoming-events-card-actions-row">
-                    </div>
                   </div>
                 </div>
               ))}
             </div>
             <div className="upcoming-events-pagination-wrapper">
-              <span className="upcoming-events-pagination-info">Showing 3 of 5 products</span>
+              <span className="upcoming-events-pagination-info">
+                Showing {currentProjects.length} of {filteredProjects.length} events
+              </span>
               <div className="upcoming-events-pagination-buttons">
                 <button
                   disabled={currentPage === 1}
@@ -182,7 +190,7 @@ export default function ProjectDashboard() {
                 >
                   Prev
                 </button>
-                {[...Array(totalPages)].map((_, index) => (
+                {[...Array(Math.ceil(filteredProjects.length / projectsPerPage))].map((_, index) => (
                   <button
                     key={index}
                     className={currentPage === index + 1 ? 'upcoming-events-active-page' : ''}
@@ -192,7 +200,7 @@ export default function ProjectDashboard() {
                   </button>
                 ))}
                 <button
-                  disabled={currentPage === totalPages}
+                  disabled={currentPage === Math.ceil(filteredProjects.length / projectsPerPage)}
                   onClick={() => handlePageChange(currentPage + 1)}
                 >
                   Next

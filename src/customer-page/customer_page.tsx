@@ -77,7 +77,7 @@ function Customer_page(){
                 getClients={getClients}
             />
         </div>
-        <AddCustomer extend={extend} extended={extended} clients={clients} setClients={setClients}/>
+        <AddCustomer extend={extend} extended={extended} clients={clients} setClients={setClients} getClients={getClients}/>
         {addDepartmentISVisible&&<Department clientID={clientID} openAddDepartment={openAddDepartment}/>}
     </div>
     );

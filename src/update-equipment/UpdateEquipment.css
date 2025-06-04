@@ -173,11 +173,12 @@
 
 .form-input, .form-select, .form-textarea {
   width: 100%;
-  padding: 0.75rem;
+  padding: 1rem 1.25rem;
   border: 1px solid #d1d5db;
   border-radius: 0.375rem;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
+  min-height: 48px;
 }
 
 .form-input:focus, .form-select:focus, .form-textarea:focus {
@@ -218,12 +219,12 @@
 
 .form-input[type="date"], .form-input[type="datetime-local"] {
   padding-right: 0.5rem;
-  min-height: 42px;
+  min-height: 48px;
 }
 
 .form-textarea {
   resize: vertical;
-  min-height: 100px;
+  min-height: 120px;
 }
 
 .button-container {
@@ -265,4 +266,15 @@
 
 :root, body, html {
   background-color: #fff7ed;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.main-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.main-content {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }

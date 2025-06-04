@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { URLS } from '../../URLS';
 import './AddCustomer.css'
+import { toast, ToastContainer } from 'react-toastify';
 
 function AddCustomer(props:any){
 
@@ -21,11 +22,11 @@ function AddCustomer(props:any){
                 throw({status:reponse.status,message:result.message});
             }
             
-            props.setClients([...props.clients,data]);
-            clearForm();
+            toast.success('Client added successfully');
+            props.getClients();
+            //clearForm();
         } catch (error:any) {
-            alert('failed to add client ');
-            alert(error.message);
+            toast.error(error.message);
             console.error("failed to add a client",error.message);
         }
     }
@@ -77,7 +78,14 @@ function AddCustomer(props:any){
 
                 </form>
             </div>
-
+            <ToastContainer 
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                pauseOnHover
+            />
         </div>
     );
 }

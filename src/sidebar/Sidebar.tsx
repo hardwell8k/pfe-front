@@ -64,13 +64,7 @@ function Sidebar(){
                     <Element imgUrl={clientImg} link="/customer" name="customer"/>
                 </li>
                 <li>
-                    <span>
-                        <Element imgUrl={equipmentImg} link="/equipment" name="equipment"/>
-                        <img className="dropdownarrow" onClick={()=>{updateInvisible("equipment")}} src={dropdown} alt="problem" />
-                    </span>
-                    <ul className={`sub_menu ${menuIsVisible.equipment? 'visible':''}`}>
-                        <li><a href="/AddEquipment">add equipment</a></li>
-                    </ul>
+                    <Element imgUrl={equipmentImg} link="/equipment" name="equipment"/>
                 </li>
                 <li>
                     <Element imgUrl={agenceImg} link="/PrestatairePage" name="fournisseur"/>

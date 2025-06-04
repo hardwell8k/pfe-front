@@ -23,7 +23,7 @@ function Department(props:any){
             if(!result.success){
                 throw({status:reponse.status,message:result.message});
             }
-            alert("department added");
+            toast.success("department added");
             reset();
         } catch (error:any) {
             console.error("failed to add department",error.message)

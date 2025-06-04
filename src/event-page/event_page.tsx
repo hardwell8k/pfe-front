@@ -10,7 +10,6 @@ import "./event_page.css"
 import { toast } from "react-toastify";
 
 function Event_page(){
-
     const getUpcomingEvents = async ()=>{
         try {
             setStatus(FETCH_STATUS.LOADING);
@@ -37,21 +36,23 @@ function Event_page(){
     const [UpComingEvents,setUpComingEvents] = useState([{nom:"hola",date_debut:'12-12-1212'}]);
     const [selectedUpcomingEventIndex,setselectedUpcomingEventIndex] = useState(-1);
     const [status,setStatus] = useState(FETCH_STATUS.IDLE);
-    
 
     useEffect(()=>{getUpcomingEvents()},[]);
-    //useEffect(()=>{},[selectedUpcomingEventIndex]);
 
     return(
     <div className="container">
         <Sidebar/>
         <div className="maindiv">
             <Current_events status={status} UpComingEvents={UpComingEvents} selectedUpcomingEventIndex={selectedUpcomingEventIndex} setselectedUpcomingEventIndex={setselectedUpcomingEventIndex} />
-            <Event_creation getUpcomingEvents={getUpcomingEvents} selectedUpcomingEvent={UpComingEvents[selectedUpcomingEventIndex]} selectedUpcomingEventIndex={selectedUpcomingEventIndex} setselectedUpcomingEventIndex={setselectedUpcomingEventIndex} setUpComingEvents={setUpComingEvents}/>
+            <Event_creation 
+                getUpcomingEvents={getUpcomingEvents} 
+                selectedUpcomingEvent={UpComingEvents[selectedUpcomingEventIndex]} 
+                selectedUpcomingEventIndex={selectedUpcomingEventIndex} 
+                setselectedUpcomingEventIndex={setselectedUpcomingEventIndex} 
+                setUpComingEvents={setUpComingEvents}
+            />
         </div>
     </div>
-    
-    
     )
 }
 

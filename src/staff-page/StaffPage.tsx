@@ -5,7 +5,7 @@ import arrowBack from '../assets/arrow_back_black.svg';
 import arrowForward from '../assets/arrow_forward_black.svg';
 import searchIcon from '../assets/search_black.svg';
 import StaffElement from './staff-element/StaffElement';
-
+import { toast } from 'react-toastify';
 import { FETCH_STATUS } from '../fetchStatus';
 
 import { Bar, Doughnut } from 'react-chartjs-2';
@@ -74,7 +74,7 @@ function StaffPage(){
         setStatus(FETCH_STATUS.SUCCESS);
       }catch (error:any) {
         console.error("error while getting upcoming events",error.message);
-        alert(error.message);
+        toast.error(error.message);
         setStatus(FETCH_STATUS.ERROR)
       }
     }
@@ -97,7 +97,7 @@ function StaffPage(){
         setStatus(FETCH_STATUS.SUCCESS);
       }catch (error:any) {
         console.error("error while getting upcoming events",error.message);
-        alert(error.message);
+        toast.error(error.message);
         setStatus(FETCH_STATUS.ERROR)
       }
     }
