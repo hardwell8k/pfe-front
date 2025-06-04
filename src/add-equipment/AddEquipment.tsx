@@ -40,56 +40,56 @@ interface CategoriesAndSubCategories {
   category_name: string;
 }
 
-
+interface FormData {
+  nom: string;
+  sub_category: string;
+  category: string;
+  prix: string;
+  type: 'loue' | 'achete';
+  code_bar: string;
+  RFID: string;
+  details: string;
+  date_achat: string;
+  date_location: string;
+  date_retour: string;
+  quantite: string;
+  agence_id: string;
+}
 
 export default function AddEquipment() {
   
   const location = useLocation();
   
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     nom: '',
-    RFID: '',
+    sub_category: '',
     category: '',
+    prix: '',
     type: 'achete',
+    code_bar: '',
+    RFID: '',
+    details: '',
+    date_achat: '',
     date_location: '',
     date_retour: '',
-    prix: '',
-    code_bar: '',
-    fournisseur: '',
-    date_achat: '',
-    details: '',
-    subcategorie: '',
-    quantite: 0
+    quantite: '1',
+    agence_id: ''
   });
 
-  
-  /*const [activeDatePicker, setActiveDatePicker] = useState(null);*/
+  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
 
   const handleInputChange = (e:any) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  /*const handleDateInputClick = (fieldName:any) => {
-    setActiveDatePicker(fieldName);
-  };*/
-
-  
-  /*const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
-    const value = e.target.value;
-    handleInputChange({
-      target: { name: fieldName, value: value }
-    });
-    setActiveDatePicker(null); 
-  };*/
-  
   const handleCategoryDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = e.target;
     
     if (value === "addNewSubCategory") {
       setIsSubCategoryModalOpen(true);
-      e.target.value = formData.subcategorie || "";
+      e.target.value = formData.sub_category || "";
     } else if(value === "addNewCategory"){
       setIsCategoryModalOpen(true);
       e.target.value = formData.category || "";
@@ -98,22 +98,70 @@ export default function AddEquipment() {
     }
   };
 
+  const validateForm = (): boolean => {
+    const newErrors: Partial<Record<keyof FormData, string>> = {};
+    
+    // Required fields validation
+    if (!formData.nom.trim()) {
+      newErrors.nom = 'Le nom est requis';
+    }
+    if (!formData.sub_category) {
+      newErrors.sub_category = 'La sous-catégorie est requise';
+    }
+    if (!formData.category) {
+      newErrors.category = 'La catégorie est requise';
+    }
+    if (!formData.prix || Number(formData.prix) <= 0) {
+      newErrors.prix = 'Le prix doit être un nombre positif';
+    }
+    if (!formData.quantite || Number(formData.quantite) < 1) {
+      newErrors.quantite = 'La quantité doit être au moins 1';
+    }
+
+    // Type-specific validations
+    if (formData.type === 'achete' && !formData.date_achat) {
+      newErrors.date_achat = 'La date d\'achat est requise pour un équipement acheté';
+    }
+    if (formData.type === 'loue') {
+      if (!formData.date_location) {
+        newErrors.date_location = 'La date de location est requise pour un équipement loué';
+      }
+      if (!formData.date_retour) {
+        newErrors.date_retour = 'La date de retour est requise pour un équipement loué';
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!validateForm()) {
+      toast.error('Veuillez corriger les erreurs dans le formulaire');
+      return;
+    }
+
     try {
-      
-      const submitData = Object.fromEntries(Object.entries({
-        ...formData,
-        prix: Number(formData.prix),
-        quantite: Number(formData.quantite),
+      const submitData = {
+        nom: formData.nom.trim(),
+        sub_category: Number(formData.sub_category),
         category: Number(formData.category),
-        sub_category: Number(formData.subcategorie),
-        date_location: formData.date_location ? parseDate(formData.date_location) : '',
-        date_retour: formData.date_retour ? parseDate(formData.date_retour) : '',
-        date_achat: formData.date_achat ? parseDate(formData.date_achat) : ''
-      }).filter(([_, value]) => value !== '' && value !== null && value !== undefined));
-      console.log("submitData : ",JSON.stringify(submitData, null, 2));
+        prix: Number(formData.prix),
+        type: formData.type,
+        code_bar: formData.code_bar.trim() || undefined,
+        RFID: formData.RFID.trim() || undefined,
+        details: formData.details.trim() || undefined,
+        date_achat: formData.type === 'achete' ? formData.date_achat : undefined,
+        date_location: formData.type === 'loue' ? formData.date_location : undefined,
+        date_retour: formData.type === 'loue' ? formData.date_retour : undefined,
+        quantite: Number(formData.quantite),
+        agence_id: formData.agence_id ? Number(formData.agence_id) : undefined
+      };
+
+      console.log('Submitting data:', submitData);
+
       const response = await fetch(`${URLS.ServerIpAddress}/api/addEquipment`, {
         method: 'POST',
         headers: {
@@ -122,35 +170,37 @@ export default function AddEquipment() {
         body: JSON.stringify(submitData),
         credentials: 'include',
       });
-  
+
       if (!response.ok) {
-        throw new Error('Failed to add equipment');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add equipment');
       }
-  
+
       const result = await response.json();
       console.log('Equipment added successfully:', result);
       
-      
+      // Reset form
       setFormData({
         nom: '',
-        RFID: '',
+        sub_category: '',
         category: '',
-        type: '',
+        prix: '',
+        type: 'achete',
+        code_bar: '',
+        RFID: '',
+        details: '',
+        date_achat: '',
         date_location: '',
         date_retour: '',
-        prix: '',
-        code_bar: '',
-        fournisseur: '',
-        subcategorie: '',
-        date_achat: '',
-        details: '',
-        quantite: 0
+        quantite: '1',
+        agence_id: ''
       });
-  
+      setErrors({});
+
       toast.success('Équipement ajouté avec succès!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      toast.error('Échec de l\'ajout de l\'équipement');
+      toast.error(error.message || 'Échec de l\'ajout de l\'équipement');
     }
   };
 
@@ -231,11 +281,11 @@ export default function AddEquipment() {
         date_retour: location.state.item.date_retour,
         prix: location.state.item.prix,
         code_bar: location.state.item.code_bar,
-        fournisseur: location.state.item.fournisseur,
-        subcategorie: location.state.item.sub_category_id,
+        sub_category: location.state.item.sub_category_id,
         date_achat: location.state.item.date_achat,
         details: location.state.item.details,
-        quantite: location.state.item.quantite
+        quantite: location.state.item.quantite,
+        agence_id: location.state.item.agence_id
       });
     }
     console.log(location.state);
@@ -258,15 +308,16 @@ export default function AddEquipment() {
               {/* Left Column */}
               <div>
                 <div className="form-group">
-                  <label className="form-label">Nom</label>
+                  <label className="form-label">Nom *</label>
                   <input
                     type="text"
                     name="nom"
                     placeholder="Sélectionner un nom"
-                    className="form-input"
+                    className={`form-input ${errors.nom ? 'error' : ''}`}
                     value={formData.nom}
                     onChange={handleInputChange}
                   />
+                  {errors.nom && <span className="error-message">{errors.nom}</span>}
                 </div>
                 
                 <div className="form-group">
@@ -282,31 +333,26 @@ export default function AddEquipment() {
                 </div>
                 
                 <div className="form-group">
-                  <label className="form-label">category</label>
+                  <label className="form-label">Catégorie *</label>
                   <div className="select-wrapper">
                     <select
                       name="category"
-                      className="form-select"
+                      className={`form-select ${errors.category ? 'error' : ''}`}
                       value={formData.category}
                       onChange={handleCategoryDropdownChange}
-                      required
                     >
-                      <option value="" disabled>Select category</option>
+                      <option value="">Sélectionner une catégorie</option>
                       {categories.map((category:Category) => (
                         <option key={category.id} value={category.id}>{category.nom}</option>
                       ))}
-                      <option value="addNewCategory">+Add New category</option>
+                      <option value="addNewCategory">+ Ajouter une catégorie</option>
                     </select>
-                    <div className="select-icon">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </div>
+                    {errors.category && <span className="error-message">{errors.category}</span>}
                   </div>
                 </div>
                 
                 <div className="form-group">
-                  <label className="form-label">type</label>
+                  <label className="form-label">Type *</label>
                   <div className="select-wrapper">
                     <select
                       name="type"
@@ -314,65 +360,50 @@ export default function AddEquipment() {
                       value={formData.type}
                       onChange={handleInputChange}
                     >
-                      <option value="" disabled>Select type</option>
-                      <option value="loue">Rented</option>
-                      <option value="achete">Purchased</option>
+                      <option value="achete">Acheté</option>
+                      <option value="loue">Loué</option>
                     </select>
-                    <div className="select-icon">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </div>
                   </div>
                 </div>
 
-                {/* Show purchase date only if type is 'achete' or not selected */}
-                {(formData.type === 'achete') && (
+                {formData.type === 'achete' && (
                   <div className="form-group">
-                    <label className="form-label">purchase date</label>
-                    <div className="date-picker-wrapper">
-                      <input
-                        type="date"
-                        name="date_achat"
-                        placeholder="Select date"
-                        className="form-input"
-                        value={formData.date_achat}
-                        onChange={handleInputChange}
-
-                      />
-                    </div>
+                    <label className="form-label">Date d'achat *</label>
+                    <input
+                      type="date"
+                      name="date_achat"
+                      className={`form-input ${errors.date_achat ? 'error' : ''}`}
+                      value={formData.date_achat}
+                      onChange={handleInputChange}
+                    />
+                    {errors.date_achat && <span className="error-message">{errors.date_achat}</span>}
                   </div>
                 )}
                 
-                {/* Show rental date and return date only if type is 'rented' or not selected */}
-                {(formData.type === 'loue') && (
+                {formData.type === 'loue' && (
                   <>
                     <div className="form-group">
-                      <label className="form-label">rental date</label>
-                      <div className="date-picker-wrapper">
-                        <input
-                          type="date"
-                          name="date_location"
-                          placeholder="Select date"
-                          className="form-input"
-                          value={formData.date_location}
-                          onChange={handleInputChange}
-                        />
-                      </div>
+                      <label className="form-label">Date de location *</label>
+                      <input
+                        type="date"
+                        name="date_location"
+                        className={`form-input ${errors.date_location ? 'error' : ''}`}
+                        value={formData.date_location}
+                        onChange={handleInputChange}
+                      />
+                      {errors.date_location && <span className="error-message">{errors.date_location}</span>}
                     </div>
                     
                     <div className="form-group">
-                      <label className="form-label">return date</label>
-                      <div className="date-picker-wrapper">
-                        <input
-                          type="date"
-                          name="date_retour"
-                          placeholder="Select date"
-                          className="form-input"
-                          value={formData.date_retour}
-                          onChange={handleInputChange}
-                        />
-                      </div>
+                      <label className="form-label">Date de retour *</label>
+                      <input
+                        type="date"
+                        name="date_retour"
+                        className={`form-input ${errors.date_retour ? 'error' : ''}`}
+                        value={formData.date_retour}
+                        onChange={handleInputChange}
+                      />
+                      {errors.date_retour && <span className="error-message">{errors.date_retour}</span>}
                     </div>
                   </>
                 )}
@@ -381,23 +412,26 @@ export default function AddEquipment() {
               {/* Right Column */}
               <div>
                 <div className="form-group">
-                  <label className="form-label">prix</label>
+                  <label className="form-label">Prix *</label>
                   <input
                     type="number"
                     name="prix"
-                    placeholder="Select prix"
-                    className="form-input"
+                    placeholder="Entrer le prix"
+                    className={`form-input ${errors.prix ? 'error' : ''}`}
                     value={formData.prix}
                     onChange={handleInputChange}
+                    min="0"
+                    step="0.01"
                   />
+                  {errors.prix && <span className="error-message">{errors.prix}</span>}
                 </div>
                 
                 <div className="form-group">
-                  <label className="form-label">Barcode</label>
+                  <label className="form-label">Code-barres</label>
                   <input
                     type="text"
                     name="code_bar"
-                    placeholder="Select barcode"
+                    placeholder="Entrer le code-barres"
                     className="form-input"
                     value={formData.code_bar}
                     onChange={handleInputChange}
@@ -405,64 +439,45 @@ export default function AddEquipment() {
                 </div>
                 
                 <div className="form-group">
-                  <label className="form-label">fournisseur</label>
-                  <input
-                    type="text"
-                    name="fournisseur"
-                    placeholder="Select type"
-                    className="form-input"
-                    value={formData.fournisseur}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label className="form-label">sub_category</label>
+                  <label className="form-label">Sous-catégorie *</label>
                   <div className="select-wrapper">
-
-                  <select
-                      name="subcategorie"
-                      className="form-select"
-                      value={formData.subcategorie}
+                    <select
+                      name="sub_category"
+                      className={`form-select ${errors.sub_category ? 'error' : ''}`}
+                      value={formData.sub_category}
                       onChange={handleCategoryDropdownChange}
                     >
-                      <option value="" disabled>Select category</option>
+                      <option value="">Sélectionner une sous-catégorie</option>
                       {subCategories.map((subCategory:SubCategory) => (
                         <option key={subCategory.id} value={subCategory.id}>{subCategory.nom}</option>
                       ))}
-                      <option value="addNewSubCategory">+Add New subcategorie</option>
+                      <option value="addNewSubCategory">+ Ajouter une sous-catégorie</option>
                     </select>
-                    <div className="select-icon">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </div>
+                    {errors.sub_category && <span className="error-message">{errors.sub_category}</span>}
                   </div>
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">quantite</label>
+                  <label className="form-label">Quantité *</label>
                   <input
                     type="number"
                     name="quantite"
-                    placeholder="Select quantite"
-                    className="form-input"
+                    placeholder="Entrer la quantité"
+                    className={`form-input ${errors.quantite ? 'error' : ''}`}
                     value={formData.quantite}
                     onChange={handleInputChange}
+                    min="1"
                   />
+                  {errors.quantite && <span className="error-message">{errors.quantite}</span>}
                 </div>
-
-
-                
               </div>
             </div>
             
-            {/* Specific Details - Full Width */}
             <div className="form-group">
-              <label className="form-label">Specific details</label>
+              <label className="form-label">Détails</label>
               <textarea
                 name="details"
-                placeholder="Details"
+                placeholder="Entrer les détails"
                 rows={4}
                 className="form-textarea"
                 value={formData.details}
@@ -470,13 +485,9 @@ export default function AddEquipment() {
               ></textarea>
             </div>
             
-            {/* Submit Button */}
             <div className="button-container">
-              <button
-                type="submit"
-                className="submit-button"
-              >
-                + Add equipment
+              <button type="submit" className="submit-button">
+                + Ajouter l'équipement
               </button>
             </div>
           </form>

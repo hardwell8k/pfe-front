@@ -41,8 +41,8 @@ function Current_events(props:any){
             {(props.status === FETCH_STATUS.LOADING)&&<Loading/>}
             {(props.status === FETCH_STATUS.SUCCESS)&&<div className="events">
                 {filteredUpcomingEvents.map((item:any,index:number)=>(
-                    <div className={`upcoming_event ${index===props.selectedUpcomingEventIndex ? "selected":""}`} onClick={()=>{if(props.selectedUpcomingEventIndex === index){props.setselectedUpcomingEventIndex(-1)}else{props.setselectedUpcomingEventIndex(index)}}}>
-                        <Event_element key={index} ID={item.ID} name={item.nom} date={item.date_debut}/>
+                    <div key={item.ID} className={`upcoming_event ${index===props.selectedUpcomingEventIndex ? "selected":""}`} onClick={()=>{if(props.selectedUpcomingEventIndex === index){props.setselectedUpcomingEventIndex(-1)}else{props.setselectedUpcomingEventIndex(index)}}}>
+                        <Event_element ID={item.ID} name={item.nom} date={item.date_debut}/>
                     </div>
                 ))}
             </div>}

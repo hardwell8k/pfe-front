@@ -29,6 +29,8 @@ export default function Eventdetails() {
   const handleCardClick = (path: string) => {
     if (path === '/event-staff') {
       navigate(path, { state: { eventId: evenement_id.current } });
+    } else if (path === '/event-equipment') {
+      navigate(`${path}/${evenement_id.current}`);
     } else {
       navigate(path, { state: { evenement_id: evenement_id.current } });
     }

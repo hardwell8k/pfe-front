@@ -49,6 +49,7 @@ import AgencyStaffInEvent from './agency-staff-in-event/AgencyStaffInEvent';
 import InStaffTeam from './in-staff-team/InStaffTeam';
 import EquipmentHistoryPage from './equipment-history-page/EquipmentHistoryPage.tsx';
 import PrestatairePage from './prestataire-page/PrestatairePage.tsx';
+import TransportList from './transport-list/TransportList';
 
 
 
@@ -249,7 +250,7 @@ const router = createBrowserRouter([
     errorElement:<div> 404 PAGE NOT FOUND</div>
   },
   {
-    path:'/event-equipment',
+    path:'/event-equipment/:eventId',
     element:<ProtectedRoute element={<EventEquipment/>} />,
     errorElement:<div> 404 PAGE NOT FOUND</div>
   },
@@ -283,7 +284,10 @@ const router = createBrowserRouter([
     element: <ProtectedRoute element={<PrestatairePage />} />,
     errorElement: <div>404 PAGE NOT FOUND</div>
   },
-
+  {
+    path: "/transport-list",
+    element: <ProtectedRoute element={<TransportList />} />,
+  },
 ])
 
 createRoot(document.getElementById('root')!).render(
